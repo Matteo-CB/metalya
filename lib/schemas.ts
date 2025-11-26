@@ -1,0 +1,30 @@
+import { z } from "zod";
+
+export const LoginSchema = z.object({
+  email: z.string().email({ message: "L'adresse email est invalide." }),
+  password: z.string().min(1, { message: "Le mot de passe est requis." }),
+});
+
+export const RegisterSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
+  email: z.string().email({ message: "L'adresse email est invalide." }),
+  password: z
+    .string()
+    .min(6, { message: "Le mot de passe doit faire au moins 6 caractères." }),
+});
+
+// AJOUT : Schéma de Contact
+export const ContactSchema = z.object({
+  name: z.string().min(2, { message: "Votre nom est requis." }),
+  email: z.string().email({ message: "Email invalide." }),
+  subject: z.string().min(5, { message: "Le sujet est trop court." }),
+  message: z
+    .string()
+    .min(20, { message: "Votre message doit faire au moins 20 caractères." }),
+});
+
+export type LoginInput = z.infer<typeof LoginSchema>;
+export type RegisterInput = z.infer<typeof RegisterSchema>;
+export type ContactInput = z.infer<typeof ContactSchema>;
