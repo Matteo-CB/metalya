@@ -15,7 +15,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      // CORRECTION : On type 'credentials' pour éviter l'erreur "implicitly has an 'any' type"
+      // On type explicitement credentials en 'any' ou 'unknown' pour éviter l'erreur TS
       authorize: async (credentials: any) => {
         if (!credentials?.email || !credentials?.password) return null;
 
@@ -23,10 +23,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: credentials.email as string },
         });
 
-        // 1. Vérifier si l'user existe ET s'il a un mot de passe
         if (!user || !user.password) return null;
 
-        // 2. Vérification du mot de passe hashé
         const passwordsMatch = await bcrypt.compare(
           credentials.password as string,
           user.password
@@ -42,7 +40,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     session({ session, token }) {
       if (session.user && token.sub) {
         session.user.id = token.sub;
-        // Fallback pour garantir que le rôle est toujours défini
         session.user.role = (token.role as UserRole) ?? UserRole.USER;
       }
       return session;
@@ -56,7 +53,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       if (!user) return token;
 
-      // On assigne le rôle au token
       token.role = user.role;
       return token;
     },

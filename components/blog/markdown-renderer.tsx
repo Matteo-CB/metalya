@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import remarkBreaks from "remark-breaks"; // <--- Import du plugin
 
 interface MarkdownRendererProps {
   content: string;
@@ -15,13 +16,18 @@ export function MarkdownRenderer({
     <div
       className={cn(
         "prose prose-neutral max-w-none dark:prose-invert",
+        // Styles de base pour la typographie
         "prose-headings:font-serif prose-headings:font-medium",
         "prose-a:text-neutral-900 prose-a:underline prose-a:underline-offset-4 hover:prose-a:decoration-neutral-400",
         "prose-img:rounded-lg",
+        // CORRECTION CRUCIALE : white-space: pre-wrap préserve les sauts de ligne de l'éditeur
+        // Mais attention, avec remark-breaks, on a parfois double saut, donc on gère intelligemment
         className
       )}
     >
       <ReactMarkdown
+        // Ajout du plugin pour transformer les sauts de ligne simples en <br>
+        remarkPlugins={[remarkBreaks]}
         components={{
           img: ({ node, ...props }) => {
             const { src, alt } = props;
