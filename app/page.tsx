@@ -15,9 +15,9 @@ import {
   Palette,
   Newspaper,
 } from "lucide-react";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatCategory } from "@/lib/utils";
 
-// 1. Récupération des données
+// Données (avec gestion d'erreur basique implicite via le framework)
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
     where: { published: true },
@@ -31,13 +31,13 @@ async function getHomePageData() {
 export default async function HomePage() {
   const posts = await getHomePageData();
 
-  // --- LOGIQUE DE TRI ---
+  // Logique de tri simple et robuste
   const heroPost = posts.find((p) => p.featured) || posts[0];
-
   const trendingPosts = posts
     .filter((p) => p.id !== heroPost?.id && p.featured)
     .slice(0, 5);
 
+  // Remplissage si pas assez de trending
   if (trendingPosts.length < 3) {
     const filler = posts
       .filter(
@@ -54,22 +54,25 @@ export default async function HomePage() {
     .slice(0, 6);
 
   return (
-    <div className="flex flex-col pt-10 md:pt-16">
+    <div className="flex flex-col pt-8 md:pt-16">
       <Container>
         {/* --- HEADER --- */}
-        <header className="mb-16 border-b border-neutral-200 pb-8 text-center md:mb-24 md:pb-12">
+        <header className="mb-12 border-b border-neutral-200 pb-10 text-center md:mb-24 md:pb-16">
           <FadeIn>
-            <h1 className="font-serif text-7xl font-medium tracking-tighter text-neutral-950 sm:text-9xl">
+            <h1 className="font-serif text-6xl font-medium tracking-tighter text-neutral-950 sm:text-8xl md:text-9xl">
               Metalya<span className="text-neutral-300">.</span>
             </h1>
-            <p className="mx-auto mt-8 max-w-2xl text-lg text-neutral-500 md:text-xl leading-relaxed">
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-neutral-500 md:mt-8 md:text-xl md:leading-relaxed">
               Une vision curieuse et analytique sur l&apos;actualité, la
               culture, la tech et l&apos;exploration.
               <br className="hidden md:block" />
               Comprendre le monde qui nous entoure, sans le bruit de fond.
             </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <nav
+              className="mt-8 mb-20 flex flex-wrap justify-center gap-3 md:mt-10"
+              aria-label="Accès rapide aux catégories"
+            >
               {["Actualités", "Culture", "Tech", "Voyage"].map((tag) => (
                 <Link
                   key={tag}
@@ -77,12 +80,12 @@ export default async function HomePage() {
                     .toLowerCase()
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")}`}
-                  className="rounded-full border border-neutral-200 bg-neutral-50 px-5 py-2 text-xs font-medium uppercase tracking-wide text-neutral-600 transition-all hover:border-neutral-900 hover:bg-white hover:text-neutral-900"
+                  className="rounded-full border border-neutral-200 bg-neutral-50 px-5 py-2 text-xs font-bold uppercase tracking-wide text-neutral-600 transition-all hover:border-neutral-900 hover:bg-white hover:text-neutral-900 active:scale-95"
                 >
                   {tag}
                 </Link>
               ))}
-            </div>
+            </nav>
           </FadeIn>
         </header>
 
@@ -91,34 +94,40 @@ export default async function HomePage() {
 
         {/* --- SECTION 2 : TENDANCES --- */}
         {trendingPosts.length > 0 && (
-          <div className="py-8">
+          <div className="py-4 md:py-8">
             <PostGrid posts={trendingPosts} title="Les Incontournables" />
           </div>
         )}
 
-        {/* --- SECTION 3 : EXPLORATION VISUELLE (DESIGN MAGIQUE) --- */}
-        <section className="my-24 relative overflow-hidden rounded-[2.5rem] bg-neutral-950 py-24 text-white">
-          {/* Effets de fond atmosphériques */}
-          <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-500/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
-          <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-purple-500/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+        {/* --- SECTION 3 : EXPLORATION VISUELLE --- */}
+        <section
+          className="my-16 relative overflow-hidden rounded-4xl bg-neutral-950 py-16 text-white md:my-24 md:rounded-2xl md:py-24"
+          aria-labelledby="univers-title"
+        >
+          {/* Effets de fond (ajustés pour mobile) */}
+          <div className="absolute top-0 left-[-20%] w-[120%] h-full md:left-1/4 md:w-[600px] md:h-[600px] bg-blue-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+          <div className="absolute bottom-0 right-[-20%] w-[120%] h-full md:right-1/4 md:w-[600px] md:h-[600px] bg-purple-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
 
           <FadeIn>
             <div className="mx-auto max-w-6xl px-6">
-              <div className="text-center mb-16 relative z-10">
+              <div className="text-center mb-12 md:mb-16 relative z-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-neutral-300 mb-6 backdrop-blur-md">
                   <Sparkles size={14} className="text-yellow-400" />
                   <span>Univers Thématiques</span>
                 </div>
-                <h2 className="font-serif text-4xl font-medium md:text-6xl tracking-tight mb-6 text-white">
+                <h2
+                  id="univers-title"
+                  className="font-serif text-4xl font-medium tracking-tight mb-4 text-white md:text-6xl md:mb-6"
+                >
                   Plongez dans l&apos;essentiel.
                 </h2>
-                <p className="mx-auto max-w-xl text-neutral-400 text-lg">
+                <p className="mx-auto max-w-xl text-neutral-400 text-base md:text-lg">
                   Quatre piliers éditoriaux pour décrypter le monde contemporain
                   sous toutes ses coutures.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {[
                   {
                     label: "Actualités",
@@ -159,27 +168,22 @@ export default async function HomePage() {
                       .toLowerCase()
                       .normalize("NFD")
                       .replace(/[\u0300-\u036f]/g, "")}`}
-                    className={`group relative flex h-72 flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 transition-all duration-500 hover:-translate-y-2 hover:border-white/20 ${cat.shadow}`}
+                    className={`group relative flex h-64 flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-6 md:p-8 transition-all duration-500 hover:-translate-y-2 hover:border-white/20 ${cat.shadow}`}
                   >
-                    {/* Fond gradient animé au survol */}
+                    {/* Fond gradient */}
                     <div
                       className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-10`}
-                    />
-
-                    {/* Cercle décoratif */}
-                    <div
-                      className={`absolute -right-4 -top-4 h-24 w-24 rounded-full bg-gradient-to-br ${cat.gradient} blur-2xl opacity-20 group-hover:opacity-40 transition-opacity duration-500`}
                     />
 
                     <div className="relative z-10">
                       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-white transition-transform duration-500 group-hover:scale-110 group-hover:bg-white/10">
                         <cat.icon size={24} />
                       </div>
-                      <h3 className="font-serif text-3xl font-bold text-white">
+                      <h3 className="font-serif text-2xl font-bold text-white md:text-3xl">
                         {cat.label}
                       </h3>
                       <p
-                        className={`mt-2 text-sm font-medium uppercase tracking-wider ${cat.text} opacity-80`}
+                        className={`mt-2 text-xs font-medium uppercase tracking-wider ${cat.text} opacity-80`}
                       >
                         {cat.desc}
                       </p>
@@ -197,13 +201,13 @@ export default async function HomePage() {
         </section>
 
         {/* --- SECTION 4 : LE FIL INFO --- */}
-        <section className="py-16">
-          <div className="mb-10 flex items-end justify-between border-b border-neutral-200 pb-4">
+        <section className="py-12 md:py-16">
+          <div className="mb-8 flex items-end justify-between border-b border-neutral-200 pb-4 md:mb-10">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-900">
-                <Clock size={20} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-900 md:h-10 md:w-10">
+                <Clock size={18} className="md:w-5 md:h-5" />
               </div>
-              <h2 className="font-serif text-3xl font-medium text-neutral-900">
+              <h2 className="font-serif text-2xl font-medium text-neutral-900 md:text-3xl">
                 Le Fil Info
               </h2>
             </div>
@@ -212,45 +216,48 @@ export default async function HomePage() {
             </span>
           </div>
 
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 md:gap-12">
             {latestPosts.map((post, index) => (
               <FadeIn key={post.id} delay={index * 0.05}>
-                <article className="group grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
+                <article className="group grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-8">
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="relative aspect-video w-full overflow-hidden rounded-xl bg-neutral-100 md:col-span-4 md:aspect-[3/2]"
+                    className="relative aspect-video w-full overflow-hidden rounded-xl bg-neutral-100 md:col-span-4 md:aspect-[3/2] lg:col-span-3"
                   >
                     <Image
                       src={post.coverImage || ""}
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 30vw"
+                      sizes="(max-width: 768px) 100vw, 25vw"
                     />
                   </Link>
-                  <div className="flex flex-col justify-center md:col-span-8">
-                    <div className="mb-3 flex items-center gap-3 text-xs font-medium text-neutral-500">
-                      <span className="rounded-full bg-neutral-100 px-2 py-1 text-neutral-900">
-                        {post.categories[0] || "Général"}
+                  <div className="flex flex-col justify-center md:col-span-8 lg:col-span-9">
+                    <div className="mb-2 flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-neutral-500">
+                      <span className="text-indigo-600">
+                        {post.categories[0]
+                          ? formatCategory(post.categories[0])
+                          : "Général"}
                       </span>
+                      <span className="h-0.5 w-0.5 rounded-full bg-neutral-300" />
                       <time dateTime={post.createdAt.toISOString()}>
                         {formatDate(post.createdAt)}
                       </time>
                     </div>
-                    <h3 className="mb-3 font-serif text-2xl font-medium text-neutral-900 group-hover:underline decoration-neutral-300 underline-offset-4">
+                    <h3 className="mb-3 font-serif text-xl font-medium text-neutral-900 group-hover:underline decoration-neutral-300 underline-offset-4 md:text-2xl">
                       <Link href={`/posts/${post.slug}`}>{post.title}</Link>
                     </h3>
-                    <p className="mb-4 line-clamp-2 text-neutral-600 md:line-clamp-3">
+                    <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-neutral-600 md:text-base">
                       {post.excerpt}
                     </p>
-                    <div className="flex items-center gap-2 text-sm font-semibold text-neutral-900">
+                    <div className="flex items-center gap-2 text-sm font-bold text-neutral-900">
                       Lire l&apos;article
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 opacity-0 group-hover:opacity-100" />
                     </div>
                   </div>
                 </article>
                 {index !== latestPosts.length - 1 && (
-                  <div className="my-8 h-px w-full bg-neutral-100 md:my-12" />
+                  <div className="my-8 h-px w-full bg-neutral-100 md:hidden" />
                 )}
               </FadeIn>
             ))}

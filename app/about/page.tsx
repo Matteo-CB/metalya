@@ -1,107 +1,92 @@
 import Image from "next/image";
 import { Container } from "@/components/ui/container";
 import { FadeIn } from "@/components/ui/fade-in";
-import { ArrowRight, Code2, Lightbulb, Newspaper } from "lucide-react";
+import {
+  ArrowRight,
+  Cpu,
+  Zap,
+  Globe,
+  Search,
+  BarChart3,
+  Rocket,
+  Layers,
+} from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
 
-export const metadata = {
-  title: "À Propos de Metalya & DLK",
+export const metadata: Metadata = {
+  title: "À Propos - Metalya x DLK Agency",
   description:
-    "L'histoire derrière Metalya, une fusion entre exploration éditoriale et excellence technique portée par DLK Digital Agency.",
+    "Metalya est une vitrine technologique conçue par DLK Digital Agency. Découvrez comment nous allions éditorial exigeant et performance web de pointe.",
 };
 
 export default function AboutPage() {
   return (
     <div className="bg-neutral-50">
-      {/* --- ACTE 1 : LE MANIFESTE (HERO) --- */}
-      <section className="relative overflow-hidden pb-24 pt-32 md:pb-40 md:pt-48">
-        <Container>
-          <div className="max-w-4xl">
-            <FadeIn>
-              <h1 className="font-serif text-6xl font-medium tracking-tighter text-neutral-950 sm:text-8xl md:text-9xl leading-[0.9]">
-                Comprendre <br />
-                le signal <br />
-                <span className="text-neutral-300">dans le bruit.</span>
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mt-12 max-w-2xl text-xl leading-relaxed text-neutral-600 md:text-2xl">
-                Nous vivons dans un océan d'informations. Metalya n'est pas là
-                pour ajouter du volume, mais pour offrir de la clarté. Une
-                exploration lente et délibérée à l'intersection de la
-                technologie, de la culture et de notre futur.
-              </p>
-            </FadeIn>
-          </div>
-        </Container>
+      {/* =========================================
+          ACTE 1 : LA VISION ÉDITORIALE (LIGHT)
+          ========================================= */}
+      <section className="relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-32">
+        {/* Background Ambient Light */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] overflow-hidden -z-10 opacity-60 pointer-events-none">
+          <div className="absolute top-[-20%] left-0 w-[70vw] h-[70vw] bg-amber-100/50 blur-[120px] rounded-full mix-blend-multiply" />
+          <div className="absolute top-[10%] right-[-10%] w-[50vw] h-[50vw] bg-indigo-100/40 blur-[100px] rounded-full mix-blend-multiply" />
+        </div>
 
-        {/* Abstract Background Element */}
-        <div className="pointer-events-none absolute right-0 top-0 -z-10 h-[800px] w-[800px] -translate-y-1/2 translate-x-1/4 rounded-full bg-gradient-to-br from-neutral-100 to-neutral-200 blur-[120px] opacity-70" />
-      </section>
-
-      {/* --- ACTE 2 : L'IMAGE DE MARQUE (VISUEL FORT) --- */}
-      <section className="py-12">
         <Container>
-          <FadeIn>
-            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl">
-              <Image
-                src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2664&auto=format&fit=crop"
-                alt="Abstract digital art wave"
-                fill
-                className="object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105 hover:scale-100"
-                sizes="95vw"
-                priority
-              />
-              <div className="absolute inset-0 bg-neutral-950/10" />
-            </div>
-          </FadeIn>
-        </Container>
-      </section>
-
-      {/* --- ACTE 3 : NOTRE PHILOSOPHIE (VALEURS) --- */}
-      <section className="py-24 md:py-40">
-        <Container>
-          <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-24">
-            <FadeIn>
-              <h2 className="font-serif text-4xl font-medium text-neutral-950 md:text-5xl">
-                Contre l'éphémère, <br /> choisir la profondeur.
-              </h2>
-            </FadeIn>
-            <div className="space-y-16">
-              <FadeIn delay={0.1}>
-                <div className="flex gap-6">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-900">
-                    <Newspaper size={24} />
-                  </div>
-                  <div>
-                    <h3 className="mb-3 font-serif text-2xl font-medium">
-                      Slow Journalisme
-                    </h3>
-                    <p className="text-lg leading-relaxed text-neutral-600">
-                      Nous rejetons la course au clic. Nos articles sont pensés
-                      pour être lus aujourd'hui et relus dans six mois. Nous
-                      prenons le temps d'analyser les tendances de fond plutôt
-                      que de réagir à l'actualité brûlante.
-                    </p>
-                  </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+            {/* Colonne Texte Hero */}
+            <div>
+              <FadeIn>
+                <div className="flex items-center gap-3 mb-6">
+                  <span className="h-px w-8 bg-neutral-900" />
+                  <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">
+                    Notre Manifeste
+                  </span>
+                </div>
+                <h1 className="font-serif text-5xl md:text-7xl font-medium tracking-tighter text-neutral-950 mb-8 leading-[1.1]">
+                  L'élégance du papier, <br />
+                  <span className="text-neutral-400 italic">
+                    la puissance du code.
+                  </span>
+                </h1>
+                <div className="prose prose-lg text-neutral-600">
+                  <p>
+                    Metalya est né d'une frustration : le web moderne est devenu
+                    bruyant, lent et encombré. Nous voulions créer un
+                    sanctuaire. Un espace où la lecture redevient un plaisir, où
+                    chaque pixel est à sa place.
+                  </p>
+                  <p>
+                    Mais un beau contenu ne suffit pas. Il faut un écrin capable
+                    de le porter à la vitesse de la pensée.
+                  </p>
                 </div>
               </FadeIn>
-              <FadeIn delay={0.2}>
-                <div className="flex gap-6">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-neutral-900">
-                    <Lightbulb size={24} />
-                  </div>
-                  <div>
-                    <h3 className="mb-3 font-serif text-2xl font-medium">
-                      Curiosité Radicale
-                    </h3>
-                    <p className="text-lg leading-relaxed text-neutral-600">
-                      Le design influence la tech, la tech influence la culture,
-                      la culture influence le voyage. Nous décloisonnons les
-                      disciplines pour offrir une vision holistique du monde
-                      contemporain.
-                    </p>
-                  </div>
+            </div>
+
+            {/* Colonne Image Artistique */}
+            <div className="relative">
+              <FadeIn
+                delay={0.2}
+                className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] shadow-2xl"
+              >
+                <Image
+                  src="https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=2668&auto=format&fit=crop"
+                  alt="Journaliste travaillant sur un design épuré"
+                  fill
+                  className="object-cover transition-transform duration-1000 hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                {/* Overlay Text */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent text-white">
+                  <p className="font-serif text-2xl italic">
+                    "Le design n'est pas seulement ce à quoi il ressemble. Le
+                    design est comment il fonctionne."
+                  </p>
+                  <p className="mt-2 text-sm font-medium uppercase tracking-widest opacity-80">
+                    — Steve Jobs
+                  </p>
                 </div>
               </FadeIn>
             </div>
@@ -109,109 +94,224 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* --- ACTE 4 : LA GENÈSE & DLK DIGITAL AGENCY (PARTENARIAT) --- */}
-      {/* Utilisation d'un fond sombre pour marquer une rupture visuelle forte */}
-      <section className="bg-neutral-950 py-24 md:py-40 text-white overflow-hidden relative">
+      {/* =========================================
+          ACTE 2 : LA PUISSANCE TECHNIQUE (DARK)
+          ========================================= */}
+      <section className="relative bg-neutral-950 py-24 md:py-40 text-white overflow-hidden rounded-t-[3rem] md:rounded-t-[5rem] -mt-12 z-10 shadow-[0_-20px_60px_rgba(0,0,0,0.2)]">
+        {/* Tech Background Grid */}
+        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] z-0" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
+
         <Container className="relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Header Section Agence */}
+          <div className="max-w-3xl mx-auto text-center mb-20 md:mb-32">
             <FadeIn>
-              <span className="block mb-6 font-mono text-sm uppercase tracking-widest text-neutral-400">
-                L'Alliance du fond et de la forme
-              </span>
-              <h2 className="font-serif text-5xl md:text-7xl font-medium mb-8 leading-tight">
-                Né de la vision de Matteo Biyikli, <br />
-                Sculpté par <span className="text-neutral-400">DLK.</span>
-              </h2>
-              <p className="text-xl text-neutral-300 leading-relaxed mb-12 max-w-xl">
-                Metalya n'est pas qu'un simple blog. C'est une démonstration de
-                force. Le résultat d'une conviction : un contenu exceptionnel ne
-                peut exister que dans un écrin technologique parfait.
-              </p>
-
-              <div className="space-y-8 border-l-2 border-neutral-800 pl-8 relative">
-                <div className="space-y-2 relative">
-                  <Code2
-                    className="text-neutral-400 absolute -left-[49px] top-1 bg-neutral-950 py-2"
-                    size={32}
-                  />
-                  <h4 className="text-xl font-serif font-medium">
-                    L'Excellence Technique DLK
-                  </h4>
-                  <p className="text-neutral-400">
-                    Conçu et développé par <strong>DLK Digital Agency</strong>,
-                    ce site repousse les limites de l'ingénierie web moderne
-                    (Next.js 15, Server Components, Edge Caching) pour offrir
-                    une performance instantanée et une expérience utilisateur
-                    fluide.
-                  </p>
-                </div>
-                <div className="space-y-2">
-                  <h4 className="text-xl font-serif font-medium">
-                    Le Laboratoire Digital
-                  </h4>
-                  <p className="text-neutral-400">
-                    Pour DLK, Metalya est un terrain de jeu grandeur nature. Un
-                    laboratoire où tester les dernières innovations en matière
-                    d'UI/UX, de SEO sémantique et d'architecture headless avant
-                    de les déployer pour leurs clients.
-                  </p>
-                </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono mb-8 backdrop-blur-md">
+                <Cpu size={14} />
+                <span>POWERED BY DLK DIGITAL AGENCY</span>
               </div>
+              <h2 className="font-serif text-4xl md:text-6xl font-medium tracking-tight mb-6">
+                Nous ne construisons pas des sites. <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+                  Nous forgeons des écosystèmes.
+                </span>
+              </h2>
+              <p className="text-lg text-neutral-400 leading-relaxed">
+                Metalya est notre laboratoire (R&D). C'est ici que{" "}
+                <strong>DLK Digital Agency</strong> repousse les limites du
+                framework Next.js pour offrir des performances web-vitals
+                parfaites (100/100).
+              </p>
+            </FadeIn>
+          </div>
 
-              <div className="mt-16">
-                <a
-                  href="https://dlkdigitalagency.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 rounded-full bg-white text-neutral-950 px-8 py-4 font-bold transition-transform hover:scale-105"
-                >
-                  Découvrir DLK Digital Agency
-                  <ArrowRight size={20} />
-                </a>
+          {/* BENTO GRID : Les Expertises */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-20">
+            {/* Carte 1 : Performance (Large) */}
+            <FadeIn
+              delay={0.1}
+              className="md:col-span-2 group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 md:p-12 transition-colors hover:bg-neutral-900 hover:border-indigo-500/30"
+            >
+              <div className="absolute top-0 right-0 -mr-8 -mt-8 h-32 w-32 rounded-full bg-indigo-500/20 blur-3xl group-hover:bg-indigo-500/30 transition-all" />
+              <div className="relative z-10 flex flex-col h-full justify-between gap-8">
+                <div>
+                  <div className="w-12 h-12 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400 mb-6">
+                    <Zap size={24} />
+                  </div>
+                  <h3 className="text-2xl font-serif font-medium mb-3">
+                    Performance Extrême
+                  </h3>
+                  <p className="text-neutral-400 max-w-md">
+                    Utilisation du <strong>Server-Side Rendering (SSR)</strong>{" "}
+                    et de l'Edge Caching. Résultat : un Time to First Byte
+                    (TTFB) inférieur à 50ms partout dans le monde.
+                  </p>
+                </div>
+                {/* Fake Graph */}
+                <div className="flex items-end gap-2 h-16 w-full opacity-50">
+                  {[40, 65, 45, 80, 55, 90, 100].map((h, i) => (
+                    <div
+                      key={i}
+                      style={{ height: `${h}%` }}
+                      className="flex-1 bg-gradient-to-t from-indigo-500 to-cyan-400 rounded-t-sm opacity-80"
+                    />
+                  ))}
+                </div>
               </div>
             </FadeIn>
 
-            {/* Image abstraite représentant la "Tech/Structure" */}
+            {/* Carte 2 : SEO (Carrée) */}
+            <FadeIn
+              delay={0.2}
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 transition-colors hover:bg-neutral-900 hover:border-emerald-500/30"
+            >
+              <div className="absolute bottom-0 left-0 -ml-8 -mb-8 h-32 w-32 rounded-full bg-emerald-500/20 blur-3xl group-hover:bg-emerald-500/30 transition-all" />
+              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6">
+                <Search size={24} />
+              </div>
+              <h3 className="text-2xl font-serif font-medium mb-3">
+                SEO Sémantique
+              </h3>
+              <p className="text-neutral-400 text-sm">
+                Structure de données JSON-LD intégrée, maillage interne
+                intelligent et balises meta dynamiques. Google adore ce que nous
+                faisons.
+              </p>
+            </FadeIn>
+
+            {/* Carte 3 : UX/UI (Carrée) */}
             <FadeIn
               delay={0.3}
-              className="h-full min-h-[600px] relative hidden lg:block rounded-3xl overflow-hidden"
+              className="group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 transition-colors hover:bg-neutral-900 hover:border-amber-500/30"
             >
-              <Image
-                src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2664&auto=format&fit=crop"
-                alt="Structure architecturale abstraite et lumineuse"
-                fill
-                className="object-cover opacity-80"
-                sizes="50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-transparent to-transparent" />
+              <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-400 mb-6">
+                <Layers size={24} />
+              </div>
+              <h3 className="text-2xl font-serif font-medium mb-3">
+                Design System
+              </h3>
+              <p className="text-neutral-400 text-sm">
+                Une interface cohérente, accessible (WCAG) et fluide. Animations
+                Framer Motion à 60fps sans bloquer le thread principal.
+              </p>
+            </FadeIn>
+
+            {/* Carte 4 : Scalabilité (Large) */}
+            <FadeIn
+              delay={0.4}
+              className="md:col-span-2 group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 md:p-12 transition-colors hover:bg-neutral-900 hover:border-cyan-500/30"
+            >
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-1/2 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
+                <div className="flex-1">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
+                    <Rocket size={24} />
+                  </div>
+                  <h3 className="text-2xl font-serif font-medium mb-3">
+                    Architecture Headless
+                  </h3>
+                  <p className="text-neutral-400">
+                    Découplage total entre le contenu (Database) et le rendu.
+                    Cela nous permet de changer de design sans perdre une
+                    virgule, et d'encaisser des pics de trafic massifs.
+                  </p>
+                </div>
+                <div className="flex-shrink-0 bg-neutral-950 border border-white/10 rounded-xl p-4 font-mono text-xs text-neutral-400">
+                  <div className="flex gap-2 mb-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500" />
+                    <div className="w-3 h-3 rounded-full bg-yellow-500" />
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                  </div>
+                  <p>
+                    <span className="text-purple-400">const</span> stack = {"{"}
+                  </p>
+                  <p className="pl-4">
+                    framework:{" "}
+                    <span className="text-green-400">"Next.js 15"</span>,
+                  </p>
+                  <p className="pl-4">
+                    database:{" "}
+                    <span className="text-green-400">"Prisma / MongoDB"</span>,
+                  </p>
+                  <p className="pl-4">
+                    deployment:{" "}
+                    <span className="text-green-400">"Vercel Edge"</span>,
+                  </p>
+                  <p>{"}"};</p>
+                </div>
+              </div>
             </FadeIn>
           </div>
-        </Container>
 
-        {/* Subtle background grid texture */}
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] z-0 pointer-events-none"></div>
+          {/* CTA Agence */}
+          <FadeIn className="text-center">
+            <p className="text-neutral-400 mb-8">
+              Vous avez un projet complexe ? Une vision ambitieuse ?
+            </p>
+            <a
+              href="https://dlkdigitalagency.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 rounded-full bg-white text-neutral-950 px-8 py-4 font-bold transition-all hover:scale-105 hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
+            >
+              <Globe size={18} />
+              Travailler avec DLK Digital Agency
+            </a>
+          </FadeIn>
+        </Container>
       </section>
 
-      {/* --- ACTE 5 : L'APPEL À L'ACTION (CONCLUSION) --- */}
-      <section className="py-24 md:py-40 text-center">
-        <Container className="max-w-3xl">
-          <FadeIn>
-            <h2 className="font-serif text-4xl md:text-6xl font-medium text-neutral-950 mb-8">
-              Rejoignez le mouvement.
-            </h2>
-            <p className="text-xl text-neutral-600 mb-12 leading-relaxed">
-              Ne soyez plus un simple consommateur passif d'informations.
-              Devenez un lecteur éclairé. Abonnez-vous pour recevoir
-              l'essentiel, une fois par semaine.
-            </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 text-lg font-bold uppercase tracking-widest text-neutral-900 group"
-            >
-              Créer un compte gratuit
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
-          </FadeIn>
+      {/* =========================================
+          ACTE 3 : L'ÉQUIPE (HUMAN TOUCH)
+          ========================================= */}
+      <section className="py-24 md:py-32">
+        <Container>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            <div className="lg:col-span-5 order-2 lg:order-1">
+              <FadeIn className="relative aspect-square w-full max-w-md mx-auto overflow-hidden rounded-[2rem] bg-neutral-100">
+                <Image
+                  src="/ales-nesetril-Im7lZjxeLhg-unsplash.jpg"
+                  alt="Espace de travail créatif"
+                  fill
+                  className="object-cover"
+                />
+              </FadeIn>
+            </div>
+            <div className="lg:col-span-7 order-1 lg:order-2">
+              <FadeIn delay={0.2}>
+                <h2 className="font-serif text-4xl md:text-5xl font-medium text-neutral-950 mb-6">
+                  Une approche artisanale du numérique.
+                </h2>
+                <p className="text-lg text-neutral-600 leading-relaxed mb-6">
+                  Derrière Metalya, il y a <strong>Matteo Biyikli</strong> et
+                  son équipe. Nous croyons que le code est une forme d'art, au
+                  même titre que l'écriture.
+                </p>
+                <p className="text-lg text-neutral-600 leading-relaxed mb-8">
+                  Chaque fonctionnalité de ce site a été pensée pour servir le
+                  lecteur, jamais pour le distraire. Pas de pop-ups agressifs,
+                  pas de trackers invasifs. Juste du contenu et de la fluidité.
+                </p>
+
+                <div className="flex flex-wrap gap-4">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-2 text-neutral-900 font-bold border-b-2 border-neutral-200 pb-1 hover:border-neutral-900 transition-colors"
+                  >
+                    Nous contacter
+                    <ArrowRight size={16} />
+                  </Link>
+                  <Link
+                    href="/category/tech"
+                    className="inline-flex items-center gap-2 text-neutral-500 font-medium hover:text-neutral-900 transition-colors"
+                  >
+                    Lire nos articles Tech
+                    <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
         </Container>
       </section>
     </div>
