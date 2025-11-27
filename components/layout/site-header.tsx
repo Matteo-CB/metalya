@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
+// Import de l'enum UserRole si possible, sinon on utilisera le string "ADMIN"
+// import { UserRole } from "@prisma/client";
 
 const NAV_LINKS = [
   { label: "Actualités", href: "/category/actualites" },
@@ -24,7 +26,7 @@ const NAV_LINKS = [
 ];
 
 interface SiteHeaderProps {
-  user?: User;
+  user?: User & { role?: string }; // Typage étendu pour inclure le rôle
 }
 
 export function SiteHeader({ user }: SiteHeaderProps) {
@@ -48,6 +50,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
       document.body.style.overflow = "unset";
     }
   }, [isMobileMenuOpen]);
+
+  // Fonction utilitaire pour vérifier si l'utilisateur est admin
+  const isAdmin = user?.role === "ADMIN";
 
   return (
     <>
@@ -144,8 +149,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                           Mon compte
                         </div>
-                        {/* @ts-expect-error - role check */}
-                        {user.role === "ADMIN" && (
+
+                        {/* Lien Admin conditionnel */}
+                        {isAdmin && (
                           <Link
                             href="/admin/create"
                             onClick={() => setIsUserMenuOpen(false)}
@@ -158,6 +164,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                             Administration
                           </Link>
                         )}
+
                         <div className="my-1 h-px bg-neutral-100" />
                         <button
                           onClick={() => signOut({ callbackUrl: "/" })}
@@ -292,8 +299,8 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         </div>
                       </div>
 
-                      {/* @ts-expect-error - role check */}
-                      {user.role === "ADMIN" && (
+                      {/* Lien Admin Mobile conditionnel */}
+                      {isAdmin && (
                         <Link
                           href="/admin/create"
                           onClick={() => setIsMobileMenuOpen(false)}
@@ -303,6 +310,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                           Administration
                         </Link>
                       )}
+
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium text-red-600 active:bg-red-50"

@@ -91,8 +91,7 @@ export const metadata: Metadata = {
   },
   // Vérification Search Console (remplacez par votre code)
   verification: {
-    google:
-      "google-site-verification=kW36zMDmilSPGFpLjk6v4FqSjyoPW0LsRdBJMqVwuHY",
+    google: "kW36zMDmilSPGFpLjk6v4FqSjyoPW0LsRdBJMqVwuHY",
   },
   robots: {
     index: true,
