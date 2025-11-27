@@ -8,6 +8,9 @@ import { AuthError } from "next-auth";
 import { LoginSchema, RegisterSchema } from "@/lib/schemas";
 import { UserRole } from "@prisma/client";
 
+// Liste des emails administrateurs autorisés
+const adminEmails = ["matteo.biyikli3224@gmail.com", "daiki.ajwad@gmail.com"];
+
 // --- INSCRIPTION ---
 export async function registerAction(values: z.infer<typeof RegisterSchema>) {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -27,8 +30,8 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
     return { error: "Cet email est déjà utilisé." };
   }
 
-  // LOGIQUE ADMIN STRICTE
-  const isAdmin = email === "matteo.biyikli3224@gmail.com";
+  // LOGIQUE ADMIN STRICTE : Vérifie si l'email est dans la liste
+  const isAdmin = adminEmails.includes(email);
   const role = isAdmin ? UserRole.ADMIN : UserRole.USER;
 
   await prisma.user.create({
@@ -66,8 +69,8 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
     await signIn("credentials", {
       email,
       password,
-      redirectTo:
-        email === "matteo.biyikli3224@gmail.com" ? "/admin/create" : "/",
+      // Redirection vers l'admin si l'email est dans la liste des admins
+      redirectTo: adminEmails.includes(email) ? "/admin/create" : "/",
     });
   } catch (error) {
     if (error instanceof AuthError) {
