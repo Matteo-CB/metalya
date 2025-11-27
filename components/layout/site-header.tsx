@@ -70,7 +70,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               className="relative z-50 font-serif text-2xl font-bold tracking-tight text-neutral-900 transition-opacity hover:opacity-80 md:text-3xl"
               aria-label="Retour à l'accueil Metalya"
             >
-              Metalya.
+              Metalya<span className="text-neutral-300">.</span>
             </Link>
 
             {/* Desktop Navigation */}
