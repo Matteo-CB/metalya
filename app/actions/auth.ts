@@ -9,7 +9,7 @@ import { LoginSchema, RegisterSchema } from "@/lib/schemas";
 import { UserRole } from "@prisma/client";
 
 // Liste des emails administrateurs autorisés
-const adminEmails = ["matteo.biyikli3224@gmail.com", "daiki.ajwad@gmail.com"];
+const adminEmails = ["matteo.biyikli3224@gmail.com", "Daiki.ajwad@gmail.com"];
 
 // --- INSCRIPTION ---
 export async function registerAction(values: z.infer<typeof RegisterSchema>) {
