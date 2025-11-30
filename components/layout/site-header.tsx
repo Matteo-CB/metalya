@@ -51,7 +51,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
     }
   }, [isMobileMenuOpen]);
 
-  // Fonction utilitaire pour vérifier si l'utilisateur est admin
   const isAdmin = user?.role === "ADMIN";
 
   return (
@@ -60,7 +59,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         className={cn(
           "fixed top-0 z-50 w-full transition-all duration-300 ease-in-out border-b",
           isScrolled
-            ? "border-neutral-200/50 bg-white/80 py-3 backdrop-blur-xl shadow-sm supports-[backdrop-filter]:bg-white/60"
+            ? "border-neutral-200/50 bg-white/80 py-3 backdrop-blur-xl shadow-sm supports-backdrop-filter:bg-white/60"
             : "border-transparent bg-transparent py-4 md:py-6"
         )}
       >
@@ -69,7 +68,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
             className="flex items-center justify-between"
             aria-label="Navigation principale"
           >
-            {/* Logo */}
             <Link
               href="/"
               className="relative z-50 font-serif text-2xl font-bold tracking-tight text-neutral-900 transition-opacity hover:opacity-80 md:text-3xl"
@@ -78,7 +76,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               Metalya<span className="text-neutral-300">.</span>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden items-center gap-8 lg:flex">
               {NAV_LINKS.map((link) => (
                 <Link
@@ -103,7 +100,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               ))}
             </div>
 
-            {/* Actions (Desktop) */}
             <div className="hidden items-center gap-4 lg:flex">
               {user ? (
                 <div className="relative">
@@ -118,7 +114,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                     </span>
                     <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-100 transition-transform group-hover:scale-105">
                       {user.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={user.image}
                           alt=""
@@ -150,7 +145,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                           Mon compte
                         </div>
 
-                        {/* Lien Admin conditionnel */}
                         {isAdmin && (
                           <Link
                             href="/admin/create"
@@ -195,7 +189,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               )}
             </div>
 
-            {/* Mobile Toggle Button */}
             <button
               className="relative z-50 -mr-2 rounded-full p-2 text-neutral-900 transition-colors active:bg-neutral-100 lg:hidden"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -230,7 +223,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
         </div>
       </header>
 
-      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -278,7 +270,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                     <>
                       <div className="flex items-center gap-3 rounded-2xl border border-neutral-100 bg-neutral-50 p-4">
                         {user.image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={user.image}
                             alt=""
@@ -299,7 +290,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         </div>
                       </div>
 
-                      {/* Lien Admin Mobile conditionnel */}
                       {isAdmin && (
                         <Link
                           href="/admin/create"

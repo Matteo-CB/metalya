@@ -14,7 +14,6 @@ interface CategoryPageProps {
   }>;
 }
 
-// 1. Génération SEO Dynamique
 export async function generateMetadata(
   props: CategoryPageProps
 ): Promise<Metadata> {
@@ -38,17 +37,14 @@ export async function generateMetadata(
   };
 }
 
-// 2. Le Composant Page
 export default async function CategoryPage(props: CategoryPageProps) {
   const params = await props.params;
   const category = getCategoryBySlug(params.slug);
 
-  // Si l'URL est invalide
   if (!category) {
     notFound();
   }
 
-  // Récupération des articles liés à cette catégorie
   const posts = await prisma.post.findMany({
     where: {
       published: true,
@@ -62,15 +58,12 @@ export default async function CategoryPage(props: CategoryPageProps) {
 
   return (
     <div className="relative min-h-screen flex flex-col pt-8 md:pt-16 overflow-hidden">
-      {/* --- BACKGROUND AMBIANT --- */}
-      {/* Subtils orbes de lumière pour donner de la profondeur */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-screen h-[600px] overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-neutral-200/40 blur-[120px] rounded-full mix-blend-multiply opacity-70" />
         <div className="absolute top-[-100px] right-1/4 w-[400px] h-[400px] bg-indigo-50/60 blur-[100px] rounded-full mix-blend-multiply opacity-60" />
       </div>
 
       <Container>
-        {/* --- FIL D'ARIANE (BREADCRUMB) --- */}
         <FadeIn>
           <nav
             aria-label="Fil d'ariane"
@@ -90,7 +83,6 @@ export default async function CategoryPage(props: CategoryPageProps) {
           </nav>
         </FadeIn>
 
-        {/* --- HEADER CATÉGORIE --- */}
         <header className="mb-16 border-b border-neutral-200/60 pb-12 md:mb-24 md:pb-16">
           <FadeIn delay={0.1}>
             <div className="mb-6 flex items-center gap-3">
@@ -122,7 +114,6 @@ export default async function CategoryPage(props: CategoryPageProps) {
           </FadeIn>
         </header>
 
-        {/* --- LISTE DES ARTICLES --- */}
         {posts.length > 0 ? (
           <PostGrid posts={posts} />
         ) : (

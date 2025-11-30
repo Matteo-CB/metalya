@@ -15,7 +15,6 @@ import {
   ArrowRight,
   Sparkles,
   Newspaper,
-  HelpCircle,
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -48,14 +47,12 @@ export default function ContactPage() {
 
   return (
     <div className="relative min-h-screen bg-neutral-50 pb-24 pt-32 md:pt-40 overflow-hidden">
-      {/* --- AMBIANCE BACKGROUND --- */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1000px] overflow-hidden -z-10 pointer-events-none opacity-50">
         <div className="absolute top-[-100px] right-0 w-[800px] h-[800px] bg-indigo-50/80 blur-[120px] rounded-full mix-blend-multiply" />
         <div className="absolute top-[100px] left-[-200px] w-[600px] h-[600px] bg-rose-50/80 blur-[100px] rounded-full mix-blend-multiply" />
       </div>
 
       <Container>
-        {/* --- HEADER MAGNIFIQUE & OPTIMISÉ SEO --- */}
         <FadeIn className="mb-20 text-center md:mb-28">
           <div className="mx-auto max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/80 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-indigo-500 shadow-sm backdrop-blur-sm">
@@ -65,7 +62,7 @@ export default function ContactPage() {
 
             <h1 className="font-serif text-5xl font-medium tracking-tight text-neutral-950 sm:text-7xl leading-[1.1] mb-8">
               Créons des liens <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-rose-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-500 to-rose-500">
                 durables.
               </span>
             </h1>
@@ -80,10 +77,8 @@ export default function ContactPage() {
         </FadeIn>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16 items-start">
-          {/* --- COLONNE GAUCHE : CARTE D'INFO --- */}
           <div className="lg:col-span-5 lg:sticky lg:top-32 space-y-8">
             <FadeIn delay={0.1}>
-              {/* Carte Email Principal */}
               <div className="group rounded-3xl bg-white p-8 shadow-[0_2px_20px_rgba(0,0,0,0.04)] border border-neutral-100 transition-all hover:shadow-[0_10px_40px_rgba(0,0,0,0.06)] hover:border-indigo-100">
                 <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 transition-colors group-hover:bg-indigo-600 group-hover:text-white">
                   <Mail size={24} />
@@ -104,7 +99,6 @@ export default function ContactPage() {
                 </a>
               </div>
 
-              {/* Carte Presse (Plus petite) */}
               <div className="rounded-3xl border border-neutral-200 bg-transparent p-8 transition-colors hover:bg-white hover:border-transparent hover:shadow-sm">
                 <div className="flex items-start gap-4">
                   <div className="mt-1 text-rose-500">
@@ -128,7 +122,6 @@ export default function ContactPage() {
             </FadeIn>
           </div>
 
-          {/* --- COLONNE DROITE : FORMULAIRE --- */}
           <div className="lg:col-span-7">
             <FadeIn delay={0.2}>
               <div className="relative rounded-[2.5rem] bg-white p-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] border border-neutral-100 md:p-12">

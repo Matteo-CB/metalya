@@ -19,7 +19,7 @@ export function PostGrid({ posts, title }: PostGridProps) {
             {title}
           </h3>
           <Link
-            href="/category/actualites" // Ou /archive si tu as créé la page
+            href="/category/actualites"
             className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-900 sm:flex"
           >
             Voir tout
@@ -35,14 +35,14 @@ export function PostGrid({ posts, title }: PostGridProps) {
             delay={index * 0.05}
             className={cn(
               "group flex flex-col gap-4",
-              // Le premier article prend 2 colonnes seulement sur tablette, pas sur grand écran pour garder la grille propre
+
               index === 0 ? "sm:col-span-2 lg:col-span-2" : ""
             )}
           >
             <article className="flex h-full flex-col">
               <Link
                 href={`/posts/${post.slug}`}
-                className="relative mb-4 aspect-[16/10] w-full overflow-hidden rounded-2xl bg-neutral-100 shadow-sm transition-all duration-500 hover:shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-neutral-900/20"
+                className="relative mb-4 aspect-16/10 w-full overflow-hidden rounded-2xl bg-neutral-100 shadow-sm transition-all duration-500 hover:shadow-md focus:outline-none focus-visible:ring-4 focus-visible:ring-neutral-900/20"
                 aria-label={`Lire : ${post.title}`}
               >
                 <Image
@@ -52,7 +52,6 @@ export function PostGrid({ posts, title }: PostGridProps) {
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
-                {/* Overlay subtil au survol */}
                 <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
               </Link>
 
@@ -72,7 +71,7 @@ export function PostGrid({ posts, title }: PostGridProps) {
                   )}
                 >
                   <Link href={`/posts/${post.slug}`}>
-                    <span className="bg-gradient-to-r from-neutral-900 to-neutral-900 bg-[length:0%_1px] bg-left-bottom bg-no-repeat transition-all duration-300 group-hover:bg-[length:100%_1px]">
+                    <span className="bg-linear-to-r from-neutral-900 to-neutral-900 bg-size-[0%_1px] bg-bottom-left bg-no-repeat transition-all duration-300 group-hover:bg-size-[100%_1px]">
                       {post.title}
                     </span>
                   </Link>

@@ -7,7 +7,6 @@ import {
   Zap,
   Globe,
   Search,
-  BarChart3,
   Rocket,
   Layers,
 } from "lucide-react";
@@ -23,11 +22,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="bg-neutral-50">
-      {/* =========================================
-          ACTE 1 : LA VISION ÉDITORIALE (LIGHT)
-          ========================================= */}
       <section className="relative overflow-hidden pt-32 pb-24 md:pt-48 md:pb-32">
-        {/* Background Ambient Light */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] overflow-hidden -z-10 opacity-60 pointer-events-none">
           <div className="absolute top-[-20%] left-0 w-[70vw] h-[70vw] bg-amber-100/50 blur-[120px] rounded-full mix-blend-multiply" />
           <div className="absolute top-[10%] right-[-10%] w-[50vw] h-[50vw] bg-indigo-100/40 blur-[100px] rounded-full mix-blend-multiply" />
@@ -35,7 +30,6 @@ export default function AboutPage() {
 
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-            {/* Colonne Texte Hero */}
             <div>
               <FadeIn>
                 <div className="flex items-center gap-3 mb-6">
@@ -65,11 +59,10 @@ export default function AboutPage() {
               </FadeIn>
             </div>
 
-            {/* Colonne Image Artistique */}
             <div className="relative">
               <FadeIn
                 delay={0.2}
-                className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] shadow-2xl"
+                className="relative aspect-4/5 w-full overflow-hidden rounded-4xl shadow-2xl"
               >
                 <Image
                   src="https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=2668&auto=format&fit=crop"
@@ -78,8 +71,7 @@ export default function AboutPage() {
                   className="object-cover transition-transform duration-1000 hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 50vw"
                 />
-                {/* Overlay Text */}
-                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 to-transparent text-white">
+                <div className="absolute bottom-0 left-0 right-0 p-8 bg-linear-to-t from-black/60 to-transparent text-white">
                   <p className="font-serif text-2xl italic">
                     "Le design n'est pas seulement ce à quoi il ressemble. Le
                     design est comment il fonctionne."
@@ -94,16 +86,11 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* =========================================
-          ACTE 2 : LA PUISSANCE TECHNIQUE (DARK)
-          ========================================= */}
       <section className="relative bg-neutral-950 py-24 md:py-40 text-white overflow-hidden rounded-t-[3rem] md:rounded-t-[5rem] -mt-12 z-10 shadow-[0_-20px_60px_rgba(0,0,0,0.2)]">
-        {/* Tech Background Grid */}
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03] z-0" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-indigo-500/10 blur-[150px] rounded-full pointer-events-none" />
 
         <Container className="relative z-10">
-          {/* Header Section Agence */}
           <div className="max-w-3xl mx-auto text-center mb-20 md:mb-32">
             <FadeIn>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono mb-8 backdrop-blur-md">
@@ -112,7 +99,7 @@ export default function AboutPage() {
               </div>
               <h2 className="font-serif text-4xl md:text-6xl font-medium tracking-tight mb-6">
                 Nous ne construisons pas des sites. <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-400 to-cyan-400">
                   Nous forgeons des écosystèmes.
                 </span>
               </h2>
@@ -125,9 +112,7 @@ export default function AboutPage() {
             </FadeIn>
           </div>
 
-          {/* BENTO GRID : Les Expertises */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-20">
-            {/* Carte 1 : Performance (Large) */}
             <FadeIn
               delay={0.1}
               className="md:col-span-2 group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 md:p-12 transition-colors hover:bg-neutral-900 hover:border-indigo-500/30"
@@ -147,20 +132,18 @@ export default function AboutPage() {
                     (TTFB) inférieur à 50ms partout dans le monde.
                   </p>
                 </div>
-                {/* Fake Graph */}
                 <div className="flex items-end gap-2 h-16 w-full opacity-50">
                   {[40, 65, 45, 80, 55, 90, 100].map((h, i) => (
                     <div
                       key={i}
                       style={{ height: `${h}%` }}
-                      className="flex-1 bg-gradient-to-t from-indigo-500 to-cyan-400 rounded-t-sm opacity-80"
+                      className="flex-1 bg-linear-to-t from-indigo-500 to-cyan-400 rounded-t-sm opacity-80"
                     />
                   ))}
                 </div>
               </div>
             </FadeIn>
 
-            {/* Carte 2 : SEO (Carrée) */}
             <FadeIn
               delay={0.2}
               className="group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 transition-colors hover:bg-neutral-900 hover:border-emerald-500/30"
@@ -179,7 +162,6 @@ export default function AboutPage() {
               </p>
             </FadeIn>
 
-            {/* Carte 3 : UX/UI (Carrée) */}
             <FadeIn
               delay={0.3}
               className="group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 transition-colors hover:bg-neutral-900 hover:border-amber-500/30"
@@ -196,12 +178,11 @@ export default function AboutPage() {
               </p>
             </FadeIn>
 
-            {/* Carte 4 : Scalabilité (Large) */}
             <FadeIn
               delay={0.4}
               className="md:col-span-2 group relative overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-8 md:p-12 transition-colors hover:bg-neutral-900 hover:border-cyan-500/30"
             >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-1/2 bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 h-full w-1/2 bg-linear-to-r from-transparent via-cyan-500/5 to-transparent skew-x-12 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8">
                 <div className="flex-1">
                   <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-6">
@@ -216,7 +197,7 @@ export default function AboutPage() {
                     virgule, et d'encaisser des pics de trafic massifs.
                   </p>
                 </div>
-                <div className="flex-shrink-0 bg-neutral-950 border border-white/10 rounded-xl p-4 font-mono text-xs text-neutral-400">
+                <div className="shrink-0 bg-neutral-950 border border-white/10 rounded-xl p-4 font-mono text-xs text-neutral-400">
                   <div className="flex gap-2 mb-2">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
                     <div className="w-3 h-3 rounded-full bg-yellow-500" />
@@ -243,7 +224,6 @@ export default function AboutPage() {
             </FadeIn>
           </div>
 
-          {/* CTA Agence */}
           <FadeIn className="text-center">
             <p className="text-neutral-400 mb-8">
               Vous avez un projet complexe ? Une vision ambitieuse ?
@@ -261,19 +241,17 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* =========================================
-          ACTE 3 : L'ÉQUIPE (HUMAN TOUCH)
-          ========================================= */}
       <section className="py-24 md:py-32">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-5 order-2 lg:order-1">
-              <FadeIn className="relative aspect-square w-full max-w-md mx-auto overflow-hidden rounded-[2rem] bg-neutral-100">
+              <FadeIn className="relative aspect-square w-full max-w-md mx-auto overflow-hidden rounded-4xl bg-neutral-100">
                 <Image
                   src="/ales-nesetril-Im7lZjxeLhg-unsplash.jpg"
                   alt="Espace de travail créatif"
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
               </FadeIn>
             </div>

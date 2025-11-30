@@ -94,11 +94,9 @@ export default async function PostPage(props: PostPageProps) {
       <JsonLd data={jsonLd} />
 
       <div className="relative min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 pb-24">
-        {/* --- FOND SUBTIL & MODERNE --- */}
-        <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
+        <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
 
         <article>
-          {/* --- TOP BAR DE NAVIGATION --- */}
           <div className="sticky top-0 z-40 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md transition-all">
             <Container className="flex h-16 items-center justify-between">
               <Link
@@ -134,9 +132,7 @@ export default async function PostPage(props: PostPageProps) {
 
           <div className="pt-12 md:pt-20">
             <Container className="max-w-5xl">
-              {/* --- HEADER ÉDITORIAL --- */}
               <FadeIn className="text-center">
-                {/* Fil d'ariane visuel */}
                 <div className="mb-8 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
                   <Link href="/" className="hover:text-neutral-900">
                     Metalya
@@ -152,12 +148,10 @@ export default async function PostPage(props: PostPageProps) {
                   )}
                 </div>
 
-                {/* Titre Impactant */}
                 <h1 className="mx-auto max-w-4xl font-serif text-4xl font-medium leading-[1.15] tracking-tight text-neutral-900 sm:text-5xl md:text-6xl lg:text-7xl text-balance">
                   {post.title}
                 </h1>
 
-                {/* Métadonnées Auteur */}
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-y border-neutral-100 py-6 text-sm text-neutral-500 md:mt-12">
                   <div className="flex items-center gap-3">
                     <div className="relative h-10 w-10 overflow-hidden rounded-full border border-neutral-200 bg-neutral-50">
@@ -200,11 +194,10 @@ export default async function PostPage(props: PostPageProps) {
               </FadeIn>
             </Container>
 
-            {/* --- IMAGE HERO CINÉMATOGRAPHIQUE --- */}
             <div className="mt-12 w-full sm:mt-16 lg:mt-20">
               <FadeIn delay={0.2}>
                 <Container className="max-w-6xl px-0 sm:px-6 lg:px-8">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden sm:rounded-[2rem] shadow-xl md:aspect-[21/9]">
+                  <div className="relative aspect-4/3 w-full overflow-hidden sm:rounded-4xl shadow-xl md:aspect-21/9">
                     <Image
                       src={post.coverImage}
                       alt={post.title}
@@ -213,9 +206,8 @@ export default async function PostPage(props: PostPageProps) {
                       className="object-cover transition-transform duration-[2s] hover:scale-105"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 95vw, 1400px"
                     />
-                    <div className="absolute inset-0 ring-1 ring-inset ring-black/10 sm:rounded-[2rem]" />
+                    <div className="absolute inset-0 ring-1 ring-inset ring-black/10 sm:rounded-4xl" />
                   </div>
-                  {/* Légende optionnelle si besoin */}
                   <figcaption className="mt-3 text-center text-xs text-neutral-400 italic">
                     Image de couverture • Metalya
                   </figcaption>
@@ -223,11 +215,9 @@ export default async function PostPage(props: PostPageProps) {
               </FadeIn>
             </div>
 
-            {/* --- CONTENU DE L'ARTICLE --- */}
             <Container className="max-w-3xl">
               <FadeIn delay={0.3}>
                 <div className="mt-16 md:mt-24">
-                  {/* Chapeau (Excerpt) Stylisé */}
                   {post.excerpt && (
                     <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
                       <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
@@ -236,12 +226,10 @@ export default async function PostPage(props: PostPageProps) {
                     </div>
                   )}
 
-                  {/* Le Corps du Texte */}
                   <div className="prose prose-lg prose-neutral md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-medium prose-p:leading-8 prose-p:text-neutral-600 prose-a:text-indigo-600 prose-a:no-underline prose-a:transition-colors hover:prose-a:text-indigo-800 hover:prose-a:underline hover:prose-a:decoration-2 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50/50 prose-blockquote:py-2 prose-blockquote:pl-6 prose-blockquote:pr-4 prose-blockquote:not-italic prose-blockquote:text-indigo-900">
                     <MarkdownRenderer content={post.content} />
                   </div>
 
-                  {/* --- SÉPARATEUR DE FIN --- */}
                   <div className="my-20 flex items-center justify-center">
                     <div className="flex gap-4">
                       <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
@@ -250,7 +238,6 @@ export default async function PostPage(props: PostPageProps) {
                     </div>
                   </div>
 
-                  {/* --- CARD AUTEUR (BAS DE PAGE) --- */}
                   <div className="mb-24 rounded-3xl bg-neutral-50 p-8 sm:p-10">
                     <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
@@ -279,9 +266,7 @@ export default async function PostPage(props: PostPageProps) {
                     </div>
                   </div>
 
-                  {/* --- PUB / CTA DLK DIGITAL AGENCY --- */}
                   <div className="relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-center shadow-2xl md:px-12 md:py-16">
-                    {/* Effets de fond */}
                     <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]" />
                     <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-rose-500/20 blur-[100px]" />
 

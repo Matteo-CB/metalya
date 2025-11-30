@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { formatDate, formatCategory } from "@/lib/utils";
 
-// Données (avec gestion d'erreur basique implicite via le framework)
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
     where: { published: true },
@@ -31,13 +30,11 @@ async function getHomePageData() {
 export default async function HomePage() {
   const posts = await getHomePageData();
 
-  // Logique de tri simple et robuste
   const heroPost = posts.find((p) => p.featured) || posts[0];
   const trendingPosts = posts
     .filter((p) => p.id !== heroPost?.id && p.featured)
     .slice(0, 5);
 
-  // Remplissage si pas assez de trending
   if (trendingPosts.length < 3) {
     const filler = posts
       .filter(
@@ -56,7 +53,6 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col pt-8 md:pt-16">
       <Container>
-        {/* --- HEADER --- */}
         <header className="mb-12 border-b border-neutral-200 pb-10 text-center md:mb-24 md:pb-16">
           <FadeIn>
             <h1 className="font-serif text-6xl font-medium tracking-tighter text-neutral-950 sm:text-8xl md:text-9xl">
@@ -89,22 +85,18 @@ export default async function HomePage() {
           </FadeIn>
         </header>
 
-        {/* --- SECTION 1 : LE HERO --- */}
         {heroPost && <HeroPost post={heroPost} />}
 
-        {/* --- SECTION 2 : TENDANCES --- */}
         {trendingPosts.length > 0 && (
           <div className="py-4 md:py-8">
             <PostGrid posts={trendingPosts} title="Les Incontournables" />
           </div>
         )}
 
-        {/* --- SECTION 3 : EXPLORATION VISUELLE --- */}
         <section
           className="my-16 relative overflow-hidden rounded-4xl bg-neutral-950 py-16 text-white md:my-24 md:rounded-2xl md:py-24"
           aria-labelledby="univers-title"
         >
-          {/* Effets de fond (ajustés pour mobile) */}
           <div className="absolute top-0 left-[-20%] w-[120%] h-full md:left-1/4 md:w-[600px] md:h-[600px] bg-blue-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
           <div className="absolute bottom-0 right-[-20%] w-[120%] h-full md:right-1/4 md:w-[600px] md:h-[600px] bg-purple-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
 
@@ -170,9 +162,8 @@ export default async function HomePage() {
                       .replace(/[\u0300-\u036f]/g, "")}`}
                     className={`group relative flex h-64 flex-col justify-between overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/50 p-6 md:p-8 transition-all duration-500 hover:-translate-y-2 hover:border-white/20 ${cat.shadow}`}
                   >
-                    {/* Fond gradient */}
                     <div
-                      className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-10`}
+                      className={`absolute inset-0 bg-linear-to-br ${cat.gradient} opacity-0 transition-opacity duration-500 group-hover:opacity-10`}
                     />
 
                     <div className="relative z-10">
@@ -200,7 +191,6 @@ export default async function HomePage() {
           </FadeIn>
         </section>
 
-        {/* --- SECTION 4 : LE FIL INFO --- */}
         <section className="py-12 md:py-16">
           <div className="mb-8 flex items-end justify-between border-b border-neutral-200 pb-4 md:mb-10">
             <div className="flex items-center gap-3">
@@ -222,7 +212,7 @@ export default async function HomePage() {
                 <article className="group grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-8">
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="relative aspect-video w-full overflow-hidden rounded-xl bg-neutral-100 md:col-span-4 md:aspect-[3/2] lg:col-span-3"
+                    className="relative aspect-video w-full overflow-hidden rounded-xl bg-neutral-100 md:col-span-4 md:aspect-3/2 lg:col-span-3"
                   >
                     <Image
                       src={post.coverImage || ""}
@@ -264,7 +254,6 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* --- NEWSLETTER --- */}
         <Newsletter />
       </Container>
     </div>

@@ -8,14 +8,12 @@ import { AuthError } from "next-auth";
 import { LoginSchema, RegisterSchema } from "@/lib/schemas";
 import { UserRole } from "@prisma/client";
 
-// Liste des emails administrateurs autorisés
 const adminEmails = [
   "matteo.biyikli3224@gmail.com",
   "Daiki.ajwad@gmail.com",
   "matteochantebiyikli@gmail.com",
 ];
 
-// --- INSCRIPTION ---
 export async function registerAction(values: z.infer<typeof RegisterSchema>) {
   const validatedFields = RegisterSchema.safeParse(values);
 
@@ -34,7 +32,6 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
     return { error: "Cet email est déjà utilisé." };
   }
 
-  // LOGIQUE ADMIN STRICTE : Vérifie si l'email est dans la liste
   const isAdmin = adminEmails.includes(email);
   const role = isAdmin ? UserRole.ADMIN : UserRole.USER;
 
@@ -42,7 +39,7 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
     data: {
       name,
       email,
-      password: hashedPassword, // Mot de passe sécurisé
+      password: hashedPassword,
       role,
     },
   });
@@ -53,13 +50,11 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
       create: { email },
     });
   } catch (e) {
-    // On ne bloque pas l'inscription si la newsletter échoue
     console.error("Erreur ajout newsletter", e);
   }
   return { success: "Compte créé ! Vous pouvez vous connecter." };
 }
 
-// --- CONNEXION ---
 export async function loginAction(values: z.infer<typeof LoginSchema>) {
   const validatedFields = LoginSchema.safeParse(values);
 
@@ -73,7 +68,6 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
     await signIn("credentials", {
       email,
       password,
-      // Redirection vers l'admin si l'email est dans la liste des admins
       redirectTo: adminEmails.includes(email) ? "/admin/create" : "/",
     });
   } catch (error) {
@@ -85,6 +79,6 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
           return { error: "Une erreur est survenue." };
       }
     }
-    throw error; // Nécessaire pour la redirection Next.js
+    throw error;
   }
 }

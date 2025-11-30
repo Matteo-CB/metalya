@@ -5,14 +5,12 @@ import { updatePost } from "@/app/actions/posts";
 import { Category, Post } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
-// Imports des composants
 import { PostHeader } from "@/components/admin/post-editor/post-header";
 import { MarkdownEditor } from "@/components/admin/post-editor/markdown-editor";
 import { LivePreview } from "@/components/admin/post-editor/live-preview";
 import { PostSettings } from "@/components/admin/post-editor/post-settings";
 
 export function PostEditorClient({ post }: { post: Post }) {
-  // --- STATE INITIALISÉ AVEC LES DONNÉES DU POST ---
   const [title, setTitle] = useState(post.title);
   const [excerpt, setExcerpt] = useState(post.excerpt);
   const [coverImage, setCoverImage] = useState(post.coverImage);
@@ -41,7 +39,6 @@ export function PostEditorClient({ post }: { post: Post }) {
     <form
       action={(formData) => {
         startTransition(async () => {
-          // On passe l'ID du post à l'action update
           await updatePost(post.id, formData);
         });
       }}
@@ -54,7 +51,6 @@ export function PostEditorClient({ post }: { post: Post }) {
       />
 
       <main className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 gap-6 p-6 lg:grid-cols-12 lg:gap-8">
-        {/* GAUCHE : PARAMÈTRES */}
         <aside
           className={cn(
             "lg:col-span-3",
@@ -77,7 +73,6 @@ export function PostEditorClient({ post }: { post: Post }) {
           </div>
         </aside>
 
-        {/* CENTRE : ÉDITEUR */}
         <section
           className={cn(
             "flex flex-col transition-all duration-300",
@@ -95,7 +90,6 @@ export function PostEditorClient({ post }: { post: Post }) {
           />
         </section>
 
-        {/* DROITE : PRÉVISUALISATION */}
         <section
           className={cn(
             "transition-all duration-300",

@@ -15,27 +15,24 @@ export async function sendContactMessage(values: ContactInput) {
   const { name, email, subject, message } = validatedFields.data;
 
   try {
-    // 1. Générer le HTML propre
     const emailHtml = await render(
       ContactEmail({ name, email, subject, message })
     );
 
-    // 2. Configurer le transporteur One.com
     const transporter = nodemailer.createTransport({
       host: process.env.CONTACT_SMTP_HOST,
       port: Number(process.env.CONTACT_SMTP_PORT),
-      secure: true, // Port 465 nécessite SSL
+      secure: true,
       auth: {
         user: process.env.CONTACT_SMTP_USER,
         pass: process.env.CONTACT_SMTP_PASS,
       },
     });
 
-    // 3. Envoyer l'email
     await transporter.sendMail({
-      from: `"Metalya Site" <${process.env.CONTACT_SMTP_USER}>`, // L'expéditeur DOIT être ton adresse One.com
-      to: "contact@metalya.fr", // Tu te l'envoies à toi-même
-      replyTo: email, // Pour répondre directement à l'utilisateur en cliquant sur "Répondre"
+      from: `"Metalya Site" <${process.env.CONTACT_SMTP_USER}>`,
+      to: "contact@metalya.fr",
+      replyTo: email,
       subject: `[Contact Web] ${subject}`,
       html: emailHtml,
     });

@@ -16,7 +16,6 @@ function slugify(text: string) {
     .replace(/\-\-+/g, "-");
 }
 
-// --- CRÉATION ---
 export async function createPost(formData: FormData) {
   const session = await auth();
 
@@ -59,7 +58,6 @@ export async function createPost(formData: FormData) {
   redirect(`/posts/${slug}`);
 }
 
-// --- MODIFICATION ---
 export async function updatePost(postId: string, formData: FormData) {
   const session = await auth();
 
@@ -75,7 +73,6 @@ export async function updatePost(postId: string, formData: FormData) {
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
 
-  // On peut choisir de mettre à jour le slug ou non. Ici, on le fait pour garder la cohérence URL/Titre.
   const slug = slugify(title);
 
   await prisma.post.update({
@@ -97,7 +94,6 @@ export async function updatePost(postId: string, formData: FormData) {
   redirect(`/posts/${slug}`);
 }
 
-// --- SUPPRESSION ---
 export async function deletePost(postId: string) {
   const session = await auth();
 
