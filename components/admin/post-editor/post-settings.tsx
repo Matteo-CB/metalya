@@ -2,6 +2,9 @@
 
 import { Category } from "@prisma/client";
 import { CategorySelector } from "@/components/admin/category-selector";
+import { uploadImage } from "@/app/actions/media";
+import { useState, useTransition } from "react";
+import { Loader2, Upload } from "lucide-react";
 
 interface PostSettingsProps {
   title: string;
@@ -28,6 +31,20 @@ export function PostSettings({
   categories,
   toggleCategory,
 }: PostSettingsProps) {
+  const [isUploading, startUpload] = useTransition();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    startUpload(async () => {
+      const formData = new FormData();
+      formData.append("file", file);
+      const url = await uploadImage(formData);
+      setCoverImage(url);
+    });
+  };
+
   return (
     <div className="space-y-8 rounded-2xl border border-neutral-100 bg-white p-6 shadow-sm">
       <div className="space-y-1">
@@ -71,16 +88,31 @@ export function PostSettings({
 
         <div className="space-y-2">
           <label className="text-xs font-bold uppercase tracking-widest text-neutral-400">
-            Image de couverture (URL)
+            Image de couverture
           </label>
-          <input
-            name="coverImage"
-            required
-            value={coverImage}
-            onChange={(e) => setCoverImage(e.target.value)}
-            placeholder="https://..."
-            className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700 focus:border-neutral-900 focus:outline-none"
-          />
+          <div className="flex gap-2">
+            <input
+              name="coverImage"
+              required
+              value={coverImage}
+              onChange={(e) => setCoverImage(e.target.value)}
+              placeholder="https://..."
+              className="flex-1 rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm text-neutral-700 focus:border-neutral-900 focus:outline-none"
+            />
+            <label className="flex cursor-pointer items-center justify-center rounded-lg border border-neutral-200 bg-neutral-50 px-3 text-neutral-500 transition-colors hover:bg-neutral-100 hover:text-neutral-900">
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+              {isUploading ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <Upload size={18} />
+              )}
+            </label>
+          </div>
         </div>
 
         <div className="space-y-2">
