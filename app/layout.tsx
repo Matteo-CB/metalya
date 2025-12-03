@@ -57,16 +57,19 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   alternates: {
     canonical: "/",
     languages: {
       "fr-FR": "/",
     },
-  },
-  icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    types: {
+      "application/rss+xml": [{ url: "feed.xml", title: "Flux RSS Metalya" }],
+    },
   },
   openGraph: {
     title: "Metalya | L'Actualité Deep Tech & Lifestyle",
@@ -94,6 +97,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "kW36zMDmilSPGFpLjk6v4FqSjyoPW0LsRdBJMqVwuHY",
+    other: {
+      "msvalidate.01": "BCE8A55CD723069D99A9A720362A8DEE",
+    },
   },
   robots: {
     index: true,
@@ -135,6 +141,12 @@ export default async function RootLayout({
         "@type": "ImageObject",
         url: `${SITE_URL}/logo.png`,
       },
+      sameAs: [
+        "https://twitter.com/Metalyafr",
+        "https://www.instagram.com/metalya.fr",
+        "https://www.tiktok.com/@metalya.fr",
+        "https://www.youtube.com/@Metalyafr",
+      ],
     },
   };
 
