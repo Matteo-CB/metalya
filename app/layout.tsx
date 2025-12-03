@@ -57,16 +57,16 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
-  },
   alternates: {
     canonical: "/",
     languages: {
       "fr-FR": "/",
     },
+  },
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
   openGraph: {
     title: "Metalya | L'Actualité Deep Tech & Lifestyle",
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
     siteName: "Metalya",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/banniere.png",
         width: 1200,
         height: 630,
         alt: "Metalya Magazine",
@@ -90,7 +90,7 @@ export const metadata: Metadata = {
     title: "Metalya",
     description: "L'essentiel de la culture, tech et actualité.",
     creator: "@Metalyafr",
-    images: ["/og-image.jpg"],
+    images: ["/banniere.png"],
   },
   verification: {
     google: "kW36zMDmilSPGFpLjk6v4FqSjyoPW0LsRdBJMqVwuHY",
