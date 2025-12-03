@@ -201,9 +201,13 @@ export default async function HomePage() {
                 Le Fil Info
               </h2>
             </div>
-            <span className="hidden text-sm font-medium text-neutral-500 md:block">
-              Dernières publications
-            </span>
+            <Link
+              href="/posts"
+              className="group hidden items-center gap-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-900 md:flex"
+            >
+              Voir toutes les publications
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
           </div>
 
           <div className="flex flex-col gap-8 md:gap-12">
@@ -251,6 +255,15 @@ export default async function HomePage() {
                 )}
               </FadeIn>
             ))}
+          </div>
+          <div className="mt-8 flex justify-center md:hidden">
+            <Link
+              href="/posts"
+              className="group flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-6 py-3 text-sm font-bold text-neutral-900 transition-all hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
+            >
+              Voir toutes les publications
+              <ArrowRight size={16} />
+            </Link>
           </div>
         </section>
 
