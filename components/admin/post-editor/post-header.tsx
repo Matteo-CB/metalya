@@ -40,7 +40,6 @@ export function PostHeader({
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Desktop Toggles */}
           <div className="hidden items-center rounded-lg border border-neutral-200 bg-neutral-50 p-1 md:flex">
             {(["edit", "split", "preview"] as const).map((mode) => (
               <button
@@ -59,7 +58,6 @@ export function PostHeader({
             ))}
           </div>
 
-          {/* Mobile Toggle */}
           <button
             type="button"
             onClick={() =>

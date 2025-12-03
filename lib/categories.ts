@@ -2,10 +2,10 @@ import { Category } from "@prisma/client";
 
 export interface CategoryConfig {
   slug: string;
-  label: string; // Pour l'affichage
-  enum: Category; // Pour la DB
-  title: string; // Pour le H1
-  description: string; // Pour le sous-titre et le SEO
+  label: string; 
+  enum: Category; 
+  title: string; 
+  description: string; 
 }
 
 export const CATEGORIES: Record<string, CategoryConfig> = {

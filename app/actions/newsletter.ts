@@ -14,7 +14,6 @@ export async function subscribeToNewsletter(formData: FormData) {
   const result = EmailSchema.safeParse({ email });
 
   if (!result.success) {
-    // CORRECTION ICI : on utilise .issues au lieu de .errors
     return { error: result.error.issues[0].message };
   }
 
@@ -28,7 +27,7 @@ export async function subscribeToNewsletter(formData: FormData) {
     revalidatePath("/");
     return { success: "Merci ! Vous êtes inscrit." };
   } catch (error) {
-    console.error(error); // Bon pour le debug
+    console.error(error); 
     return { error: "Une erreur est survenue." };
   }
 }

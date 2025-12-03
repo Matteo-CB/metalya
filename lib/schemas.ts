@@ -15,7 +15,6 @@ export const RegisterSchema = z.object({
     .min(6, { message: "Le mot de passe doit faire au moins 6 caractères." }),
 });
 
-// AJOUT : Schéma de Contact
 export const ContactSchema = z.object({
   name: z.string().min(2, { message: "Votre nom est requis." }),
   email: z.string().email({ message: "Email invalide." }),

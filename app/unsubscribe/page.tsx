@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { unsubscribeAction } from "@/app/actions/newsletter";
 import { Container } from "@/components/ui/container";
@@ -21,7 +21,6 @@ export default function UnsubscribePage() {
       return;
     }
 
-    // On lance le désabonnement automatiquement à l'arrivée sur la page
     unsubscribeAction(id)
       .then((res) => {
         if (res.success) setStatus("success");

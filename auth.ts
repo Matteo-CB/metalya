@@ -15,7 +15,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      // On type explicitement credentials en 'any' ou 'unknown' pour éviter l'erreur TS
       authorize: async (credentials: any) => {
         if (!credentials?.email || !credentials?.password) return null;
 

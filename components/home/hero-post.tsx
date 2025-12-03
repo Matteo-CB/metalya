@@ -26,7 +26,7 @@ export function HeroPost({ post }: HeroPostProps) {
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-neutral-900/40 via-neutral-900/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <div className="absolute inset-0 bg-linear-to-t from-neutral-900/40 via-neutral-900/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
           <div className="absolute top-4 left-4 flex items-center gap-2 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-900 shadow-sm backdrop-blur-md md:top-6 md:left-6 md:px-4 md:py-2 md:text-xs">
             <Sparkles size={14} className="text-amber-500 fill-amber-500" />

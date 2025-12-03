@@ -16,7 +16,7 @@ import {
 interface MetalyaNewsletterProps {
   subject: string;
   content: string;
-  unsubscribeUrl: string; // <--- NOUVELLE PROP
+  unsubscribeUrl: string; 
 }
 
 export const MetalyaNewsletter = ({
@@ -62,7 +62,6 @@ export const MetalyaNewsletter = ({
               <br />
               Vous recevez cet email car vous êtes abonné à notre newsletter.
             </Text>
-            {/* Utilisation du lien dynamique */}
             <Link href={unsubscribeUrl} style={link}>
               Se désabonner
             </Link>
@@ -73,7 +72,6 @@ export const MetalyaNewsletter = ({
   );
 };
 
-// STYLES (Inline CSS pour compatibilité Email)
 const main = {
   backgroundColor: "#fafafa",
   fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
@@ -97,7 +95,7 @@ const header = {
 const logo = {
   fontSize: "32px",
   fontWeight: "bold",
-  fontFamily: '"Times New Roman", serif', // Style Metalya
+  fontFamily: '"Times New Roman", serif', 
   color: "#0a0a0a",
   margin: "0",
 };

@@ -16,21 +16,15 @@ export function MarkdownRenderer({
     <div
       className={cn(
         "prose prose-neutral max-w-none dark:prose-invert",
-        // Styles de base pour la typographie
         "prose-headings:font-serif prose-headings:font-medium",
         "prose-a:text-neutral-900 prose-a:underline prose-a:underline-offset-4 hover:prose-a:decoration-neutral-400",
         "prose-img:rounded-lg",
-
-        // --- MODIFICATION ICI ---
-        // On ajoute 'whitespace-pre-wrap' pour forcer le respect des sauts de ligne
         "whitespace-pre-wrap",
-        // ------------------------
 
         className
       )}
     >
       <ReactMarkdown
-        // Ce plugin transforme les retours chariots simples en balises <br> HTML
         remarkPlugins={[remarkBreaks]}
         components={{
           img: ({ node, ...props }) => {

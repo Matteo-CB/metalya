@@ -24,13 +24,9 @@ export function Newsletter() {
 
   return (
     <section className="relative mb-24 mt-24 w-full">
-      {/* Conteneur principal avec effet de verre et bordure lumineuse */}
       <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-neutral-950 px-6 py-24 text-center md:px-12 lg:py-32">
-        {/* --- ARRIÈRE-PLAN MAGIQUE --- */}
-        {/* Grille subtile */}
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]" />
 
-        {/* Orbes de lumière animés */}
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -50,9 +46,7 @@ export function Newsletter() {
           className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-[100px]"
         />
 
-        {/* --- CONTENU --- */}
         <div className="relative z-10 mx-auto max-w-3xl">
-          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -67,7 +61,6 @@ export function Newsletter() {
             </div>
           </motion.div>
 
-          {/* Titre */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -76,12 +69,11 @@ export function Newsletter() {
             className="font-serif text-5xl font-medium tracking-tight text-white md:text-7xl"
           >
             Restez{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 via-white to-indigo-200">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-200 via-white to-indigo-200">
               inspiré.
             </span>
           </motion.h2>
 
-          {/* Description */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -94,7 +86,6 @@ export function Newsletter() {
             signal.
           </motion.p>
 
-          {/* Formulaire */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -137,7 +128,6 @@ export function Newsletter() {
               </button>
             </form>
 
-            {/* Messages de retour */}
             {message && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}

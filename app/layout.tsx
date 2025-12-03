@@ -57,14 +57,17 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  // Indispensable pour éviter le duplicate content
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   alternates: {
     canonical: "/",
     languages: {
       "fr-FR": "/",
     },
   },
-  // Optimisation Réseaux Sociaux
   openGraph: {
     title: "Metalya | L'Actualité Deep Tech & Lifestyle",
     description:
@@ -73,7 +76,7 @@ export const metadata: Metadata = {
     siteName: "Metalya",
     images: [
       {
-        url: "/og-image.jpg", // Assurez-vous d'avoir une image par défaut dans public/
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Metalya Magazine",
@@ -86,10 +89,9 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Metalya",
     description: "L'essentiel de la culture, tech et actualité.",
-    creator: "@Metalyafr", // Mettez votre vrai handle Twitter
+    creator: "@Metalyafr",
     images: ["/og-image.jpg"],
   },
-  // Vérification Search Console (remplacez par votre code)
   verification: {
     google: "kW36zMDmilSPGFpLjk6v4FqSjyoPW0LsRdBJMqVwuHY",
   },
@@ -113,7 +115,6 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
 
-  // JSON-LD pour définir l'entité "Website" (Schema.org)
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -132,7 +133,7 @@ export default async function RootLayout({
       name: "Metalya",
       logo: {
         "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`, // Mettez votre logo dans public/
+        url: `${SITE_URL}/logo.png`,
       },
     },
   };

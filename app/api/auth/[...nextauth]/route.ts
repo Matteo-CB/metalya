@@ -1,3 +1,3 @@
-import { handlers } from "@/auth"; // L'import @/auth fonctionnera une fois renommé en .ts
+import { handlers } from "@/auth"; 
 
 export const { GET, POST } = handlers;

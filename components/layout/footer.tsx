@@ -76,7 +76,6 @@ export async function Footer() {
     >
       <Container>
         <div className="grid grid-cols-1 gap-16 lg:grid-cols-12 lg:gap-8 mb-16 md:mb-24">
-          {/* --- Colonne Logo & Social --- */}
           <div className="flex flex-col gap-8 lg:col-span-5">
             <FadeIn>
               <Link
@@ -112,9 +111,7 @@ export async function Footer() {
             </FadeIn>
           </div>
 
-          {/* --- Colonnes de Liens --- */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7 lg:pl-12">
-            {/* Explorer */}
             <div className="flex flex-col gap-6">
               <h3 className="font-serif text-lg font-medium text-white">
                 Explorer
@@ -184,7 +181,6 @@ export async function Footer() {
               </nav>
             </div>
 
-            {/* Légal */}
             <div className="flex flex-col gap-6">
               <h3 className="font-serif text-lg font-medium text-white">
                 Légal
@@ -207,7 +203,6 @@ export async function Footer() {
           </div>
         </div>
 
-        {/* --- Bas de page --- */}
         <div className="flex flex-col items-center justify-between gap-6 border-t border-white/5 py-8 text-xs text-neutral-600 sm:flex-row">
           <p>&copy; {currentYear} Metalya. Tous droits réservés.</p>
           <p className="flex items-center gap-1">

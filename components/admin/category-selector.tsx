@@ -13,7 +13,6 @@ export function CategorySelector({
   selected,
   onChange,
 }: CategorySelectorProps) {
-  // Liste des catégories disponibles depuis l'Enum Prisma
   const categories = Object.values(Category);
 
   return (

@@ -5,14 +5,12 @@ import { createPost } from "@/app/actions/posts";
 import { Category } from "@prisma/client";
 import { cn } from "@/lib/utils";
 
-// Imports des composants découpés
 import { PostHeader } from "@/components/admin/post-editor/post-header";
 import { MarkdownEditor } from "@/components/admin/post-editor/markdown-editor";
 import { LivePreview } from "@/components/admin/post-editor/live-preview";
 import { PostSettings } from "@/components/admin/post-editor/post-settings";
 
 export default function CreatePostPage() {
-  // --- STATE ---
   const [title, setTitle] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [coverImage, setCoverImage] = useState("");
@@ -25,7 +23,6 @@ export default function CreatePostPage() {
     "split"
   );
 
-  // --- HELPERS ---
   const insertText = (template: string) => {
     setContent((prev) => prev + template);
   };
@@ -45,16 +42,14 @@ export default function CreatePostPage() {
       }}
       className="flex min-h-screen flex-col bg-neutral-50/50"
     >
-      {/* 1. HEADER */}
       <PostHeader
         isPending={isPending}
         viewMode={viewMode}
         setViewMode={setViewMode}
       />
 
-      {/* 2. MAIN CONTENT */}
       <main className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 gap-6 p-6 lg:grid-cols-12 lg:gap-8">
-        {/* GAUCHE : PARAMÈTRES (Visible sauf en mode preview plein écran) */}
+       
         <aside
           className={cn(
             "lg:col-span-3",
@@ -77,7 +72,6 @@ export default function CreatePostPage() {
           </div>
         </aside>
 
-        {/* CENTRE : ÉDITEUR */}
         <section
           className={cn(
             "flex flex-col transition-all duration-300",
@@ -95,7 +89,6 @@ export default function CreatePostPage() {
           />
         </section>
 
-        {/* DROITE : PRÉVISUALISATION */}
         <section
           className={cn(
             "transition-all duration-300",

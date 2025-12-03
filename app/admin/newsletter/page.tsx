@@ -20,13 +20,12 @@ export default function NewsletterPage() {
 
   const insertText = (t: string) => setContent((prev) => prev + t);
 
-  // Génération du HTML pour l'iframe de prévisualisation
   const emailHtml = useMemo(() => {
     const template = (
       <MetalyaNewsletter
         subject={subject || "Sujet de la newsletter"}
         content={content || "Commencez à rédiger votre contenu..."}
-        unsubscribeUrl="#" // Lien factice pour la prévisualisation
+        unsubscribeUrl="#" 
       />
     );
     return renderToStaticMarkup(template);
@@ -35,7 +34,6 @@ export default function NewsletterPage() {
   return (
     <div className="min-h-screen bg-neutral-50 pb-20">
       <main className="mx-auto grid max-w-7xl grid-cols-1 gap-8 p-6 lg:grid-cols-2">
-        {/* Colonne Édition */}
         <div
           className={cn(
             "flex flex-col gap-6",
@@ -107,7 +105,6 @@ export default function NewsletterPage() {
           </form>
         </div>
 
-        {/* Colonne Prévisualisation */}
         <div
           className={cn(
             "overflow-hidden rounded-xl border border-neutral-200 bg-white p-4 shadow-sm",

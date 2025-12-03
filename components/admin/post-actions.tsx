@@ -4,7 +4,6 @@ import { deletePost } from "@/app/actions/posts";
 import { Edit, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 
 interface PostActionsProps {
   postId: string;
@@ -22,7 +21,6 @@ export function PostActions({ postId }: PostActionsProps) {
 
   return (
     <div className="flex items-center gap-2">
-      {/* Bouton Modifier */}
       <Link
         href={`/admin/posts/${postId}/edit`}
         className="inline-flex items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 py-2 text-xs font-bold uppercase tracking-widest text-neutral-600 transition-colors hover:border-neutral-900 hover:bg-neutral-900 hover:text-white"
@@ -31,7 +29,6 @@ export function PostActions({ postId }: PostActionsProps) {
         Modifier
       </Link>
 
-      {/* Bouton Supprimer (avec confirmation) */}
       {!showConfirm ? (
         <button
           onClick={() => setShowConfirm(true)}

@@ -128,7 +128,6 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Mention légale ajoutée ici */}
             <p className="px-1 text-center text-xs leading-relaxed text-neutral-500">
               En cliquant sur « Créer un compte », vous acceptez nos{" "}
               <Link

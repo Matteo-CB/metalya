@@ -5,7 +5,7 @@ import { FadeIn } from "@/components/ui/fade-in";
 export const metadata: Metadata = {
   title: "Mentions Légales",
   description: "Informations légales et contacts de l'éditeur du site Metalya.",
-  robots: { index: false, follow: true }, // Souvent inutile d'indexer ces pages pour le SEO global
+  robots: { index: false, follow: true },
 };
 
 export default function LegalMentionsPage() {

@@ -15,8 +15,6 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
-// Import de l'enum UserRole si possible, sinon on utilisera le string "ADMIN"
-// import { UserRole } from "@prisma/client";
 
 const NAV_LINKS = [
   { label: "Actualités", href: "/category/actualites" },
@@ -26,7 +24,7 @@ const NAV_LINKS = [
 ];
 
 interface SiteHeaderProps {
-  user?: User & { role?: string }; // Typage étendu pour inclure le rôle
+  user?: User & { role?: string }; 
 }
 
 export function SiteHeader({ user }: SiteHeaderProps) {
@@ -35,14 +33,12 @@ export function SiteHeader({ user }: SiteHeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const pathname = usePathname();
 
-  // Gestion du scroll pour l'effet de verre
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Bloquer le scroll du body quand le menu mobile est ouvert
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";

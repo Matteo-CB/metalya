@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { FadeIn } from "@/components/ui/fade-in";
-import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Conditions Générales d'Utilisation",

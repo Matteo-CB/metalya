@@ -4,13 +4,11 @@ import { prisma } from "@/lib/prisma";
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // 1. Récupérer tous les articles publiés
   const posts = await prisma.post.findMany({
     where: { published: true },
     select: { slug: true, updatedAt: true },
   });
 
-  // 2. Créer les URLs dynamiques pour les articles
   const postEntries: MetadataRoute.Sitemap = posts.map((post) => ({
     url: `${BASE_URL}/posts/${post.slug}`,
     lastModified: post.updatedAt,
@@ -18,11 +16,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Les pages statiques importantes
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
-      lastModified: new Date(), // Correction ici
+      lastModified: new Date(), 
       changeFrequency: "daily",
       priority: 1,
     },
@@ -38,7 +35,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.5,
     },
-    // Catégories
     {
       url: `${BASE_URL}/category/actualites`,
       lastModified: new Date(),

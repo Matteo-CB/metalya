@@ -47,7 +47,6 @@ export const ContactEmail = ({
   );
 };
 
-// Styles simplifiés pour la lisibilité interne
 const main = { backgroundColor: "#ffffff", fontFamily: "sans-serif" };
 const container = {
   border: "1px solid #eaeaea",

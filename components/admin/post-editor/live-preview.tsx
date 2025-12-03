@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { MarkdownRenderer } from "@/components/blog/markdown-renderer";
 import { Category } from "@prisma/client";
 import { formatCategory } from "@/lib/utils";
@@ -30,7 +29,6 @@ export function LivePreview({
       </div>
       <div className="px-8 py-12 md:px-12">
         <article className="mx-auto max-w-2xl">
-          {/* Header Article */}
           <header className="mb-10 flex flex-col items-center text-center">
             <div className="mb-6 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-500">
               <span className="text-neutral-900">
@@ -63,10 +61,8 @@ export function LivePreview({
             </div>
           </header>
 
-          {/* Image */}
           <div className="relative mb-12 aspect-video w-full overflow-hidden rounded-2xl bg-neutral-100 shadow-sm">
             {coverImage ? (
-              /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={coverImage}
                 alt="Cover Preview"
@@ -79,14 +75,12 @@ export function LivePreview({
             )}
           </div>
 
-          {/* Intro */}
           {excerpt && (
             <p className="mb-10 border-l-4 border-neutral-900 pl-6 text-xl font-medium leading-relaxed text-neutral-700 italic">
               {excerpt}
             </p>
           )}
 
-          {/* Contenu */}
           <div className="prose prose-neutral prose-lg max-w-none">
             <MarkdownRenderer
               content={
