@@ -2,7 +2,6 @@ import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import remarkBreaks from "remark-breaks";
-import { ClickToTweet } from "@/components/blog/click-to-tweet"; // Import ajouté
 
 interface MarkdownRendererProps {
   content: string;
@@ -51,25 +50,6 @@ export function MarkdownRenderer({
                 {children}
               </h3>
             );
-          },
-          // REMPLACEMENT DES CITATIONS PAR CLICK-TO-TWEET
-          blockquote: ({ node, children, ...props }) => {
-            // Extraction du texte pur depuis les enfants React
-            let text = "";
-            if (Array.isArray(children)) {
-              children.forEach((child: any) => {
-                if (child?.props?.children) text += child.props.children;
-                else if (typeof child === "string") text += child;
-              });
-            } else {
-              // @ts-ignore
-              text = children?.props?.children || children;
-            }
-
-            // Nettoyage sommaire
-            if (Array.isArray(text)) text = text.join("");
-
-            return <ClickToTweet quote={String(text).trim()} />;
           },
           img: ({ node, ...props }) => {
             const { src, alt } = props;
