@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Globe,
   Sparkles,
+  RefreshCw,
 } from "lucide-react";
 import { auth } from "@/auth";
 import { UserRole, PostStatus } from "@prisma/client";
@@ -28,6 +29,7 @@ import { ShareButton } from "@/components/blog/share-button";
 import { ReadingProgressBar } from "@/components/blog/progress-bar";
 import { CommentSection } from "@/components/blog/comment-section";
 import { TableOfContents } from "@/components/blog/table-of-contents";
+import { AudioPlayer } from "@/components/blog/audio-player"; // Import du Lecteur
 
 interface PostPageProps {
   params: Promise<{
@@ -79,6 +81,7 @@ export async function generateMetadata(
       description: post.excerpt,
       type: "article",
       publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
       authors: [post.author.name || "Metalya Team"],
       images: [{ url: post.coverImage }],
     },
@@ -98,6 +101,9 @@ export default async function PostPage(props: PostPageProps) {
   const isAdmin = session?.user?.role === UserRole.ADMIN;
 
   if (!post) notFound();
+
+  const isUpdated =
+    post.updatedAt.getTime() - post.createdAt.getTime() > 24 * 60 * 60 * 1000;
 
   const jsonLd: WithContext<Article> = {
     "@context": "https://schema.org",
@@ -133,9 +139,7 @@ export default async function PostPage(props: PostPageProps) {
     <>
       <JsonLd data={jsonLd} />
       <Breadcrumbs items={breadcrumbItems} />
-
       <ReadingProgressBar />
-
       <StickyShare url={postUrl} title={post.title} />
 
       <div className="relative min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 pb-24">
@@ -159,7 +163,6 @@ export default async function PostPage(props: PostPageProps) {
 
               <div className="flex items-center gap-3">
                 {isAdmin && <PostActions postId={post.id} />}
-
                 <div className="flex items-center gap-2 border-l border-neutral-200 pl-3 ml-2">
                   <ShareButton
                     title={post.title}
@@ -224,10 +227,24 @@ export default async function PostPage(props: PostPageProps) {
 
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                      <Calendar size={16} className="text-neutral-400" />
-                      <time dateTime={post.createdAt.toISOString()}>
-                        {formatDate(post.createdAt)}
-                      </time>
+                      {isUpdated ? (
+                        <>
+                          <RefreshCw size={16} className="text-emerald-600" />
+                          <time
+                            dateTime={post.updatedAt.toISOString()}
+                            className="font-medium text-emerald-700"
+                          >
+                            Mis à jour le {formatDate(post.updatedAt)}
+                          </time>
+                        </>
+                      ) : (
+                        <>
+                          <Calendar size={16} className="text-neutral-400" />
+                          <time dateTime={post.createdAt.toISOString()}>
+                            {formatDate(post.createdAt)}
+                          </time>
+                        </>
+                      )}
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock size={16} className="text-neutral-400" />
@@ -261,9 +278,12 @@ export default async function PostPage(props: PostPageProps) {
 
             <Container className="max-w-7xl">
               <div className="mt-16 md:mt-24 flex flex-col lg:flex-row lg:gap-12">
-                {/* CONTENT */}
+                {/* CONTENT & PLAYER */}
                 <div className="flex-1 max-w-3xl mx-auto">
                   <FadeIn delay={0.3}>
+                    {/* AJOUT DU LECTEUR AUDIO ICI */}
+                    <AudioPlayer text={post.content} />
+
                     {post.excerpt && (
                       <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
                         <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">

@@ -1,34 +1,30 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { z } from "zod";
+import { NewsletterSchema } from "@/lib/schemas";
 import { revalidatePath } from "next/cache";
 
-const EmailSchema = z.object({
-  email: z.string().email("Email invalide"),
-});
-
 export async function subscribeToNewsletter(formData: FormData) {
-  const email = formData.get("email");
+  const email = formData.get("email") as string;
 
-  const result = EmailSchema.safeParse({ email });
+  const validated = NewsletterSchema.safeParse({ email });
 
-  if (!result.success) {
-    return { error: result.error.issues[0].message };
+  if (!validated.success) {
+    return { error: validated.error.errors[0].message };
   }
 
   try {
     await prisma.subscriber.upsert({
-      where: { email: result.data.email },
+      where: { email: validated.data.email },
       update: { isActive: true },
-      create: { email: result.data.email },
+      create: { email: validated.data.email },
     });
 
     revalidatePath("/");
-    return { success: "Merci ! Vous êtes inscrit." };
+    return { success: "Inscription réussie ! Bienvenue dans le club." };
   } catch (error) {
-    console.error(error); 
-    return { error: "Une erreur est survenue." };
+    console.error("Erreur inscription newsletter:", error);
+    return { error: "Une erreur est survenue. Réessayez plus tard." };
   }
 }
 

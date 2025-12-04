@@ -1,156 +1,137 @@
 "use client";
 
-import { Mail, Loader2, Send, Sparkles } from "lucide-react";
-import { subscribeToNewsletter } from "@/app/actions/newsletter";
 import { useState, useTransition } from "react";
-import { motion } from "framer-motion";
+import { subscribeToNewsletter } from "@/app/actions/newsletter";
+import {
+  Loader2,
+  Mail,
+  ArrowRight,
+  CheckCircle2,
+  Sparkles,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeIn } from "@/components/ui/fade-in";
 import { cn } from "@/lib/utils";
 
 export function Newsletter() {
   const [isPending, startTransition] = useTransition();
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [message, setMessage] = useState("");
 
-  async function onSubmit(formData: FormData) {
-    setMessage(null);
+  const handleSubmit = (formData: FormData) => {
+    setStatus("idle");
+    setMessage("");
+
     startTransition(async () => {
       const res = await subscribeToNewsletter(formData);
-      if (res.error) setMessage({ type: "error", text: res.error });
-      if (res.success) setMessage({ type: "success", text: res.success });
+      if (res.error) {
+        setStatus("error");
+        setMessage(res.error);
+      } else {
+        setStatus("success");
+        setMessage(res.success!);
+      }
     });
-  }
+  };
 
   return (
-    <section className="relative mb-24 mt-24 w-full">
-      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/10 bg-neutral-950 px-6 py-24 text-center md:px-12 lg:py-32">
-        <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-[0.03]" />
+    <section className="relative my-16 overflow-hidden rounded-4xl bg-neutral-950 py-16 md:my-24 md:py-24">
+      <div className="absolute inset-0 opacity-20 pointer-events-none">
+        <div className="absolute -left-24 -top-24 h-[500px] w-[500px] rounded-full bg-indigo-500 blur-[120px]" />
+        <div className="absolute -bottom-24 -right-24 h-[500px] w-[500px] rounded-full bg-purple-500 blur-[120px]" />
+      </div>
 
-        <motion.div
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-            rotate: [0, 90, 0],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-indigo-500/20 blur-[100px]"
-        />
-        <motion.div
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.2, 0.4, 0.2],
-            x: [0, 50, 0],
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-fuchsia-500/20 blur-[100px]"
-        />
+      <div className="relative z-10 mx-auto max-w-4xl px-6 text-center">
+        <FadeIn>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-indigo-300 backdrop-blur-md">
+            <Sparkles size={14} />
+            <span>Hebdomadaire & Gratuit</span>
+          </div>
 
-        <div className="relative z-10 mx-auto max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-8 flex justify-center"
-          >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-medium text-neutral-300 backdrop-blur-md">
-              <Sparkles size={14} className="text-yellow-400" />
-              <span className="uppercase tracking-widest text-[10px]">
-                Hebdomadaire
-              </span>
-            </div>
-          </motion.div>
+          <h2 className="font-serif text-4xl font-medium text-white md:text-5xl lg:text-6xl">
+            Le futur, directement <br className="hidden md:block" />
+            dans votre boîte mail.
+          </h2>
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="font-serif text-5xl font-medium tracking-tight text-white md:text-7xl"
-          >
-            Restez{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-200 via-white to-indigo-200">
-              inspiré.
-            </span>
-          </motion.h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg text-neutral-400">
+            Rejoignez Metalya. Recevez chaque semaine notre sélection des
+            meilleurs articles Tech, Culture et Voyage. Pas de spam, promis.
+          </p>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-neutral-400 md:text-xl"
-          >
-            Rejoignez <strong>Metalya</strong>. Recevez notre sélection triée
-            sur le volet : tech, culture et voyage. Pas de bruit, juste le
-            signal.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="mt-12"
-          >
-            <form
-              action={onSubmit}
-              className="relative mx-auto flex max-w-md flex-col gap-2 sm:flex-row"
-            >
-              <div className="relative w-full group">
-                <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 transition-colors group-focus-within:text-white">
-                  <Mail size={18} />
-                </div>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  placeholder="votre@email.com"
-                  className="h-14 w-full rounded-full border border-white/10 bg-white/5 pl-12 pr-4 text-white placeholder:text-neutral-600 outline-none transition-all focus:border-white/30 focus:bg-white/10 focus:ring-4 focus:ring-white/5"
-                />
-              </div>
-
-              <button
-                disabled={isPending}
-                className="group relative flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-white px-8 font-bold text-neutral-950 transition-all hover:scale-105 hover:bg-neutral-200 disabled:opacity-70 sm:w-auto"
-              >
-                {isPending ? (
-                  <Loader2 className="animate-spin" size={20} />
-                ) : (
-                  <>
-                    <span>S'abonner</span>
-                    <Send
-                      size={16}
-                      className="transition-transform group-hover:translate-x-1"
+          <div className="mx-auto mt-10 max-w-md">
+            <AnimatePresence mode="wait">
+              {status === "success" ? (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex flex-col items-center gap-3 rounded-2xl bg-white/10 p-6 text-emerald-400 backdrop-blur-md border border-white/5"
+                >
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-500/20">
+                    <CheckCircle2 size={24} />
+                  </div>
+                  <p className="font-medium text-white">{message}</p>
+                </motion.div>
+              ) : (
+                <motion.form
+                  key="form"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  action={handleSubmit}
+                  className="relative flex flex-col gap-3 sm:flex-row"
+                >
+                  <div className="relative flex-1">
+                    <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-neutral-400" />
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      placeholder="votre@email.com"
+                      disabled={isPending}
+                      className="h-14 w-full rounded-full border border-white/10 bg-white/5 pl-12 pr-4 text-white placeholder-neutral-500 backdrop-blur-md transition-all focus:border-indigo-500 focus:bg-white/10 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 disabled:opacity-50"
                     />
-                  </>
-                )}
-              </button>
-            </form>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="group flex h-14 items-center justify-center gap-2 rounded-full bg-white px-8 text-sm font-bold text-neutral-950 transition-all hover:bg-indigo-50 hover:shadow-lg hover:shadow-indigo-500/20 disabled:opacity-70"
+                  >
+                    {isPending ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      <>
+                        S'inscrire
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </>
+                    )}
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
 
-            {message && (
-              <motion.div
+            {status === "error" && (
+              <motion.p
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={cn(
-                  "mt-6 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium backdrop-blur-sm",
-                  message.type === "error"
-                    ? "bg-red-500/10 text-red-200 border border-red-500/20"
-                    : "bg-emerald-500/10 text-emerald-200 border border-emerald-500/20"
-                )}
+                className="mt-4 text-sm text-red-400"
               >
-                {message.type === "success" && (
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                )}
-                {message.text}
-              </motion.div>
+                {message}
+              </motion.p>
             )}
 
-            <p className="mt-6 text-xs text-neutral-600">
-              Désinscription en un clic. Nous respectons votre inbox.
+            <p className="mt-6 text-xs text-neutral-500">
+              En vous inscrivant, vous acceptez notre{" "}
+              <a
+                href="/privacy"
+                className="text-neutral-400 underline hover:text-white transition-colors"
+              >
+                politique de confidentialité
+              </a>
+              .
             </p>
-          </motion.div>
-        </div>
+          </div>
+        </FadeIn>
       </div>
     </section>
   );

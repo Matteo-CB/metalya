@@ -8,6 +8,7 @@ import { auth } from "@/auth";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Providers } from "@/components/providers";
 import { prisma } from "@/lib/prisma";
+import { ExitIntentPopup } from "@/components/ui/exit-intent-popup";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -183,6 +184,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <ExitIntentPopup />
         </Providers>
       </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""} />

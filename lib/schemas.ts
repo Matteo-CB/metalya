@@ -30,7 +30,9 @@ export const ProfileSchema = z.object({
     .min(2, { message: "Le nom doit contenir au moins 2 caractères." }),
   bio: z
     .string()
-    .max(500, { message: "La biographie ne doit pas dépasser 500 caractères." })
+    .max(500, {
+      message: "La biographie ne doit pas dépasser 500 caractères.",
+    })
     .optional()
     .or(z.literal("")),
   image: z.string().optional().or(z.literal("")),
@@ -50,9 +52,14 @@ export const ResetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const NewsletterSchema = z.object({
+  email: z.string().email({ message: "Veuillez entrer une adresse valide." }),
+});
+
 export type LoginInput = z.infer<typeof LoginSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type ContactInput = z.infer<typeof ContactSchema>;
 export type ProfileInput = z.infer<typeof ProfileSchema>;
 export type ForgotPasswordInput = z.infer<typeof ForgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+export type NewsletterInput = z.infer<typeof NewsletterSchema>;
