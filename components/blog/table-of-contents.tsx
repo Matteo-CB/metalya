@@ -58,7 +58,8 @@ export function TableOfContents({ content }: TableOfContentsProps) {
         <List size={16} />
         Sommaire
       </div>
-      <ul className="space-y-3 border-l border-neutral-200 pl-4">
+      {/* AJOUT DE : max-h-[calc(100vh-200px)] overflow-y-auto */}
+      <ul className="space-y-3 border-l border-neutral-200 pl-4 max-h-[calc(100vh-200px)] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent">
         {headings.map((heading) => (
           <li
             key={heading.id}
@@ -78,6 +79,7 @@ export function TableOfContents({ content }: TableOfContentsProps) {
                   behavior: "smooth",
                 });
               }}
+              className="block py-1"
             >
               {heading.text}
             </a>
