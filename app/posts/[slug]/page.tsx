@@ -25,7 +25,8 @@ import { RelatedPosts } from "@/components/blog/related-posts";
 import { StickyShare } from "@/components/blog/sticky-share";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ShareButton } from "@/components/blog/share-button";
-import { ReadingProgressBar } from "@/components/blog/progress-bar"; // Ajout ici
+import { ReadingProgressBar } from "@/components/blog/progress-bar";
+import { CommentSection } from "@/components/blog/comment-section"; // Import ajouté
 
 interface PostPageProps {
   params: Promise<{
@@ -38,7 +39,14 @@ const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
     where: { slug },
-    include: { author: true },
+    include: {
+      author: true,
+      comments: {
+        // Inclure les commentaires
+        include: { author: true },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
   if (!post) return null;
   return post;
@@ -115,7 +123,6 @@ export default async function PostPage(props: PostPageProps) {
       <JsonLd data={jsonLd} />
       <Breadcrumbs items={breadcrumbItems} />
 
-      {/* Barre de progression ajoutée ici */}
       <ReadingProgressBar />
 
       <StickyShare url={postUrl} title={post.title} />
@@ -256,16 +263,11 @@ export default async function PostPage(props: PostPageProps) {
                     <MarkdownRenderer content={post.content} />
                   </div>
 
-                  <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
-                    <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
-                      Partager cet article
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <ShareButton
-                        title={post.title}
-                        text={post.excerpt}
-                        url={postUrl}
-                      />
+                  <div className="my-20 flex items-center justify-center">
+                    <div className="flex gap-4">
+                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
                     </div>
                   </div>
 
@@ -301,7 +303,10 @@ export default async function PostPage(props: PostPageProps) {
                     </div>
                   </div>
 
-                  <div className="relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-center shadow-2xl md:px-12 md:py-16">
+                  {/* SECTION COMMENTAIRES */}
+                  <CommentSection postId={post.id} comments={post.comments} />
+
+                  <div className="mt-12 relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-center shadow-2xl md:px-12 md:py-16">
                     <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]" />
                     <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-rose-500/20 blur-[100px]" />
 

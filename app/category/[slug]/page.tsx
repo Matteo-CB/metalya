@@ -48,7 +48,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
 
   const posts = await prisma.post.findMany({
     where: {
-      status: PostStatus.PUBLISHED,
+      status: PostStatus.PUBLISHED, // CORRECTION ICI
       categories: {
         has: category.enum,
       },

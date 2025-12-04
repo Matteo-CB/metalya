@@ -37,33 +37,39 @@ export async function createPost(formData: FormData) {
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
+  const action = formData.get("action") as string; // 'draft' ou 'publish'
 
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
 
-  if (!title || !content || !coverImage) {
-    throw new Error("Champs manquants");
+  if (!title) {
+    throw new Error("Le titre est obligatoire");
   }
 
   const slug = slugify(title);
 
+  // Détermination du statut initial
   let status: PostStatus = PostStatus.DRAFT;
-  if (session.user.role === UserRole.REDACTEUR) {
-    status = PostStatus.PENDING;
-  } else if (
-    session.user.role === UserRole.ADMIN ||
-    session.user.role === UserRole.SUPER_ADMIN
-  ) {
-    status = PostStatus.PUBLISHED;
+
+  if (action === "publish") {
+    if (session.user.role === UserRole.REDACTEUR) {
+      status = PostStatus.PENDING; // Soumission pour validation
+    } else if (
+      session.user.role === UserRole.ADMIN ||
+      session.user.role === UserRole.SUPER_ADMIN
+    ) {
+      status = PostStatus.PUBLISHED; // Publication directe
+    }
   }
+  // Si action === 'draft', on reste sur DRAFT
 
   await prisma.post.create({
     data: {
       title,
       slug,
-      content,
-      excerpt,
-      coverImage,
+      content: content || "",
+      excerpt: excerpt || "",
+      coverImage: coverImage || "",
       readingTime: readingTime || 5,
       status,
       authorId: session.user.id!,
@@ -92,7 +98,10 @@ export async function updatePost(postId: string, formData: FormData) {
     userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN;
   const isRedacteurOwner = userRole === UserRole.REDACTEUR && isAuthor;
 
+  // Vérification des permissions
   if (isRedacteurOwner) {
+    // Un rédacteur peut modifier ses brouillons ET ses articles en attente
+    // Mais pas ceux qui sont déjà publiés
     if (post.status === PostStatus.PUBLISHED) {
       throw new Error("Impossible de modifier un article déjà publié.");
     }
@@ -105,13 +114,22 @@ export async function updatePost(postId: string, formData: FormData) {
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
+  const action = formData.get("action") as string; // 'draft' ou 'publish'
+
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
 
+  // Gestion du changement de statut
   let status = post.status;
-  const statusInput = formData.get("status");
-  if (isAdmin && statusInput) {
-    status = statusInput as PostStatus;
+
+  if (action === "draft") {
+    status = PostStatus.DRAFT; // Retour en brouillon
+  } else if (action === "publish") {
+    if (userRole === UserRole.REDACTEUR) {
+      status = PostStatus.PENDING; // Soumission
+    } else if (isAdmin) {
+      status = PostStatus.PUBLISHED; // Publication
+    }
   }
 
   const slug = slugify(title);
@@ -150,7 +168,6 @@ export async function deletePost(postId: string) {
     userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN;
   const isRedacteurOwner = userRole === UserRole.REDACTEUR && isAuthor;
 
-  // Rédacteur peut supprimer seulement si non publié
   if (isRedacteurOwner) {
     if (post.status === PostStatus.PUBLISHED) {
       throw new Error("Impossible de supprimer un article publié.");

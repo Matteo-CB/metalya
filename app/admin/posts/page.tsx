@@ -14,9 +14,10 @@ import {
   FileText,
 } from "lucide-react";
 import { updatePostStatus, deletePostAdmin } from "@/app/actions/admin";
+import { AdminPagination } from "@/components/admin/admin-pagination";
 
 interface PostsAdminPageProps {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; page?: string }>;
 }
 
 export default async function PostsAdminPage(props: PostsAdminPageProps) {
@@ -32,6 +33,8 @@ export default async function PostsAdminPage(props: PostsAdminPageProps) {
 
   const statusParam = searchParams.status;
   const currentStatus = statusParam || "ALL";
+  const currentPage = Number(searchParams.page) || 1;
+  const itemsPerPage = 10;
 
   const where: any = {};
 
@@ -42,11 +45,19 @@ export default async function PostsAdminPage(props: PostsAdminPageProps) {
     where.status = currentStatus as PostStatus;
   }
 
-  const posts = await prisma.post.findMany({
-    where,
-    include: { author: true },
-    orderBy: { createdAt: "desc" },
-  });
+  // Transaction pour récupérer les données et le compte total en une fois (optimisation)
+  const [totalItems, posts] = await prisma.$transaction([
+    prisma.post.count({ where }),
+    prisma.post.findMany({
+      where,
+      include: { author: true },
+      orderBy: { createdAt: "desc" },
+      skip: (currentPage - 1) * itemsPerPage,
+      take: itemsPerPage,
+    }),
+  ]);
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const tabs = [
     { label: "Tous", value: "ALL" },
@@ -197,6 +208,8 @@ export default async function PostsAdminPage(props: PostsAdminPageProps) {
             </div>
           )}
         </div>
+
+        <AdminPagination totalPages={totalPages} />
       </Container>
     </div>
   );

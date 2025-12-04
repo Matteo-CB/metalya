@@ -28,20 +28,51 @@ enum PostStatus {
   REJECTED
 }
 
+enum NewsletterStatus {
+  DRAFT
+  PENDING
+  SENT
+  REJECTED
+}
+
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  bio           String?
-  password      String?
-  role          UserRole  @default(USER)
-  posts         Post[]
-  accounts      Account[]
-  sessions      Session[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id               String             @id @default(auto()) @map("_id") @db.ObjectId
+  name             String?
+  email            String             @unique
+  emailVerified    DateTime?
+  image            String?
+  bio              String?
+  password         String?
+  role             UserRole           @default(USER)
+  posts            Post[]
+  comments         Comment[]
+  newsletters      Newsletter[]
+  sentMessages     Message[]          @relation("SentMessages")
+  receivedMessages MessageRecipient[]
+  accounts         Account[]
+  sessions         Session[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+}
+
+model Message {
+  id         String             @id @default(auto()) @map("_id") @db.ObjectId
+  subject    String
+  content    String
+  senderId   String             @db.ObjectId
+  sender     User               @relation("SentMessages", fields: [senderId], references: [id])
+  recipients MessageRecipient[]
+  createdAt  DateTime           @default(now())
+}
+
+model MessageRecipient {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  messageId String    @db.ObjectId
+  message   Message   @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  userId    String    @db.ObjectId
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  isRead    Boolean   @default(false)
+  readAt    DateTime?
 }
 
 model Post {
@@ -55,15 +86,36 @@ model Post {
   status      PostStatus @default(DRAFT)
   authorId    String     @db.ObjectId
   author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
-  categories  Category[] 
-  
+  comments    Comment[]
+  categories  Category[]
   seoTitle    String?
   seoDesc     String?
   keywords    String[]
   readingTime Int        @default(5)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+}
+
+model Comment {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
+  postId    String   @db.ObjectId
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String   @db.ObjectId
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Newsletter {
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  subject   String
+  content   String
+  status    NewsletterStatus @default(DRAFT)
+  authorId  String           @db.ObjectId
+  author    User             @relation(fields: [authorId], references: [id])
+  sentAt    DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 }
 
 model Account {

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Eye, Edit3, Save, Loader2, Mail } from "lucide-react";
+import { ArrowLeft, Eye, Edit3, Save, Loader2, Send, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface PostHeaderProps {
@@ -16,7 +16,7 @@ export function PostHeader({
   setViewMode,
 }: PostHeaderProps) {
   return (
-    <header className=" top-0 z-40 border-b border-neutral-200 bg-white/90 px-6 py-4 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 px-6 py-4 backdrop-blur-md transition-all">
       <div className="mx-auto flex max-w-7xl items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
@@ -31,11 +31,8 @@ export function PostHeader({
           <span className="h-6 w-px bg-neutral-200" />
           <div>
             <h1 className="font-serif text-lg font-bold text-neutral-900">
-              Nouveau Récit
+              Éditeur
             </h1>
-            <p className="text-[10px] uppercase tracking-wider text-neutral-400">
-              Brouillon
-            </p>
           </div>
         </div>
 
@@ -78,13 +75,26 @@ export function PostHeader({
 
           <button
             type="submit"
+            name="action"
+            value="draft"
+            disabled={isPending}
+            className="hidden h-10 items-center gap-2 rounded-full border border-neutral-200 bg-white px-4 text-sm font-medium text-neutral-700 transition-all hover:bg-neutral-50 disabled:opacity-70 sm:flex"
+          >
+            <Save size={16} />
+            <span>Brouillon</span>
+          </button>
+
+          <button
+            type="submit"
+            name="action"
+            value="publish"
             disabled={isPending}
             className="flex h-10 items-center gap-2 rounded-full bg-neutral-900 px-6 text-sm font-bold text-white transition-all hover:bg-neutral-800 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPending ? (
               <Loader2 className="animate-spin" size={16} />
             ) : (
-              <Save size={16} />
+              <Send size={16} />
             )}
             <span className="hidden sm:inline">Publier</span>
           </button>

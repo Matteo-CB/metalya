@@ -13,11 +13,14 @@ import {
   LayoutDashboard,
   ChevronDown,
   Settings,
+  Users,
+  MessageSquare,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
 
 const NAV_LINKS = [
+  { label: "Articles", href: "/posts" },
   { label: "Actualités", href: "/category/actualites" },
   { label: "Culture", href: "/category/culture" },
   { label: "Tech", href: "/category/tech" },
@@ -26,9 +29,10 @@ const NAV_LINKS = [
 
 interface SiteHeaderProps {
   user?: User & { role?: string };
+  unreadCount?: number;
 }
 
-export function SiteHeader({ user }: SiteHeaderProps) {
+export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -48,7 +52,12 @@ export function SiteHeader({ user }: SiteHeaderProps) {
     }
   }, [isMobileMenuOpen]);
 
-  const isAdmin = user?.role === "ADMIN";
+  const hasAdminAccess =
+    user?.role === "ADMIN" ||
+    user?.role === "SUPER_ADMIN" ||
+    user?.role === "REDACTEUR";
+
+  const isSuperAdmin = user?.role === "SUPER_ADMIN";
 
   return (
     <>
@@ -73,7 +82,7 @@ export function SiteHeader({ user }: SiteHeaderProps) {
               Metalya<span className="text-neutral-300">.</span>
             </Link>
 
-            <div className="hidden items-center gap-8 lg:flex">
+            <div className="hidden items-center gap-6 lg:flex xl:gap-8">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
@@ -120,6 +129,10 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         <UserIcon size={16} />
                       )}
                     </div>
+                    {/* Badge de notification sur l'avatar */}
+                    {unreadCount > 0 && (
+                      <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
+                    )}
                     <ChevronDown
                       size={14}
                       className={cn(
@@ -136,36 +149,87 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 8, scale: 0.95 }}
                         transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute right-0 top-full mt-2 w-56 overflow-hidden rounded-2xl border border-neutral-100 bg-white p-2 shadow-xl ring-1 ring-black/5"
+                        className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl border border-neutral-100 bg-white p-2 shadow-xl ring-1 ring-black/5"
                       >
-                        <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                          Mon compte
+                        <div className="px-3 py-2">
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                            Compte
+                          </p>
+                          <p className="truncate text-xs font-medium text-neutral-900">
+                            {user.email}
+                          </p>
                         </div>
+
+                        <div className="my-1 h-px bg-neutral-100" />
+
+                        {hasAdminAccess && (
+                          <>
+                            <Link
+                              href="/admin/posts"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex w-full items-center gap-3 rounded-xl bg-neutral-50 px-3 py-2.5 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-100"
+                            >
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                                <LayoutDashboard size={16} />
+                              </div>
+                              <div>
+                                <span>Administration</span>
+                                <p className="text-[10px] font-normal text-neutral-500">
+                                  Gérer le site
+                                </p>
+                              </div>
+                            </Link>
+
+                            <Link
+                              href="/admin/messages"
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+                            >
+                              <div className="flex items-center gap-3">
+                                <MessageSquare
+                                  size={18}
+                                  className="text-neutral-400"
+                                />
+                                Messagerie
+                              </div>
+                              {unreadCount > 0 && (
+                                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-bold text-white">
+                                  {unreadCount}
+                                </span>
+                              )}
+                            </Link>
+                          </>
+                        )}
+
+                        {isSuperAdmin && (
+                          <Link
+                            href="/admin/users"
+                            onClick={() => setIsUserMenuOpen(false)}
+                            className="flex w-full items-center gap-3 rounded-xl bg-purple-50 px-3 py-2.5 text-sm font-bold text-purple-900 transition-colors hover:bg-purple-100"
+                          >
+                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm border border-purple-100">
+                              <Users size={16} className="text-purple-600" />
+                            </div>
+                            <div>
+                              <span>Utilisateurs</span>
+                              <p className="text-[10px] font-normal text-purple-500">
+                                Gérer les rôles
+                              </p>
+                            </div>
+                          </Link>
+                        )}
 
                         <Link
                           href="/profile"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
                         >
-                          <Settings size={18} className="text-neutral-500" />
+                          <Settings size={18} className="text-neutral-400" />
                           Profil & Réglages
                         </Link>
 
-                        {isAdmin && (
-                          <Link
-                            href="/admin/create"
-                            onClick={() => setIsUserMenuOpen(false)}
-                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
-                          >
-                            <LayoutDashboard
-                              size={18}
-                              className="text-neutral-500"
-                            />
-                            Administration
-                          </Link>
-                        )}
-
                         <div className="my-1 h-px bg-neutral-100" />
+
                         <button
                           onClick={() => signOut({ callbackUrl: "/" })}
                           className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
@@ -221,6 +285,9 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                     exit={{ rotate: -90, opacity: 0 }}
                   >
                     <Menu size={24} />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -296,6 +363,39 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         </div>
                       </div>
 
+                      {hasAdminAccess && (
+                        <>
+                          <Link
+                            href="/admin/posts"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex w-full items-center gap-3 rounded-xl bg-neutral-900 px-4 py-3 font-medium text-white shadow-lg active:scale-95"
+                          >
+                            <LayoutDashboard size={20} />
+                            Administration
+                          </Link>
+
+                          <Link
+                            href="/admin/messages"
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-neutral-900 shadow-sm ring-1 ring-neutral-100 active:bg-neutral-50"
+                          >
+                            <MessageSquare size={20} />
+                            Messagerie
+                          </Link>
+                        </>
+                      )}
+
+                      {isSuperAdmin && (
+                        <Link
+                          href="/admin/users"
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="flex w-full items-center gap-3 rounded-xl bg-purple-50 px-4 py-3 font-medium text-purple-900 border border-purple-100 active:scale-95"
+                        >
+                          <Users size={20} />
+                          Gérer les Utilisateurs
+                        </Link>
+                      )}
+
                       <Link
                         href="/profile"
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -304,17 +404,6 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         <Settings size={20} />
                         Profil & Réglages
                       </Link>
-
-                      {isAdmin && (
-                        <Link
-                          href="/admin/create"
-                          onClick={() => setIsMobileMenuOpen(false)}
-                          className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-neutral-900 shadow-sm ring-1 ring-neutral-100 active:bg-neutral-50"
-                        >
-                          <LayoutDashboard size={20} />
-                          Administration
-                        </Link>
-                      )}
 
                       <button
                         onClick={() => signOut({ callbackUrl: "/" })}

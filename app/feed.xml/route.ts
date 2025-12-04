@@ -24,7 +24,7 @@ function escapeXml(unsafe: string): string {
 
 export async function GET() {
   const posts = await prisma.post.findMany({
-    where: { status: PostStatus.PUBLISHED }, // Correction ici
+    where: { status: PostStatus.PUBLISHED }, // CORRECTION ICI
     orderBy: { createdAt: "desc" },
     take: 20,
     include: { author: true },

@@ -20,7 +20,7 @@ import { PostStatus } from "@prisma/client";
 
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
-    where: { status: PostStatus.PUBLISHED },
+    where: { status: PostStatus.PUBLISHED }, // CORRECTION ICI
     orderBy: { createdAt: "desc" },
     include: { author: true },
     take: 20,

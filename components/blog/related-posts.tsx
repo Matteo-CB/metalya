@@ -17,7 +17,7 @@ export async function RelatedPosts({
 }: RelatedPostsProps) {
   const posts = await prisma.post.findMany({
     where: {
-      status: PostStatus.PUBLISHED, // Correction ici
+      status: PostStatus.PUBLISHED, // CORRECTION ICI
       categories: { has: category },
       id: { not: currentPostId },
     },

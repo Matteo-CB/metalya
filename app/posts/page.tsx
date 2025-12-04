@@ -2,10 +2,11 @@ import { Metadata } from "next";
 import { Container } from "@/components/ui/container";
 import { FadeIn } from "@/components/ui/fade-in";
 import { PostGrid } from "@/components/home/post-grid";
-import { prisma } from "@/lib/prisma";
-import { Sparkles, BookOpen } from "lucide-react";
 import { PostSearch } from "@/components/blog/post-search";
 import { Pagination } from "@/components/blog/pagination";
+import { prisma } from "@/lib/prisma";
+import { Sparkles, BookOpen } from "lucide-react";
+import { PostStatus } from "@prisma/client";
 
 export const metadata: Metadata = {
   title: "Toutes les publications | Metalya",
@@ -26,15 +27,16 @@ export default async function PostsPage(props: PostsPageProps) {
   const currentPage = Number(searchParams.page) || 1;
   const itemsPerPage = 9;
 
-  const where = {
-    published: true,
-    OR: query
-      ? [
-          { title: { contains: query, mode: "insensitive" as const } },
-          { excerpt: { contains: query, mode: "insensitive" as const } },
-        ]
-      : undefined,
+  const where: any = {
+    status: PostStatus.PUBLISHED, // CORRECTION ICI
   };
+
+  if (query) {
+    where.OR = [
+      { title: { contains: query, mode: "insensitive" } },
+      { excerpt: { contains: query, mode: "insensitive" } },
+    ];
+  }
 
   const totalItems = await prisma.post.count({ where });
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -48,8 +50,8 @@ export default async function PostsPage(props: PostsPageProps) {
   });
 
   return (
-    <div className="min-h-screen bg-neutral-50 pt-16 pb-24">
-      <div className="absolute top-0 left-0 w-full h-[500px] bg-white overflow-hidden -z-10">
+    <div className="min-h-screen bg-neutral-50 pt-16 pb-24 relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-[500px] -z-10 pointer-events-none">
         <div className="absolute top-[-50%] right-[-10%] w-[800px] h-[800px] bg-indigo-50/50 blur-[120px] rounded-full mix-blend-multiply" />
         <div className="absolute top-[10%] left-[-10%] w-[600px] h-[600px] bg-amber-50/50 blur-[100px] rounded-full mix-blend-multiply" />
       </div>
@@ -64,7 +66,7 @@ export default async function PostsPage(props: PostsPageProps) {
 
             <h1 className="font-serif text-5xl md:text-7xl font-medium text-neutral-950 tracking-tight mb-6">
               Explorer nos <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-purple-600">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
                 horizons.
               </span>
             </h1>

@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { Footer } from "@/components/layout/footer";
 import { auth } from "@/auth";
 import { SiteHeader } from "@/components/layout/site-header";
-import { Providers } from "@/components/providers"; // Import du nouveau composant
+import { Providers } from "@/components/providers";
+import { prisma } from "@/lib/prisma";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -27,7 +28,7 @@ export const viewport: Viewport = {
   maximumScale: 5,
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -122,6 +123,16 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
 
+  let unreadCount = 0;
+  if (session?.user) {
+    unreadCount = await prisma.messageRecipient.count({
+      where: {
+        userId: session.user.id,
+        isRead: false,
+      },
+    });
+  }
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -167,7 +178,7 @@ export default async function RootLayout({
         )}
       >
         <Providers>
-          <SiteHeader user={session?.user} />
+          <SiteHeader user={session?.user} unreadCount={unreadCount} />
           <main className="relative mt-20 flex min-h-screen flex-col">
             {children}
           </main>

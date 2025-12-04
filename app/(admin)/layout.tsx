@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 import { UserRole } from "@prisma/client";
 import { AdminNav } from "@/components/admin/admin-nav";
 import Link from "next/link";
@@ -19,6 +20,14 @@ export default async function AdminLayout({
   ) {
     redirect("/login");
   }
+
+  // Compter les messages non lus
+  const unreadCount = await prisma.messageRecipient.count({
+    where: {
+      userId: session.user.id,
+      isRead: false,
+    },
+  });
 
   return (
     <div className="min-h-screen bg-neutral-50">
@@ -50,7 +59,7 @@ export default async function AdminLayout({
             </div>
           </div>
         </div>
-        <AdminNav role={session.user.role} />
+        <AdminNav role={session.user.role} unreadCount={unreadCount} />
       </header>
       <main>{children}</main>
     </div>

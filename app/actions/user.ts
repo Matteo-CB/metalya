@@ -58,3 +58,25 @@ export async function updateUserRole(targetUserId: string, newRole: UserRole) {
     return { error: "Erreur lors de la mise à jour du rôle." };
   }
 }
+
+export async function deleteUser(userId: string) {
+  const session = await auth();
+
+  if (session?.user?.role !== UserRole.SUPER_ADMIN) {
+    return { error: "Permission refusée." };
+  }
+
+  if (userId === session.user.id) {
+    return { error: "Vous ne pouvez pas vous supprimer vous-même." };
+  }
+
+  try {
+    await prisma.user.delete({
+      where: { id: userId },
+    });
+    revalidatePath("/admin/users");
+    return { success: "Utilisateur supprimé définitivement." };
+  } catch (error) {
+    return { error: "Erreur lors de la suppression." };
+  }
+}

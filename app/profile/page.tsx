@@ -44,14 +44,32 @@ export default function ProfilePage() {
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setError("");
+
     if (!file) return;
 
+    // Validation du format
+    if (!file.type.startsWith("image/")) {
+      setError("Le fichier doit être une image (JPG, PNG, WebP).");
+      return;
+    }
+
+    // Validation de la taille (4MB)
+    if (file.size > 4 * 1024 * 1024) {
+      setError("L'image est trop lourde (Max 4MB).");
+      return;
+    }
+
     startUpload(async () => {
-      const formData = new FormData();
-      formData.append("file", file);
-      const url = await uploadImage(formData);
-      form.setValue("image", url);
-      setPreviewImage(url);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        const url = await uploadImage(formData);
+        form.setValue("image", url);
+        setPreviewImage(url);
+      } catch (err) {
+        setError("Erreur lors de l'upload de l'image.");
+      }
     });
   };
 
@@ -125,7 +143,7 @@ export default function ProfilePage() {
                     <input
                       type="file"
                       className="hidden"
-                      accept="image/*"
+                      accept="image/png, image/jpeg, image/webp"
                       onChange={handleImageUpload}
                     />
                   </label>
