@@ -9,6 +9,7 @@ import { SiteHeader } from "@/components/layout/site-header";
 import { Providers } from "@/components/providers";
 import { prisma } from "@/lib/prisma";
 import { ExitIntentPopup } from "@/components/ui/exit-intent-popup";
+import { PWAInstallBanner } from "@/components/ui/pwa-install-banner";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -115,6 +116,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  other: {
+    "opensearchdescription+xml": "/opensearch.xml",
+  },
 };
 
 export default async function RootLayout({
@@ -184,6 +188,7 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
+          <PWAInstallBanner />
           <ExitIntentPopup />
         </Providers>
       </body>

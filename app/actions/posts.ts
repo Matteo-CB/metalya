@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
+import { pingIndexNow } from "@/lib/indexnow";
 
 function slugify(text: string) {
   return text
@@ -37,7 +38,7 @@ export async function createPost(formData: FormData) {
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
-  const action = formData.get("action") as string; // 'draft' ou 'publish'
+  const action = formData.get("action") as string;
 
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
@@ -48,20 +49,18 @@ export async function createPost(formData: FormData) {
 
   const slug = slugify(title);
 
-  // Détermination du statut initial
   let status: PostStatus = PostStatus.DRAFT;
 
   if (action === "publish") {
     if (session.user.role === UserRole.REDACTEUR) {
-      status = PostStatus.PENDING; // Soumission pour validation
+      status = PostStatus.PENDING;
     } else if (
       session.user.role === UserRole.ADMIN ||
       session.user.role === UserRole.SUPER_ADMIN
     ) {
-      status = PostStatus.PUBLISHED; // Publication directe
+      status = PostStatus.PUBLISHED;
     }
   }
-  // Si action === 'draft', on reste sur DRAFT
 
   await prisma.post.create({
     data: {
@@ -78,6 +77,10 @@ export async function createPost(formData: FormData) {
       categories: categories,
     },
   });
+
+  if (status === PostStatus.PUBLISHED) {
+    await pingIndexNow(slug);
+  }
 
   revalidatePath("/");
   redirect(`/posts/${slug}`);
@@ -98,10 +101,7 @@ export async function updatePost(postId: string, formData: FormData) {
     userRole === UserRole.ADMIN || userRole === UserRole.SUPER_ADMIN;
   const isRedacteurOwner = userRole === UserRole.REDACTEUR && isAuthor;
 
-  // Vérification des permissions
   if (isRedacteurOwner) {
-    // Un rédacteur peut modifier ses brouillons ET ses articles en attente
-    // Mais pas ceux qui sont déjà publiés
     if (post.status === PostStatus.PUBLISHED) {
       throw new Error("Impossible de modifier un article déjà publié.");
     }
@@ -114,21 +114,20 @@ export async function updatePost(postId: string, formData: FormData) {
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
-  const action = formData.get("action") as string; // 'draft' ou 'publish'
+  const action = formData.get("action") as string;
 
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
 
-  // Gestion du changement de statut
   let status = post.status;
 
   if (action === "draft") {
-    status = PostStatus.DRAFT; // Retour en brouillon
+    status = PostStatus.DRAFT;
   } else if (action === "publish") {
     if (userRole === UserRole.REDACTEUR) {
-      status = PostStatus.PENDING; // Soumission
+      status = PostStatus.PENDING;
     } else if (isAdmin) {
-      status = PostStatus.PUBLISHED; // Publication
+      status = PostStatus.PUBLISHED;
     }
   }
 
@@ -148,6 +147,10 @@ export async function updatePost(postId: string, formData: FormData) {
       updatedAt: new Date(),
     },
   });
+
+  if (status === PostStatus.PUBLISHED) {
+    await pingIndexNow(slug);
+  }
 
   revalidatePath("/");
   revalidatePath(`/posts/${slug}`);
