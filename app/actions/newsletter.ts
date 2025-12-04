@@ -10,7 +10,7 @@ export async function subscribeToNewsletter(formData: FormData) {
   const validated = NewsletterSchema.safeParse({ email });
 
   if (!validated.success) {
-    return { error: validated.error.errors[0].message };
+    return { error: validated.error.issues[0].message };
   }
 
   try {

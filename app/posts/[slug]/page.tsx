@@ -29,7 +29,7 @@ import { ShareButton } from "@/components/blog/share-button";
 import { ReadingProgressBar } from "@/components/blog/progress-bar";
 import { CommentSection } from "@/components/blog/comment-section";
 import { TableOfContents } from "@/components/blog/table-of-contents";
-import { AudioPlayer } from "@/components/blog/audio-player"; // Import du Lecteur
+import { AudioPlayer } from "@/components/blog/audio-player";
 
 interface PostPageProps {
   params: Promise<{
@@ -90,6 +90,10 @@ export async function generateMetadata(
       title: post.title,
       description: post.excerpt,
       images: [post.coverImage],
+    },
+    other: {
+      // C'est ici que la magie opère pour Google Discover
+      amphtml: `${SITE_URL}/web-stories/${post.slug}`,
     },
   };
 }
@@ -278,12 +282,9 @@ export default async function PostPage(props: PostPageProps) {
 
             <Container className="max-w-7xl">
               <div className="mt-16 md:mt-24 flex flex-col lg:flex-row lg:gap-12">
-                {/* CONTENT & PLAYER */}
                 <div className="flex-1 max-w-3xl mx-auto">
                   <FadeIn delay={0.3}>
-                    {/* AJOUT DU LECTEUR AUDIO ICI */}
                     <AudioPlayer text={post.content} />
-
                     {post.excerpt && (
                       <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
                         <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
@@ -298,11 +299,9 @@ export default async function PostPage(props: PostPageProps) {
                   </FadeIn>
                 </div>
 
-                {/* SOMMAIRE (Desktop Sticky) */}
                 <TableOfContents content={post.content} />
               </div>
 
-              {/* BOTTOM SECTION */}
               <div className="max-w-3xl mx-auto">
                 <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
                   <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">

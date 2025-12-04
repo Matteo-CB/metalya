@@ -47,15 +47,15 @@ export default async function MessagesPage(props: MessagesPageProps) {
   }
 
   return (
-    <div className="py-10">
+    <div className="py-6 lg:py-10">
       <Container>
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="font-serif text-3xl font-bold text-neutral-900">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between lg:mb-8">
+          <h1 className="font-serif text-2xl font-bold text-neutral-900 lg:text-3xl">
             Messagerie
           </h1>
           <Link
             href="/admin/messages/create"
-            className="flex items-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-neutral-800"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-neutral-900 px-6 py-2.5 text-sm font-bold text-white transition-colors hover:bg-neutral-800 sm:w-auto"
           >
             <Plus size={18} />
             Nouveau Message
@@ -63,14 +63,14 @@ export default async function MessagesPage(props: MessagesPageProps) {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          <div className="flex flex-col gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:pb-0">
             <Link
               href="?tab=inbox"
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                "flex flex-1 items-center justify-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors lg:justify-start",
                 tab === "inbox"
                   ? "bg-indigo-50 text-indigo-700"
-                  : "text-neutral-600 hover:bg-neutral-50"
+                  : "bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 lg:border-transparent"
               )}
             >
               <Inbox size={18} />
@@ -79,10 +79,10 @@ export default async function MessagesPage(props: MessagesPageProps) {
             <Link
               href="?tab=sent"
               className={cn(
-                "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors",
+                "flex flex-1 items-center justify-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors lg:justify-start",
                 tab === "sent"
                   ? "bg-indigo-50 text-indigo-700"
-                  : "text-neutral-600 hover:bg-neutral-50"
+                  : "bg-white text-neutral-600 hover:bg-neutral-50 border border-neutral-200 lg:border-transparent"
               )}
             >
               <Send size={18} />
@@ -96,27 +96,27 @@ export default async function MessagesPage(props: MessagesPageProps) {
                 <div
                   key={msg.id}
                   className={cn(
-                    "relative flex flex-col gap-4 rounded-xl border bg-white p-6 shadow-sm transition-all hover:shadow-md",
+                    "relative flex flex-col gap-4 rounded-xl border bg-white p-4 shadow-sm transition-all hover:shadow-md lg:p-6",
                     tab === "inbox" && !msg.isRead
                       ? "border-indigo-100 bg-indigo-50/30"
                       : "border-neutral-200"
                   )}
                 >
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100 text-neutral-500">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neutral-100 text-neutral-500">
                         {msg.sender?.image ? (
                           <img
                             src={msg.sender.image}
                             alt=""
-                            className="h-full w-full rounded-full object-cover"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <User size={20} />
                         )}
                       </div>
-                      <div>
-                        <p className="font-bold text-neutral-900">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-bold text-neutral-900">
                           {tab === "sent" ? "À : " : "De : "}
                           {tab === "sent"
                             ? msg.recipients
@@ -129,18 +129,21 @@ export default async function MessagesPage(props: MessagesPageProps) {
                         </p>
                       </div>
                     </div>
-                    {tab === "inbox" && msg.isRead && (
-                      <span className="flex items-center gap-1 text-xs font-medium text-neutral-400">
-                        <CheckCheck size={14} /> Lu
-                      </span>
-                    )}
-                    {tab === "inbox" && !msg.isRead && (
-                      <form action={markAsRead.bind(null, msg.id)}>
-                        <button className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold text-white hover:bg-indigo-700">
-                          Marquer comme lu
-                        </button>
-                      </form>
-                    )}
+
+                    <div className="flex items-center gap-3 self-end sm:self-auto">
+                      {tab === "inbox" && msg.isRead && (
+                        <span className="flex items-center gap-1 text-xs font-medium text-neutral-400">
+                          <CheckCheck size={14} /> Lu
+                        </span>
+                      )}
+                      {tab === "inbox" && !msg.isRead && (
+                        <form action={markAsRead.bind(null, msg.id)}>
+                          <button className="rounded-full bg-indigo-600 px-3 py-1 text-xs font-bold text-white hover:bg-indigo-700">
+                            Marquer comme lu
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -149,14 +152,13 @@ export default async function MessagesPage(props: MessagesPageProps) {
                     </h3>
                     <div className="prose prose-sm max-w-none text-neutral-600">
                       {msg.content.split("\n").map((p: string, i: number) => (
-                        <p key={i} className="mb-1">
+                        <p key={i} className="mb-1 break-words">
                           {p}
                         </p>
                       ))}
                     </div>
                   </div>
 
-                  {/* Formulaire de Réponse Rapide (Uniquement Inbox) */}
                   {tab === "inbox" && (
                     <details className="group mt-2">
                       <summary className="flex cursor-pointer items-center gap-2 text-sm font-bold text-indigo-600 transition-colors hover:text-indigo-800">
