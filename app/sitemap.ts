@@ -1,11 +1,12 @@
 import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
+import { PostStatus } from "@prisma/client";
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await prisma.post.findMany({
-    where: { published: true },
+    where: { status: PostStatus.PUBLISHED }, // Correction ici
     select: { slug: true, updatedAt: true },
   });
 
@@ -19,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = [
     {
       url: BASE_URL,
-      lastModified: new Date(), 
+      lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
     },
