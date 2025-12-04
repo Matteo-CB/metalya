@@ -8,6 +8,13 @@ interface MarkdownRendererProps {
   className?: string;
 }
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-");
+}
+
 export function MarkdownRenderer({
   content,
   className,
@@ -16,17 +23,34 @@ export function MarkdownRenderer({
     <div
       className={cn(
         "prose prose-neutral max-w-none dark:prose-invert",
-        "prose-headings:font-serif prose-headings:font-medium",
+        "prose-headings:font-serif prose-headings:font-medium prose-headings:scroll-mt-24",
         "prose-a:text-neutral-900 prose-a:underline prose-a:underline-offset-4 hover:prose-a:decoration-neutral-400",
         "prose-img:rounded-lg",
         "whitespace-pre-wrap",
-
         className
       )}
     >
       <ReactMarkdown
         remarkPlugins={[remarkBreaks]}
         components={{
+          h2: ({ node, children, ...props }) => {
+            const text = String(children).replace(/<[^>]*>/g, "");
+            const id = slugify(text);
+            return (
+              <h2 id={id} {...props}>
+                {children}
+              </h2>
+            );
+          },
+          h3: ({ node, children, ...props }) => {
+            const text = String(children).replace(/<[^>]*>/g, "");
+            const id = slugify(text);
+            return (
+              <h3 id={id} {...props}>
+                {children}
+              </h3>
+            );
+          },
           img: ({ node, ...props }) => {
             const { src, alt } = props;
 

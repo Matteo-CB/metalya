@@ -27,6 +27,7 @@ import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ShareButton } from "@/components/blog/share-button";
 import { ReadingProgressBar } from "@/components/blog/progress-bar";
 import { CommentSection } from "@/components/blog/comment-section";
+import { TableOfContents } from "@/components/blog/table-of-contents";
 
 interface PostPageProps {
   params: Promise<{
@@ -36,8 +37,6 @@ interface PostPageProps {
 
 const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 
-// --- NOUVEAU : Génération Statique (SSG) ---
-// Cette fonction pré-génère les pages au build pour une vitesse extrême
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({
     where: { status: PostStatus.PUBLISHED },
@@ -48,7 +47,6 @@ export async function generateStaticParams() {
     slug: post.slug,
   }));
 }
-// --------------------------------------------
 
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
@@ -174,7 +172,7 @@ export default async function PostPage(props: PostPageProps) {
           </div>
 
           <div className="pt-12 md:pt-20">
-            <Container className="max-w-5xl">
+            <Container className="max-w-6xl">
               <FadeIn className="text-center">
                 <div className="mb-8 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
                   <Link href="/" className="hover:text-neutral-900">
@@ -261,108 +259,114 @@ export default async function PostPage(props: PostPageProps) {
               </FadeIn>
             </div>
 
-            <Container className="max-w-3xl">
-              <FadeIn delay={0.3}>
-                <div className="mt-16 md:mt-24">
-                  {post.excerpt && (
-                    <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
-                      <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
-                        {post.excerpt}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="prose prose-lg prose-neutral md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-medium prose-p:leading-8 prose-p:text-neutral-600 prose-a:text-indigo-600 prose-a:no-underline prose-a:transition-colors hover:prose-a:text-indigo-800 hover:prose-a:underline hover:prose-a:decoration-2 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50/50 prose-blockquote:py-2 prose-blockquote:pl-6 prose-blockquote:pr-4 prose-blockquote:not-italic prose-blockquote:text-indigo-900">
-                    <MarkdownRenderer content={post.content} />
-                  </div>
-
-                  <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
-                    <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
-                      Partager cet article
-                    </p>
-                    <div className="flex items-center gap-4">
-                      <ShareButton
-                        title={post.title}
-                        text={post.excerpt}
-                        url={postUrl}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mb-24 rounded-3xl bg-neutral-50 p-8 sm:p-10">
-                    <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-                      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
-                        {authorImage ? (
-                          <Image
-                            src={authorImage}
-                            alt={authorName}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-neutral-200">
-                            <UserIcon size={32} className="text-neutral-400" />
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-serif text-xl font-bold text-neutral-900">
-                          <Link
-                            href={`/author/${post.author.id}`}
-                            className="hover:text-indigo-600 transition-colors"
-                          >
-                            Écrit par {authorName}
-                          </Link>
-                        </h3>
-                        <p className="mt-2 text-neutral-600 leading-relaxed">
-                          {authorBio}
+            <Container className="max-w-7xl">
+              <div className="mt-16 md:mt-24 flex flex-col lg:flex-row lg:gap-12">
+                {/* CONTENT */}
+                <div className="flex-1 max-w-3xl mx-auto">
+                  <FadeIn delay={0.3}>
+                    {post.excerpt && (
+                      <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
+                        <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
+                          {post.excerpt}
                         </p>
                       </div>
+                    )}
+
+                    <div className="prose prose-lg prose-neutral md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-medium prose-p:leading-8 prose-p:text-neutral-600 prose-a:text-indigo-600 prose-a:no-underline prose-a:transition-colors hover:prose-a:text-indigo-800 hover:prose-a:underline hover:prose-a:decoration-2 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50/50 prose-blockquote:py-2 prose-blockquote:pl-6 prose-blockquote:pr-4 prose-blockquote:not-italic prose-blockquote:text-indigo-900">
+                      <MarkdownRenderer content={post.content} />
                     </div>
+                  </FadeIn>
+                </div>
+
+                {/* SOMMAIRE (Desktop Sticky) */}
+                <TableOfContents content={post.content} />
+              </div>
+
+              {/* BOTTOM SECTION */}
+              <div className="max-w-3xl mx-auto">
+                <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
+                  <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
+                    Partager cet article
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <ShareButton
+                      title={post.title}
+                      text={post.excerpt}
+                      url={postUrl}
+                    />
                   </div>
+                </div>
 
-                  {/* SECTION COMMENTAIRES */}
-                  <CommentSection postId={post.id} comments={post.comments} />
-
-                  <div className="mt-12 relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-center shadow-2xl md:px-12 md:py-16">
-                    <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]" />
-                    <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-rose-500/20 blur-[100px]" />
-
-                    <div className="relative z-10 flex flex-col items-center">
-                      <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-indigo-300 backdrop-blur-md">
-                        <Sparkles size={14} className="text-yellow-400" />
-                        <span>Création Web & Design</span>
-                      </div>
-
-                      <h3 className="mb-4 font-serif text-3xl font-medium text-white md:text-4xl">
-                        Vous aimez ce site ?
-                      </h3>
-                      <p className="mb-8 max-w-lg text-lg text-neutral-400">
-                        Ce chef-d'œuvre numérique a été conçu et développé par{" "}
-                        <strong className="text-white">
-                          DLK Digital Agency
-                        </strong>
-                        . Offrez à votre entreprise la présence en ligne qu'elle
-                        mérite.
-                      </p>
-
-                      <a
-                        href="https://dlkdigitalagency.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-bold uppercase tracking-widest text-neutral-950 transition-all hover:bg-neutral-200 hover:scale-105 active:scale-95"
-                      >
-                        <Globe size={18} />
-                        Lancer mon projet
-                        <ChevronRight
-                          size={16}
-                          className="transition-transform group-hover:translate-x-1"
+                <div className="mb-24 rounded-3xl bg-neutral-50 p-8 sm:p-10">
+                  <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
+                      {authorImage ? (
+                        <Image
+                          src={authorImage}
+                          alt={authorName}
+                          fill
+                          className="object-cover"
                         />
-                      </a>
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center bg-neutral-200">
+                          <UserIcon size={32} className="text-neutral-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-neutral-900">
+                        <Link
+                          href={`/author/${post.author.id}`}
+                          className="hover:text-indigo-600 transition-colors"
+                        >
+                          Écrit par {authorName}
+                        </Link>
+                      </h3>
+                      <p className="mt-2 text-neutral-600 leading-relaxed">
+                        {authorBio}
+                      </p>
                     </div>
                   </div>
                 </div>
-              </FadeIn>
+
+                <CommentSection postId={post.id} comments={post.comments} />
+
+                <div className="mt-12 relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 text-center shadow-2xl md:px-12 md:py-16">
+                  <div className="absolute top-0 left-0 -mt-10 -ml-10 h-64 w-64 rounded-full bg-indigo-500/20 blur-[100px]" />
+                  <div className="absolute bottom-0 right-0 -mb-10 -mr-10 h-64 w-64 rounded-full bg-rose-500/20 blur-[100px]" />
+
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-indigo-300 backdrop-blur-md">
+                      <Sparkles size={14} className="text-yellow-400" />
+                      <span>Création Web & Design</span>
+                    </div>
+
+                    <h3 className="mb-4 font-serif text-3xl font-medium text-white md:text-4xl">
+                      Vous aimez ce site ?
+                    </h3>
+                    <p className="mb-8 max-w-lg text-lg text-neutral-400">
+                      Ce chef-d'œuvre numérique a été conçu et développé par{" "}
+                      <strong className="text-white">DLK Digital Agency</strong>
+                      . Offrez à votre entreprise la présence en ligne qu'elle
+                      mérite.
+                    </p>
+
+                    <a
+                      href="https://dlkdigitalagency.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-bold uppercase tracking-widest text-neutral-950 transition-all hover:bg-neutral-200 hover:scale-105 active:scale-95"
+                    >
+                      <Globe size={18} />
+                      Lancer mon projet
+                      <ChevronRight
+                        size={16}
+                        className="transition-transform group-hover:translate-x-1"
+                      />
+                    </a>
+                  </div>
+                </div>
+              </div>
             </Container>
           </div>
 
