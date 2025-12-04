@@ -12,6 +12,7 @@ import {
   LogOut,
   LayoutDashboard,
   ChevronDown,
+  Settings,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
@@ -24,7 +25,7 @@ const NAV_LINKS = [
 ];
 
 interface SiteHeaderProps {
-  user?: User & { role?: string }; 
+  user?: User & { role?: string };
 }
 
 export function SiteHeader({ user }: SiteHeaderProps) {
@@ -140,6 +141,15 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                         <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                           Mon compte
                         </div>
+
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+                        >
+                          <Settings size={18} className="text-neutral-500" />
+                          Profil & Réglages
+                        </Link>
 
                         {isAdmin && (
                           <Link
@@ -285,6 +295,15 @@ export function SiteHeader({ user }: SiteHeaderProps) {
                           </p>
                         </div>
                       </div>
+
+                      <Link
+                        href="/profile"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                        className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-neutral-900 shadow-sm ring-1 ring-neutral-100 active:bg-neutral-50"
+                      >
+                        <Settings size={20} />
+                        Profil & Réglages
+                      </Link>
 
                       {isAdmin && (
                         <Link

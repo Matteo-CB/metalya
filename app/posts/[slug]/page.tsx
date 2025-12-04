@@ -14,8 +14,6 @@ import {
   Calendar,
   Clock,
   User as UserIcon,
-  Share2,
-  Bookmark,
   ChevronRight,
   Globe,
   Sparkles,
@@ -23,12 +21,19 @@ import {
 import { auth } from "@/auth";
 import { UserRole } from "@prisma/client";
 import { PostActions } from "@/components/admin/post-actions";
+import { RelatedPosts } from "@/components/blog/related-posts";
+import { StickyShare } from "@/components/blog/sticky-share";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { ShareButton } from "@/components/blog/share-button";
+import { ReadingProgressBar } from "@/components/blog/progress-bar"; // Ajout ici
 
 interface PostPageProps {
   params: Promise<{
     slug: string;
   }>;
 }
+
+const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
@@ -89,9 +94,31 @@ export default async function PostPage(props: PostPageProps) {
     description: post.seoDesc || post.excerpt,
   };
 
+  const authorName = post.author.name || "L'Équipe Metalya";
+  const authorBio =
+    post.author.bio ||
+    "Rédacteur pour Metalya. Passionné par l'intersection entre technologie, culture et société.";
+  const authorImage = post.author.image;
+
+  const categorySlug = post.categories[0]?.toLowerCase() || "actualites";
+  const categoryName = formatCategory(post.categories[0] || "ACTUALITES");
+  const breadcrumbItems = [
+    { name: "Accueil", item: SITE_URL },
+    { name: categoryName, item: `${SITE_URL}/category/${categorySlug}` },
+    { name: post.title, item: `${SITE_URL}/posts/${post.slug}` },
+  ];
+
+  const postUrl = `${SITE_URL}/posts/${post.slug}`;
+
   return (
     <>
       <JsonLd data={jsonLd} />
+      <Breadcrumbs items={breadcrumbItems} />
+
+      {/* Barre de progression ajoutée ici */}
+      <ReadingProgressBar />
+
+      <StickyShare url={postUrl} title={post.title} />
 
       <div className="relative min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 pb-24">
         <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
@@ -114,18 +141,14 @@ export default async function PostPage(props: PostPageProps) {
 
               <div className="flex items-center gap-3">
                 {isAdmin && <PostActions postId={post.id} />}
-                <button
-                  className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-                  aria-label="Partager"
-                >
-                  <Share2 size={16} />
-                </button>
-                <button
-                  className="hidden sm:flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-colors hover:border-neutral-900 hover:text-neutral-900"
-                  aria-label="Sauvegarder"
-                >
-                  <Bookmark size={16} />
-                </button>
+
+                <div className="flex items-center gap-2 border-l border-neutral-200 pl-3 ml-2">
+                  <ShareButton
+                    title={post.title}
+                    text={post.excerpt}
+                    url={postUrl}
+                  />
+                </div>
               </div>
             </Container>
           </div>
@@ -153,12 +176,15 @@ export default async function PostPage(props: PostPageProps) {
                 </h1>
 
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-y border-neutral-100 py-6 text-sm text-neutral-500 md:mt-12">
-                  <div className="flex items-center gap-3">
-                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-neutral-200 bg-neutral-50">
-                      {post.author.image ? (
+                  <Link
+                    href={`/author/${post.author.id}`}
+                    className="group flex items-center gap-3 transition-opacity hover:opacity-80"
+                  >
+                    <div className="relative h-10 w-10 overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 group-hover:border-indigo-200 transition-colors">
+                      {authorImage ? (
                         <Image
-                          src={post.author.image}
-                          alt={post.author.name || "Auteur"}
+                          src={authorImage}
+                          alt={authorName}
                           fill
                           className="object-cover"
                         />
@@ -169,12 +195,12 @@ export default async function PostPage(props: PostPageProps) {
                       )}
                     </div>
                     <div className="flex flex-col text-left">
-                      <span className="font-bold text-neutral-900">
-                        {post.author.name || "L'Équipe"}
+                      <span className="font-bold text-neutral-900 group-hover:text-indigo-600 transition-colors">
+                        {authorName}
                       </span>
                       <span className="text-xs">Auteur</span>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="hidden h-8 w-px bg-neutral-200 sm:block" />
 
@@ -230,21 +256,26 @@ export default async function PostPage(props: PostPageProps) {
                     <MarkdownRenderer content={post.content} />
                   </div>
 
-                  <div className="my-20 flex items-center justify-center">
-                    <div className="flex gap-4">
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
+                  <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
+                    <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
+                      Partager cet article
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <ShareButton
+                        title={post.title}
+                        text={post.excerpt}
+                        url={postUrl}
+                      />
                     </div>
                   </div>
 
                   <div className="mb-24 rounded-3xl bg-neutral-50 p-8 sm:p-10">
                     <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
-                        {post.author.image ? (
+                        {authorImage ? (
                           <Image
-                            src={post.author.image}
-                            alt={post.author.name || "Auteur"}
+                            src={authorImage}
+                            alt={authorName}
                             fill
                             className="object-cover"
                           />
@@ -256,11 +287,15 @@ export default async function PostPage(props: PostPageProps) {
                       </div>
                       <div>
                         <h3 className="font-serif text-xl font-bold text-neutral-900">
-                          Écrit par {post.author.name}
+                          <Link
+                            href={`/author/${post.author.id}`}
+                            className="hover:text-indigo-600 transition-colors"
+                          >
+                            Écrit par {authorName}
+                          </Link>
                         </h3>
                         <p className="mt-2 text-neutral-600 leading-relaxed">
-                          Rédacteur pour Metalya. Passionné par l'intersection
-                          entre technologie, culture et société.
+                          {authorBio}
                         </p>
                       </div>
                     </div>
@@ -307,6 +342,13 @@ export default async function PostPage(props: PostPageProps) {
               </FadeIn>
             </Container>
           </div>
+
+          {post.categories[0] && (
+            <RelatedPosts
+              currentPostId={post.id}
+              category={post.categories[0]}
+            />
+          )}
         </article>
       </div>
     </>

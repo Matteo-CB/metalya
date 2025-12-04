@@ -16,10 +16,11 @@ import {
   Newspaper,
 } from "lucide-react";
 import { formatDate, formatCategory } from "@/lib/utils";
+import { PostStatus } from "@prisma/client";
 
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
-    where: { published: true },
+    where: { status: PostStatus.PUBLISHED },
     orderBy: { createdAt: "desc" },
     include: { author: true },
     take: 20,

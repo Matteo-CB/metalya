@@ -8,11 +8,8 @@ import { AuthError } from "next-auth";
 import { LoginSchema, RegisterSchema } from "@/lib/schemas";
 import { UserRole } from "@prisma/client";
 
-const adminEmails = [
-  "matteo.biyikli3224@gmail.com",
-  "Daiki.ajwad@gmail.com",
-  "matteochantebiyikli@gmail.com",
-];
+// Seul cet email sera Super Admin automatiquement à l'inscription
+const SUPER_ADMIN_EMAIL = "matteo.biyikli3224@gmail.com";
 
 export async function registerAction(values: z.infer<typeof RegisterSchema>) {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -32,8 +29,11 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
     return { error: "Cet email est déjà utilisé." };
   }
 
-  const isAdmin = adminEmails.includes(email);
-  const role = isAdmin ? UserRole.ADMIN : UserRole.USER;
+  // Logique d'attribution des rôles
+  let role: UserRole = UserRole.USER;
+  if (email === SUPER_ADMIN_EMAIL) {
+    role = UserRole.SUPER_ADMIN;
+  }
 
   await prisma.user.create({
     data: {
@@ -68,7 +68,7 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
     await signIn("credentials", {
       email,
       password,
-      redirectTo: adminEmails.includes(email) ? "/admin/create" : "/",
+      redirectTo: "/",
     });
   } catch (error) {
     if (error instanceof AuthError) {

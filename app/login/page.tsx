@@ -76,7 +76,7 @@ export default function LoginPage() {
                   Mot de passe
                 </label>
                 <Link
-                  href="#"
+                  href="/forgot-password"
                   className="text-xs text-neutral-500 hover:underline"
                 >
                   Oublié ?

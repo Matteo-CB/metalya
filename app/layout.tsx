@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { Footer } from "@/components/layout/footer";
 import { auth } from "@/auth";
 import { SiteHeader } from "@/components/layout/site-header";
+import { Providers } from "@/components/providers"; // Import du nouveau composant
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -165,11 +166,13 @@ export default async function RootLayout({
           fontSerif.variable
         )}
       >
-        <SiteHeader user={session?.user} />
-        <main className="relative mt-20 flex min-h-screen flex-col">
-          {children}
-        </main>
-        <Footer />
+        <Providers>
+          <SiteHeader user={session?.user} />
+          <main className="relative mt-20 flex min-h-screen flex-col">
+            {children}
+          </main>
+          <Footer />
+        </Providers>
       </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""} />
     </html>

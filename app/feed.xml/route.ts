@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { PostStatus } from "@prisma/client";
 
 const BASE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 
@@ -23,7 +24,7 @@ function escapeXml(unsafe: string): string {
 
 export async function GET() {
   const posts = await prisma.post.findMany({
-    where: { published: true },
+    where: { status: PostStatus.PUBLISHED }, // Correction ici
     orderBy: { createdAt: "desc" },
     take: 20,
     include: { author: true },

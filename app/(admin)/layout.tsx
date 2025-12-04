@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { UserRole } from "@prisma/client";
+import { AdminNav } from "@/components/admin/admin-nav";
+import Link from "next/link";
 
 export default async function AdminLayout({
   children,
@@ -9,23 +11,48 @@ export default async function AdminLayout({
 }) {
   const session = await auth();
 
-  if (!session?.user || session.user.role !== UserRole.ADMIN) {
-    redirect("/api/auth/signin");
+  if (
+    !session?.user ||
+    (session.user.role !== UserRole.ADMIN &&
+      session.user.role !== UserRole.SUPER_ADMIN &&
+      session.user.role !== UserRole.REDACTEUR)
+  ) {
+    redirect("/login");
   }
 
   return (
     <div className="min-h-screen bg-neutral-50">
-      <nav className="border-b border-neutral-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <span className="font-serif text-xl font-bold tracking-tight">
-            Metalya Admin
-          </span>
-          <div className="flex items-center gap-4 text-sm font-medium">
-            <span>{session.user.email}</span>
+      <header className="border-b border-neutral-200 bg-white">
+        <div className="flex h-16 items-center justify-between px-6">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/"
+              className="font-serif text-xl font-bold tracking-tight text-neutral-900"
+            >
+              Metalya<span className="text-neutral-300">.</span>
+            </Link>
+            <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-medium text-neutral-600">
+              {session.user.role}
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-neutral-500">
+              {session.user.email}
+            </span>
+            <div className="h-8 w-8 overflow-hidden rounded-full bg-neutral-200">
+              {session.user.image && (
+                <img
+                  src={session.user.image}
+                  alt="Avatar"
+                  className="h-full w-full object-cover"
+                />
+              )}
+            </div>
           </div>
         </div>
-      </nav>
-      <main className="mx-auto max-w-7xl p-6 md:p-12">{children}</main>
+        <AdminNav role={session.user.role} />
+      </header>
+      <main>{children}</main>
     </div>
   );
 }
