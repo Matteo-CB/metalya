@@ -7,6 +7,7 @@ import { PostGrid } from "@/components/home/post-grid";
 import { FadeIn } from "@/components/ui/fade-in";
 import { getCategoryBySlug } from "@/lib/categories";
 import { Home, Sparkles, ArrowLeft, BookOpen } from "lucide-react";
+import { PostStatus } from "@prisma/client";
 
 interface CategoryPageProps {
   params: Promise<{
@@ -47,7 +48,7 @@ export default async function CategoryPage(props: CategoryPageProps) {
 
   const posts = await prisma.post.findMany({
     where: {
-      published: true,
+      status: PostStatus.PUBLISHED,
       categories: {
         has: category.enum,
       },
