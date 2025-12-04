@@ -19,14 +19,14 @@ import {
   Sparkles,
 } from "lucide-react";
 import { auth } from "@/auth";
-import { UserRole } from "@prisma/client";
+import { UserRole, PostStatus } from "@prisma/client";
 import { PostActions } from "@/components/admin/post-actions";
 import { RelatedPosts } from "@/components/blog/related-posts";
 import { StickyShare } from "@/components/blog/sticky-share";
 import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { ShareButton } from "@/components/blog/share-button";
 import { ReadingProgressBar } from "@/components/blog/progress-bar";
-import { CommentSection } from "@/components/blog/comment-section"; // Import ajouté
+import { CommentSection } from "@/components/blog/comment-section";
 
 interface PostPageProps {
   params: Promise<{
@@ -36,13 +36,26 @@ interface PostPageProps {
 
 const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
 
+// --- NOUVEAU : Génération Statique (SSG) ---
+// Cette fonction pré-génère les pages au build pour une vitesse extrême
+export async function generateStaticParams() {
+  const posts = await prisma.post.findMany({
+    where: { status: PostStatus.PUBLISHED },
+    select: { slug: true },
+  });
+
+  return posts.map((post) => ({
+    slug: post.slug,
+  }));
+}
+// --------------------------------------------
+
 async function getPost(slug: string) {
   const post = await prisma.post.findUnique({
     where: { slug },
     include: {
       author: true,
       comments: {
-        // Inclure les commentaires
         include: { author: true },
         orderBy: { createdAt: "desc" },
       },
@@ -263,11 +276,16 @@ export default async function PostPage(props: PostPageProps) {
                     <MarkdownRenderer content={post.content} />
                   </div>
 
-                  <div className="my-20 flex items-center justify-center">
-                    <div className="flex gap-4">
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
-                      <span className="h-1.5 w-1.5 rounded-full bg-neutral-200" />
+                  <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
+                    <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
+                      Partager cet article
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <ShareButton
+                        title={post.title}
+                        text={post.excerpt}
+                        url={postUrl}
+                      />
                     </div>
                   </div>
 
