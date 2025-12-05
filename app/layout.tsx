@@ -182,14 +182,14 @@ export default async function RootLayout({
           fontSerif.variable
         )}
       >
-        <Providers>
+        <Providers session={session}>
           <SiteHeader user={session?.user} unreadCount={unreadCount} />
           <main className="relative mt-20 flex min-h-screen flex-col">
             {children}
           </main>
           <Footer />
-          <PWAInstallBanner />
           <ExitIntentPopup />
+          <PWAInstallBanner />
         </Providers>
       </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""} />
