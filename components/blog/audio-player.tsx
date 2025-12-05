@@ -12,52 +12,72 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [supported, setSupported] = useState(false);
-  const [isReady, setIsReady] = useState(false); // Nouvel état pour indiquer que la voix est chargée
+  const [isReady, setIsReady] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
-  // 1. Initialisation et chargement des voix
+  // Correction: Stocker la voix française sélectionnée pour la réutiliser
+  const frenchVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
+
+  // 1. Initialisation et chargement des voix (CORRECTION APPLIQUÉE ICI)
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       setSupported(true);
 
-      const loadVoices = () => {
+      const selectAndSetVoice = () => {
         const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
+
+        // Sélection de la voix française (logique déplacée du handlePlay)
+        const frenchVoice =
+          voices.find((v) => v.lang === "fr-FR" && v.name.includes("French")) ||
+          voices.find((v) => v.lang.startsWith("fr"));
+
+        if (frenchVoice) {
+          // Stocker la voix dans la ref
+          frenchVoiceRef.current = frenchVoice;
           setIsReady(true);
-        } else {
-          // Si les voix ne sont pas encore chargées, on réessaie
-          window.speechSynthesis.onvoiceschanged = () => {
-            setIsReady(true);
-          };
+        } else if (voices.length > 0) {
+          // Fallback : si des voix sont chargées mais aucune n'est française,
+          // on utilise la première disponible pour au moins garantir que le player fonctionne.
+          frenchVoiceRef.current = voices[0];
+          setIsReady(true);
         }
       };
 
-      loadVoices();
+      // **CORRECTION CRITIQUE** : On écoute TOUJOURS l'événement `onvoiceschanged`.
+      // C'est l'événement qui se déclenche lorsque le navigateur a fini de charger
+      // les voix de manière asynchrone (le point de rupture en production).
+      window.speechSynthesis.onvoiceschanged = selectAndSetVoice;
+
+      // On vérifie immédiatement au cas où les voix sont déjà chargées au montage.
+      selectAndSetVoice();
     }
 
     return () => {
       // Nettoyage si on quitte la page pendant la lecture
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
+        // Optionnel : Retirer l'écouteur (en le réinitialisant à null)
+        window.speechSynthesis.onvoiceschanged = null;
       }
     };
-  }, []);
+  }, []); // Dépendances vides pour un seul montage
 
-  // Nettoyage optimisé du Markdown pour la lecture
+  // Nettoyage optimisé du Markdown pour la lecture (inchangé)
   const cleanText = text
-    .replace(/#{1,6} /g, "") // Titres
-    .replace(/\*\*/g, "") // Gras
-    .replace(/\*/g, "") // Italique
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Liens, y compris les liens images
-    .replace(/!\[([^\]]+)\]\([^)]+\)/g, "Image.") // Images/Vidéo (remplacé par "Image.")
-    .replace(/> /g, "") // Citations
-    .replace(/`{3}[\s\S]*?`{3}/g, "Code source.") // Blocs de code
-    .replace(/`/g, "") // Code inline
-    .replace(/\s+/g, " ") // Supprimer les espaces multiples
+    .replace(/#{1,6} /g, "")
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/!\[([^\]]+)\]\([^)]+\)/g, "Image.")
+    .replace(/> /g, "")
+    .replace(/`{3}[\s\S]*?`{3}/g, "Code source.")
+    .replace(/`/g, "")
+    .replace(/\s+/g, " ")
     .trim();
 
   const handlePlay = () => {
-    if (!supported || !isReady) return;
+    // Si isReady est false, on s'arrête (couvre le cas `!supported`)
+    if (!isReady) return;
 
     if (isPaused) {
       window.speechSynthesis.resume();
@@ -72,16 +92,17 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    // Tentative de choisir une voix française (optionnel mais améliore la qualité)
-    const voices = window.speechSynthesis.getVoices();
-    const frenchVoice =
-      voices.find((v) => v.lang === "fr-FR" && v.name.includes("French")) ||
-      voices.find((v) => v.lang.startsWith("fr"));
-    if (frenchVoice) {
-      utterance.voice = frenchVoice;
+    // **MISE À JOUR** : Utiliser la voix stockée dans la ref, qui est garantie
+    // d'avoir été chargée correctement grâce au `onvoiceschanged`.
+    if (frenchVoiceRef.current) {
+      utterance.voice = frenchVoiceRef.current;
+      // On utilise la langue de la voix sélectionnée pour plus de cohérence
+      utterance.lang = frenchVoiceRef.current.lang;
+    } else {
+      // Fallback si la ref n'est pas remplie (bien que isReady doive empêcher cela)
+      utterance.lang = "fr-FR";
     }
 
-    utterance.lang = "fr-FR";
     utterance.rate = 1;
     utterance.pitch = 1;
 
@@ -106,7 +127,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-    // On ne met PAS setIsPlaying(true) ici, on attend le onstart
+    // On ne met PAS setIsPlaying(true) ici, on attend le onstart (inchangé, c'est une bonne pratique)
   };
 
   const handlePause = () => {
@@ -133,7 +154,8 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
           <Volume2 size={16} />
           <span>Écouter l'article</span>
         </div>
-        {(isPlaying || isPaused) && ( // Afficher l'indicateur même en pause pour montrer que c'est prêt
+        {(isPlaying || isPaused) && (
+          // Lignes 146-150 du composant AudioPlayer
           <div className="flex gap-1">
             <span className="h-3 w-1 animate-[bounce_1s_infinite] rounded-full bg-indigo-500"></span>
             <span className="h-3 w-1 animate-[bounce_1.2s_infinite] rounded-full bg-indigo-500"></span>
@@ -154,7 +176,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
           {isPlaying ? (
             <button
               onClick={handlePause}
-              disabled={!isReady} // Désactiver si les voix ne sont pas prêtes
+              disabled={!isReady}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 text-white transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
               title="Pause"
             >
@@ -163,7 +185,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
           ) : (
             <button
               onClick={handlePlay}
-              disabled={!isReady} // Désactiver si les voix ne sont pas prêtes
+              disabled={!isReady}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-900 text-white transition-transform hover:scale-105 active:scale-95 disabled:opacity-50"
               title="Lire"
             >
