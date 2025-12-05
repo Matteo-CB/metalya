@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
 import { formatDate, formatCategory } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { NewsArticle, WithContext, BreadcrumbList } from "schema-dts";
+import { NewsArticle, WithContext } from "schema-dts";
 import { MarkdownRenderer } from "@/components/blog/markdown-renderer";
 import { FadeIn } from "@/components/ui/fade-in";
 import {
@@ -77,14 +77,13 @@ export async function generateMetadata(
 
   const url = `${SITE_URL}/posts/${post.slug}`;
   const authorName = post.author.name || "Metalya Team";
+  const authorUrl = `${SITE_URL}/author/${post.author.id}`;
 
   return {
     title: post.seoTitle || post.title,
     description: post.seoDesc || post.excerpt,
     keywords: post.keywords,
-    authors: [
-      { name: authorName, url: `${SITE_URL}/author/${post.author.id}` },
-    ],
+    authors: [{ name: authorName, url: authorUrl }],
     creator: authorName,
     publisher: SITE_NAME,
     alternates: {
