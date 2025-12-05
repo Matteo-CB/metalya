@@ -24,7 +24,6 @@ export function ShareButton({ title, text, url }: ShareButtonProps) {
         console.log("Partage annulé");
       }
     } else {
-      // Fallback pour Desktop : Copier dans le presse-papier
       navigator.clipboard.writeText(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

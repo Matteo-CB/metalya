@@ -8,8 +8,9 @@ import { AuthError } from "next-auth";
 import { LoginSchema, RegisterSchema } from "@/lib/schemas";
 import { UserRole } from "@prisma/client";
 
-// Seul cet email sera Super Admin automatiquement à l'inscription
-const SUPER_ADMIN_EMAIL = "matteo.biyikli3224@gmail.com";
+// Configuration des emails privilégiés
+const SUPER_ADMIN_EMAILS = ["matteo.biyikli3224@gmail.com"];
+const ADMIN_EMAILS = ["daiki.ajwad@gmail.com"]; // Rétablissement de l'autre admin
 
 export async function registerAction(values: z.infer<typeof RegisterSchema>) {
   const validatedFields = RegisterSchema.safeParse(values);
@@ -31,8 +32,11 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
 
   // Logique d'attribution des rôles
   let role: UserRole = UserRole.USER;
-  if (email === SUPER_ADMIN_EMAIL) {
+
+  if (SUPER_ADMIN_EMAILS.includes(email)) {
     role = UserRole.SUPER_ADMIN;
+  } else if (ADMIN_EMAILS.includes(email)) {
+    role = UserRole.ADMIN;
   }
 
   await prisma.user.create({
@@ -43,6 +47,7 @@ export async function registerAction(values: z.infer<typeof RegisterSchema>) {
       role,
     },
   });
+
   try {
     await prisma.subscriber.upsert({
       where: { email },
@@ -65,10 +70,24 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
   const { email, password } = validatedFields.data;
 
   try {
+    // On vérifie le rôle avant la connexion pour savoir où rediriger
+    // (Cette requête est rapide et permet une meilleure UX)
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: { role: true },
+    });
+
+    const isStaff =
+      user &&
+      (user.role === UserRole.ADMIN ||
+        user.role === UserRole.SUPER_ADMIN ||
+        user.role === UserRole.REDACTEUR);
+
     await signIn("credentials", {
       email,
       password,
-      redirectTo: "/",
+      // Redirection intelligente : Admin -> Dashboard, User -> Accueil
+      redirectTo: isStaff ? "/admin/posts" : "/",
     });
   } catch (error) {
     if (error instanceof AuthError) {

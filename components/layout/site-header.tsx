@@ -129,7 +129,6 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                         <UserIcon size={16} />
                       )}
                     </div>
-                    {/* Badge de notification sur l'avatar */}
                     {unreadCount > 0 && (
                       <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
                     )}
@@ -377,10 +376,17 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                           <Link
                             href="/admin/messages"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="flex w-full items-center gap-3 rounded-xl bg-white px-4 py-3 font-medium text-neutral-900 shadow-sm ring-1 ring-neutral-100 active:bg-neutral-50"
+                            className="flex w-full items-center justify-between rounded-xl bg-white px-4 py-3 font-medium text-neutral-900 shadow-sm ring-1 ring-neutral-100 active:bg-neutral-50"
                           >
-                            <MessageSquare size={20} />
-                            Messagerie
+                            <div className="flex items-center gap-3">
+                              <MessageSquare size={20} />
+                              Messagerie
+                            </div>
+                            {unreadCount > 0 && (
+                              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-bold text-white">
+                                {unreadCount}
+                              </span>
+                            )}
                           </Link>
                         </>
                       )}

@@ -4,7 +4,13 @@ import { useState, useTransition } from "react";
 import { useSession } from "next-auth/react";
 import { createComment, deleteComment } from "@/app/actions/comments";
 import { formatDate } from "@/lib/utils";
-import { Send, Trash2, MessageSquare, Loader2 } from "lucide-react";
+import {
+  Send,
+  Trash2,
+  MessageSquare,
+  Loader2,
+  User as UserIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -72,13 +78,17 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
       {session ? (
         <form onSubmit={handleSubmit} className="mb-12 flex gap-4">
           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-200">
-            {session.user?.image && (
+            {session.user?.image ? (
               <Image
                 src={session.user.image}
                 alt="Avatar"
                 fill
                 className="object-cover"
               />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-neutral-400">
+                <UserIcon size={20} />
+              </div>
             )}
           </div>
           <div className="flex-1">
@@ -87,7 +97,6 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Partagez votre avis..."
               rows={3}
-              // AJOUT DE 'resize-none' ICI
               className="w-full resize-none rounded-xl border border-neutral-200 bg-neutral-50 p-4 text-sm outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900"
             />
             {error && <p className="mt-2 text-xs text-red-500">{error}</p>}
@@ -126,13 +135,17 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
             <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-200">
-              {comment.author.image && (
+              {comment.author.image ? (
                 <Image
                   src={comment.author.image}
                   alt={comment.author.name || "Auteur"}
                   fill
                   className="object-cover"
                 />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-neutral-400">
+                  <UserIcon size={20} />
+                </div>
               )}
             </div>
             <div className="flex-1">
