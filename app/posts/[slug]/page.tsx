@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { Container } from "@/components/ui/container";
 import { formatDate, formatCategory } from "@/lib/utils";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Article, WithContext } from "schema-dts";
+import { NewsArticle, WithContext, BreadcrumbList } from "schema-dts";
 import { MarkdownRenderer } from "@/components/blog/markdown-renderer";
 import { FadeIn } from "@/components/ui/fade-in";
 import {
@@ -40,6 +40,7 @@ interface PostPageProps {
 }
 
 const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
+const SITE_NAME = "Metalya";
 
 export async function generateStaticParams() {
   const posts = await prisma.post.findMany({
@@ -74,24 +75,60 @@ export async function generateMetadata(
   const post = await getPost(params.slug);
   if (!post) return {};
 
+  const url = `${SITE_URL}/posts/${post.slug}`;
+  const authorName = post.author.name || "Metalya Team";
+
   return {
     title: post.seoTitle || post.title,
     description: post.seoDesc || post.excerpt,
     keywords: post.keywords,
+    authors: [
+      { name: authorName, url: `${SITE_URL}/author/${post.author.id}` },
+    ],
+    creator: authorName,
+    publisher: SITE_NAME,
+    alternates: {
+      canonical: url,
+    },
     openGraph: {
       title: post.title,
       description: post.excerpt,
       type: "article",
+      url: url,
+      siteName: SITE_NAME,
       publishedTime: post.createdAt.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
-      authors: [post.author.name || "Metalya Team"],
-      images: [{ url: post.coverImage }],
+      section: formatCategory(post.categories[0] || "Général"),
+      tags: post.keywords,
+      authors: [authorName],
+      images: [
+        {
+          url: post.coverImage,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+      locale: "fr_FR",
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt,
+      site: "@Metalyafr",
+      creator: "@Metalyafr",
       images: [post.coverImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
     other: {
       amphtml: `${SITE_URL}/web-stories/${post.slug}`,
@@ -110,44 +147,76 @@ export default async function PostPage(props: PostPageProps) {
   const isUpdated =
     post.updatedAt.getTime() - post.createdAt.getTime() > 24 * 60 * 60 * 1000;
 
-  const jsonLd: WithContext<Article> = {
+  const wordCount = post.content.split(/\s+/).length;
+  const postUrl = `${SITE_URL}/posts/${post.slug}`;
+  const authorName = post.author.name || "L'Équipe Metalya";
+  const authorUrl = `${SITE_URL}/author/${post.author.id}`;
+  const authorImage = post.author.image;
+  const authorBio =
+    post.author.bio ||
+    "Rédacteur pour Metalya. Passionné par l'intersection entre technologie, culture et société.";
+
+  const articleSchema: WithContext<NewsArticle> = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "NewsArticle",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
     headline: post.title,
-    image: post.coverImage,
+    alternativeHeadline: post.seoTitle || undefined,
+    image: [post.coverImage],
     datePublished: post.createdAt.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     author: {
       "@type": "Person",
-      name: post.author.name || "Admin",
+      name: authorName,
+      url: authorUrl,
+      image: authorImage || undefined,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo.png`,
+        width: "512px",
+        height: "512px",
+      },
     },
     description: post.seoDesc || post.excerpt,
+    keywords: post.keywords.join(", "),
+    articleSection: formatCategory(post.categories[0] || "Général"),
+    wordCount: wordCount,
+    inLanguage: "fr-FR",
+    isAccessibleForFree: true,
+    interactionStatistic: [
+      {
+        "@type": "InteractionCounter",
+        interactionType: { "@type": "CommentAction" },
+        userInteractionCount: post.comments.length,
+      },
+    ],
   };
-
-  const authorName = post.author.name || "L'Équipe Metalya";
-  const authorBio =
-    post.author.bio ||
-    "Rédacteur pour Metalya. Passionné par l'intersection entre technologie, culture et société.";
-  const authorImage = post.author.image;
 
   const categorySlug = post.categories[0]?.toLowerCase() || "actualites";
   const categoryName = formatCategory(post.categories[0] || "ACTUALITES");
   const breadcrumbItems = [
     { name: "Accueil", item: SITE_URL },
     { name: categoryName, item: `${SITE_URL}/category/${categorySlug}` },
-    { name: post.title, item: `${SITE_URL}/posts/${post.slug}` },
+    { name: post.title, item: postUrl },
   ];
-
-  const postUrl = `${SITE_URL}/posts/${post.slug}`;
 
   return (
     <>
-      <JsonLd data={jsonLd} />
+      <JsonLd data={articleSchema} />
       <SpeakableSchema />
       <Breadcrumbs items={breadcrumbItems} />
+
       <ReadingProgressBar />
       <TextSelectionShare />
       <StickyShare url={postUrl} title={post.title} />
+
       <div className="relative min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 pb-24">
         <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
 
@@ -198,7 +267,6 @@ export default async function PostPage(props: PostPageProps) {
                   )}
                 </div>
 
-                {/* AJOUT DE L'ID POUR LE SCHEMA SPEAKABLE */}
                 <h1
                   id="speakable-title"
                   className="mx-auto max-w-4xl font-serif text-4xl font-medium leading-[1.15] tracking-tight text-neutral-900 sm:text-5xl md:text-6xl lg:text-7xl text-balance"
@@ -208,8 +276,9 @@ export default async function PostPage(props: PostPageProps) {
 
                 <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-y border-neutral-100 py-6 text-sm text-neutral-500 md:mt-12">
                   <Link
-                    href={`/author/${post.author.id}`}
+                    href={authorUrl}
                     className="group flex items-center gap-3 transition-opacity hover:opacity-80"
+                    title={`Voir le profil de ${authorName}`}
                   >
                     <div className="relative h-10 w-10 overflow-hidden rounded-full border border-neutral-200 bg-neutral-50 group-hover:border-indigo-200 transition-colors">
                       {authorImage ? (
@@ -294,7 +363,7 @@ export default async function PostPage(props: PostPageProps) {
 
                     {post.excerpt && (
                       <div
-                        id="speakable-summary" // AJOUT DE L'ID POUR LE SCHEMA SPEAKABLE
+                        id="speakable-summary"
                         className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9"
                       >
                         <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
@@ -313,7 +382,6 @@ export default async function PostPage(props: PostPageProps) {
               </div>
 
               <div className="max-w-3xl mx-auto">
-                {/* ... Reste du code (Share, Author, Comments, Pub DLK) inchangé ... */}
                 <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
                   <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
                     Partager cet article
@@ -329,7 +397,11 @@ export default async function PostPage(props: PostPageProps) {
 
                 <div className="mb-24 rounded-3xl bg-neutral-50 p-8 sm:p-10">
                   <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
-                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md">
+                    <Link
+                      href={authorUrl}
+                      className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-2 border-white shadow-md transition-transform hover:scale-105"
+                      title={`Voir le profil de ${authorName}`}
+                    >
                       {authorImage ? (
                         <Image
                           src={authorImage}
@@ -342,11 +414,11 @@ export default async function PostPage(props: PostPageProps) {
                           <UserIcon size={32} className="text-neutral-400" />
                         </div>
                       )}
-                    </div>
+                    </Link>
                     <div>
                       <h3 className="font-serif text-xl font-bold text-neutral-900">
                         <Link
-                          href={`/author/${post.author.id}`}
+                          href={authorUrl}
                           className="hover:text-indigo-600 transition-colors"
                         >
                           Écrit par {authorName}

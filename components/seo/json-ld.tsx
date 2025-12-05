@@ -1,7 +1,7 @@
-import { WithContext, Article } from "schema-dts";
+import { WithContext, Thing } from "schema-dts";
 
 interface JsonLdProps {
-  data: WithContext<Article>;
+  data: WithContext<Thing>;
 }
 
 export function JsonLd({ data }: JsonLdProps) {

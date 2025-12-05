@@ -10,6 +10,8 @@ import { Providers } from "@/components/providers";
 import { prisma } from "@/lib/prisma";
 import { ExitIntentPopup } from "@/components/ui/exit-intent-popup";
 import { PWAInstallBanner } from "@/components/ui/pwa-install-banner";
+import { SpeculationRules } from "@/components/seo/speculation-rules";
+import { NewsMediaOrganization, WebSite, WithContext } from "schema-dts";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -28,6 +30,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
+  userScalable: true,
 };
 
 const SITE_URL = process.env.NEXT_PUBLIC_URL || "https://metalya.fr";
@@ -43,6 +46,8 @@ export const metadata: Metadata = {
   applicationName: "Metalya",
   authors: [{ name: "Matteo Biyikli", url: "https://dlkdigitalagency.com" }],
   generator: "Next.js",
+  category: "technology",
+  classification: "Magazine, News, Tech, Culture",
   keywords: [
     "Tech",
     "Culture",
@@ -52,6 +57,8 @@ export const metadata: Metadata = {
     "Deep Tech",
     "Lifestyle",
     "Magazine Numérique",
+    "Intelligence Artificielle",
+    "Web3",
   ],
   referrer: "origin-when-cross-origin",
   creator: "DLK Digital Agency",
@@ -61,10 +68,21 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Metalya",
+  },
   icons: {
     icon: "/logo.png",
     shortcut: "/logo.png",
     apple: "/logo.png",
+    other: [
+      {
+        rel: "apple-touch-icon-precomposed",
+        url: "/logo.png",
+      },
+    ],
   },
   alternates: {
     canonical: "/",
@@ -86,7 +104,8 @@ export const metadata: Metadata = {
         url: "/banniere.png",
         width: 1200,
         height: 630,
-        alt: "Metalya Magazine",
+        alt: "Metalya Magazine - Tech & Culture",
+        type: "image/png",
       },
     ],
     locale: "fr_FR",
@@ -97,6 +116,7 @@ export const metadata: Metadata = {
     title: "Metalya",
     description: "L'essentiel de la culture, tech et actualité.",
     creator: "@Metalyafr",
+    site: "@Metalyafr",
     images: ["/banniere.png"],
   },
   verification: {
@@ -118,6 +138,8 @@ export const metadata: Metadata = {
   },
   other: {
     "opensearchdescription+xml": "/opensearch.xml",
+    "geo.region": "FR",
+    "geo.placename": "Paris",
   },
 };
 
@@ -138,7 +160,47 @@ export default async function RootLayout({
     });
   }
 
-  const jsonLd = {
+  const orgSchema: WithContext<NewsMediaOrganization> = {
+    "@context": "https://schema.org",
+    "@type": "NewsMediaOrganization",
+    name: "Metalya",
+    url: SITE_URL,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/logo.png`,
+      width: "512px",
+      height: "512px",
+    },
+    sameAs: [
+      "https://twitter.com/Metalyafr",
+      "https://www.instagram.com/metalya.fr",
+      "https://www.tiktok.com/@metalya.fr",
+      "https://www.youtube.com/@Metalyafr",
+      "https://www.linkedin.com/company/metalya",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      email: "contact@metalya.fr",
+      contactType: "customer service",
+      areaServed: "FR",
+      availableLanguage: "French",
+    },
+    address: {
+      "@type": "PostalAddress",
+      addressCountry: "FR",
+    },
+    publishingPrinciples: `${SITE_URL}/about`,
+    foundingDate: "2025",
+    knowsAbout: [
+      "Technology",
+      "Culture",
+      "Artificial Intelligence",
+      "Travel",
+      "Innovation",
+    ],
+  };
+
+  const websiteSchema: WithContext<WebSite> = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "Metalya",
@@ -150,29 +212,27 @@ export default async function RootLayout({
         urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
       },
       "query-input": "required name=search_term_string",
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "Metalya",
-      logo: {
-        "@type": "ImageObject",
-        url: `${SITE_URL}/logo.png`,
-      },
-      sameAs: [
-        "https://twitter.com/Metalyafr",
-        "https://www.instagram.com/metalya.fr",
-        "https://www.tiktok.com/@metalya.fr",
-        "https://www.youtube.com/@Metalyafr",
-      ],
-    },
+    } as any,
+    inLanguage: "fr-FR",
   };
 
   return (
-    <html lang="fr">
+    <html lang="fr" className="scroll-smooth">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
       <body
@@ -182,14 +242,25 @@ export default async function RootLayout({
           fontSerif.variable
         )}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-md focus:bg-white focus:p-4 focus:text-neutral-900 focus:shadow-xl focus:ring-2 focus:ring-neutral-900"
+        >
+          Aller au contenu principal
+        </a>
+
         <Providers session={session}>
           <SiteHeader user={session?.user} unreadCount={unreadCount} />
-          <main className="relative mt-20 flex min-h-screen flex-col">
+          <main
+            id="main-content"
+            className="relative mt-20 flex min-h-screen flex-col"
+          >
             {children}
           </main>
           <Footer />
           <ExitIntentPopup />
           <PWAInstallBanner />
+          <SpeculationRules />
         </Providers>
       </body>
       <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS || ""} />

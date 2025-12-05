@@ -74,7 +74,6 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
         </h3>
       </div>
 
-      {/* Formulaire */}
       {session ? (
         <form onSubmit={handleSubmit} className="mb-12 flex gap-4">
           <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-200">
@@ -130,11 +129,13 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
         </div>
       )}
 
-      {/* Liste des commentaires */}
       <div className="space-y-8">
         {comments.map((comment) => (
           <div key={comment.id} className="flex gap-4">
-            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-200">
+            <Link
+              href={`/author/${comment.author.id}`}
+              className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full bg-neutral-200 transition-opacity hover:opacity-80"
+            >
               {comment.author.image ? (
                 <Image
                   src={comment.author.image}
@@ -147,13 +148,17 @@ export function CommentSection({ postId, comments }: CommentSectionProps) {
                   <UserIcon size={20} />
                 </div>
               )}
-            </div>
+            </Link>
+
             <div className="flex-1">
               <div className="mb-1 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-neutral-900">
+                  <Link
+                    href={`/author/${comment.author.id}`}
+                    className="font-bold text-neutral-900 hover:text-indigo-600 transition-colors"
+                  >
                     {comment.author.name || "Anonyme"}
-                  </span>
+                  </Link>
                   <span className="text-xs text-neutral-400">
                     • {formatDate(comment.createdAt)}
                   </span>
