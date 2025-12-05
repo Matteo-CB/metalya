@@ -14,11 +14,10 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
   const [supported, setSupported] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-
-  // Correction: Stocker la voix française sélectionnée pour la réutiliser
+  // Ref pour stocker la voix française sélectionnée une fois chargée
   const frenchVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
-  // 1. Initialisation et chargement des voix (CORRECTION APPLIQUÉE ICI)
+  // 1. Initialisation et chargement des voix (Fix pour la production)
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       setSupported(true);
@@ -26,43 +25,38 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
       const selectAndSetVoice = () => {
         const voices = window.speechSynthesis.getVoices();
 
-        // Sélection de la voix française (logique déplacée du handlePlay)
+        // Sélection de la voix française
         const frenchVoice =
           voices.find((v) => v.lang === "fr-FR" && v.name.includes("French")) ||
           voices.find((v) => v.lang.startsWith("fr"));
 
         if (frenchVoice) {
-          // Stocker la voix dans la ref
           frenchVoiceRef.current = frenchVoice;
           setIsReady(true);
         } else if (voices.length > 0) {
-          // Fallback : si des voix sont chargées mais aucune n'est française,
-          // on utilise la première disponible pour au moins garantir que le player fonctionne.
+          // Fallback : au moins une voix est disponible
           frenchVoiceRef.current = voices[0];
           setIsReady(true);
         }
       };
 
-      // **CORRECTION CRITIQUE** : On écoute TOUJOURS l'événement `onvoiceschanged`.
-      // C'est l'événement qui se déclenche lorsque le navigateur a fini de charger
-      // les voix de manière asynchrone (le point de rupture en production).
+      // CORRECTION AUDIO CRITIQUE : Toujours écouter l'événement asynchrone
       window.speechSynthesis.onvoiceschanged = selectAndSetVoice;
 
-      // On vérifie immédiatement au cas où les voix sont déjà chargées au montage.
+      // On vérifie immédiatement au cas où les voix sont déjà chargées
       selectAndSetVoice();
     }
 
     return () => {
-      // Nettoyage si on quitte la page pendant la lecture
+      // Nettoyage
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
-        // Optionnel : Retirer l'écouteur (en le réinitialisant à null)
         window.speechSynthesis.onvoiceschanged = null;
       }
     };
-  }, []); // Dépendances vides pour un seul montage
+  }, []);
 
-  // Nettoyage optimisé du Markdown pour la lecture (inchangé)
+  // Nettoyage optimisé du Markdown pour la lecture
   const cleanText = text
     .replace(/#{1,6} /g, "")
     .replace(/\*\*/g, "")
@@ -76,7 +70,6 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
     .trim();
 
   const handlePlay = () => {
-    // Si isReady est false, on s'arrête (couvre le cas `!supported`)
     if (!isReady) return;
 
     if (isPaused) {
@@ -92,14 +85,11 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
     const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    // **MISE À JOUR** : Utiliser la voix stockée dans la ref, qui est garantie
-    // d'avoir été chargée correctement grâce au `onvoiceschanged`.
+    // Utilisation de la voix chargée et stockée dans la ref
     if (frenchVoiceRef.current) {
       utterance.voice = frenchVoiceRef.current;
-      // On utilise la langue de la voix sélectionnée pour plus de cohérence
       utterance.lang = frenchVoiceRef.current.lang;
     } else {
-      // Fallback si la ref n'est pas remplie (bien que isReady doive empêcher cela)
       utterance.lang = "fr-FR";
     }
 
@@ -127,7 +117,6 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-    // On ne met PAS setIsPlaying(true) ici, on attend le onstart (inchangé, c'est une bonne pratique)
   };
 
   const handlePause = () => {
@@ -155,11 +144,20 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
           <span>Écouter l'article</span>
         </div>
         {(isPlaying || isPaused) && (
-          // Lignes 146-150 du composant AudioPlayer
+          // CORRECTION REACT : Ajout de la prop `key` aux éléments `span`
           <div className="flex gap-1">
-            <span className="h-3 w-1 animate-[bounce_1s_infinite] rounded-full bg-indigo-500"></span>
-            <span className="h-3 w-1 animate-[bounce_1.2s_infinite] rounded-full bg-indigo-500"></span>
-            <span className="h-3 w-1 animate-[bounce_0.8s_infinite] rounded-full bg-indigo-500"></span>
+            <span
+              key="dot-1"
+              className="h-3 w-1 animate-[bounce_1s_infinite] rounded-full bg-indigo-500"
+            ></span>
+            <span
+              key="dot-2"
+              className="h-3 w-1 animate-[bounce_1.2s_infinite] rounded-full bg-indigo-500"
+            ></span>
+            <span
+              key="dot-3"
+              className="h-3 w-1 animate-[bounce_0.8s_infinite] rounded-full bg-indigo-500"
+            ></span>
           </div>
         )}
       </div>
