@@ -20,7 +20,7 @@ import { PostStatus } from "@prisma/client";
 
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
-    where: { status: PostStatus.PUBLISHED }, // CORRECTION ICI
+    where: { status: PostStatus.PUBLISHED },
     orderBy: { createdAt: "desc" },
     include: { author: true },
     take: 20,
@@ -55,7 +55,7 @@ export default async function HomePage() {
     <div className="flex flex-col pt-8 md:pt-16">
       <Container>
         <header className="mb-12 border-b border-neutral-200 pb-10 text-center md:mb-24 md:pb-16">
-          <FadeIn>
+          <FadeIn priority>
             <h1 className="font-serif text-6xl font-medium tracking-tighter text-neutral-950 sm:text-8xl md:text-9xl">
               Metalya<span className="text-neutral-300">.</span>
             </h1>
@@ -86,6 +86,7 @@ export default async function HomePage() {
           </FadeIn>
         </header>
 
+        {/* Le reste reste standard (chargement au scroll) */}
         {heroPost && <HeroPost post={heroPost} />}
 
         {trendingPosts.length > 0 && (

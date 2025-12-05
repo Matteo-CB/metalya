@@ -92,7 +92,6 @@ export async function generateMetadata(
       images: [post.coverImage],
     },
     other: {
-      // C'est ici que la magie opère pour Google Discover
       amphtml: `${SITE_URL}/web-stories/${post.slug}`,
     },
   };
@@ -179,8 +178,8 @@ export default async function PostPage(props: PostPageProps) {
           </div>
 
           <div className="pt-12 md:pt-20">
-            <Container className="max-w-6xl">
-              <FadeIn className="text-center">
+            <Container className="max-w-5xl">
+              <FadeIn className="text-center" priority>
                 <div className="mb-8 flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-400">
                   <Link href="/" className="hover:text-neutral-900">
                     Metalya
@@ -260,7 +259,8 @@ export default async function PostPage(props: PostPageProps) {
             </Container>
 
             <div className="mt-12 w-full sm:mt-16 lg:mt-20">
-              <FadeIn delay={0.2}>
+              {/* IMAGE ÉGALEMENT PRIORITAIRE */}
+              <FadeIn delay={0} priority>
                 <Container className="max-w-6xl px-0 sm:px-6 lg:px-8">
                   <div className="relative aspect-4/3 w-full overflow-hidden sm:rounded-4xl shadow-xl md:aspect-21/9">
                     <Image
@@ -283,7 +283,7 @@ export default async function PostPage(props: PostPageProps) {
             <Container className="max-w-7xl">
               <div className="mt-16 md:mt-24 flex flex-col lg:flex-row lg:gap-12">
                 <div className="flex-1 max-w-3xl mx-auto">
-                  <FadeIn delay={0.3}>
+                  <FadeIn delay={0.2}>
                     <AudioPlayer text={post.content} />
                     {post.excerpt && (
                       <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">

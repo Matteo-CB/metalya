@@ -14,6 +14,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
   const [isSupported, setIsSupported] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [voiceName, setVoiceName] = useState("");
+
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
 
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
@@ -21,9 +22,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const chunksRef = useRef<string[]>([]);
 
-  // 1. Découpage du texte en phrases (Chunking)
   useEffect(() => {
-    // Nettoyage Markdown
     const cleanText = text
       .replace(/#{1,6} /g, "")
       .replace(/\*\*/g, "")
@@ -33,28 +32,26 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
       .replace(/> /g, "")
       .replace(/`{3}[\s\S]*?`{3}/g, "")
       .replace(/`/g, "")
-      .replace(/\s+/g, " ")
       .trim();
 
-    // Découpage intelligent par ponctuation pour éviter les blocs trop longs
-    // On coupe après ., !, ?, ou ;
-    const rawChunks = cleanText.match(/[^.!?]+[.!?]+["']?|[^.!?]+$/g) || [
-      cleanText,
-    ];
-    chunksRef.current = rawChunks;
+    const paragraphs = cleanText
+      .split(/\n+/)
+      .filter((p) => p.trim().length > 0);
+
+    chunksRef.current = paragraphs;
   }, [text]);
 
-  // 2. Initialisation Voix
   useEffect(() => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       synthesisRef.current = window.speechSynthesis;
       setIsSupported(true);
 
       const loadVoices = () => {
+        synthesisRef.current?.cancel();
+
         const voices = synthesisRef.current?.getVoices() || [];
 
         if (voices.length > 0) {
-          // Priorité aux voix "Google" (Chrome) ou "Siri" (Safari) qui sont bien meilleures
           const preferredVoice =
             voices.find(
               (v) =>
@@ -67,22 +64,21 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
           if (preferredVoice) {
             voiceRef.current = preferredVoice;
-            // Nettoyage du nom pour l'affichage
             setVoiceName(
               preferredVoice.name.replace(/Google|Microsoft|\(.*\)/g, "").trim()
             );
-            setIsReady(true);
           } else {
-            voiceRef.current = voices[0]; // Fallback
-            setIsReady(true);
+            voiceRef.current = voices[0];
+            setVoiceName("Standard");
           }
+          setIsReady(true);
         }
       };
 
-      loadVoices();
-      if (synthesisRef.current) {
+      if (synthesisRef.current?.onvoiceschanged !== undefined) {
         synthesisRef.current.onvoiceschanged = loadVoices;
       }
+      loadVoices();
     }
 
     return () => {
@@ -92,13 +88,8 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
     };
   }, []);
 
-  // Fonction pour lire un chunk spécifique
   const speakChunk = (index: number) => {
-    if (
-      !synthesisRef.current ||
-      !voiceRef.current ||
-      index >= chunksRef.current.length
-    ) {
+    if (!synthesisRef.current || index >= chunksRef.current.length) {
       setIsPlaying(false);
       setProgress(100);
       return;
@@ -106,18 +97,21 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
     const chunkText = chunksRef.current[index];
     const utterance = new SpeechSynthesisUtterance(chunkText);
-    utterance.voice = voiceRef.current;
+
+    if (voiceRef.current) {
+      utterance.voice = voiceRef.current;
+    }
     utterance.lang = "fr-FR";
     utterance.rate = 1.0;
 
+    utterance.onstart = () => {};
+
     utterance.onend = () => {
-      // Passer au chunk suivant
       const nextIndex = index + 1;
       if (nextIndex < chunksRef.current.length) {
         setCurrentChunkIndex(nextIndex);
-        speakChunk(nextIndex); // Récursion pour lire la suite
-        // Mise à jour de la barre de progression
         setProgress((nextIndex / chunksRef.current.length) * 100);
+        speakChunk(nextIndex);
       } else {
         setIsPlaying(false);
         setProgress(100);
@@ -126,16 +120,22 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
     };
 
     utterance.onerror = (e) => {
-      console.error("TTS Error", e);
-      // En cas d'erreur sur une phrase, on essaie de passer à la suivante
-      if (e.error !== "interrupted" && e.error !== "canceled") {
-        const nextIndex = index + 1;
+      if (e.error === "interrupted" || e.error === "canceled") {
+        return;
+      }
+      console.warn("TTS Error on chunk " + index, e.error);
+
+      const nextIndex = index + 1;
+      if (nextIndex < chunksRef.current.length) {
         setCurrentChunkIndex(nextIndex);
         speakChunk(nextIndex);
+      } else {
+        setIsPlaying(false);
       }
     };
 
     utteranceRef.current = utterance;
+
     synthesisRef.current.speak(utterance);
   };
 
@@ -146,11 +146,12 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
       synthesisRef.current.resume();
       setIsPlaying(true);
       setIsPaused(false);
-    } else {
-      synthesisRef.current.cancel(); // Reset
-      setIsPlaying(true);
-      speakChunk(currentChunkIndex);
+      return;
     }
+
+    synthesisRef.current.cancel();
+    setIsPlaying(true);
+    speakChunk(currentChunkIndex);
   };
 
   const handlePause = () => {
@@ -185,7 +186,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
               Version Audio
             </span>
             <span className="text-[10px] text-neutral-400 font-medium">
-              {isReady ? `Voix : ${voiceName}` : "Chargement..."}
+              {isReady ? `Voix : ${voiceName}` : "Initialisation..."}
             </span>
           </div>
         </div>
@@ -219,8 +220,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
             ) : (
               <button
                 onClick={handlePlay}
-                disabled={!isReady}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-200 transition-all hover:scale-105 hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-600 text-white shadow-lg shadow-indigo-200 transition-all hover:scale-105 hover:bg-indigo-700 active:scale-95"
               >
                 {isReady ? (
                   <Play size={20} fill="currentColor" className="ml-1" />
@@ -232,7 +232,7 @@ export function AudioPlayer({ text }: AudioPlayerProps) {
 
             <button
               onClick={handleStop}
-              disabled={!isPlaying && !isPaused && currentChunkIndex === 0}
+              disabled={!isPlaying && !isPaused}
               className="flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200 text-neutral-500 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <RotateCcw size={16} />
