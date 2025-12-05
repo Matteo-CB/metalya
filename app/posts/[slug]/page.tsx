@@ -30,6 +30,8 @@ import { ReadingProgressBar } from "@/components/blog/progress-bar";
 import { CommentSection } from "@/components/blog/comment-section";
 import { TableOfContents } from "@/components/blog/table-of-contents";
 import { AudioPlayer } from "@/components/blog/audio-player";
+import { SpeakableSchema } from "@/components/seo/speakable-schema";
+import { TextSelectionShare } from "@/components/blog/text-selection-share";
 
 interface PostPageProps {
   params: Promise<{
@@ -141,10 +143,11 @@ export default async function PostPage(props: PostPageProps) {
   return (
     <>
       <JsonLd data={jsonLd} />
+      <SpeakableSchema />
       <Breadcrumbs items={breadcrumbItems} />
       <ReadingProgressBar />
+      <TextSelectionShare />
       <StickyShare url={postUrl} title={post.title} />
-
       <div className="relative min-h-screen bg-white selection:bg-indigo-100 selection:text-indigo-900 pb-24">
         <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
 
@@ -195,7 +198,11 @@ export default async function PostPage(props: PostPageProps) {
                   )}
                 </div>
 
-                <h1 className="mx-auto max-w-4xl font-serif text-4xl font-medium leading-[1.15] tracking-tight text-neutral-900 sm:text-5xl md:text-6xl lg:text-7xl text-balance">
+                {/* AJOUT DE L'ID POUR LE SCHEMA SPEAKABLE */}
+                <h1
+                  id="speakable-title"
+                  className="mx-auto max-w-4xl font-serif text-4xl font-medium leading-[1.15] tracking-tight text-neutral-900 sm:text-5xl md:text-6xl lg:text-7xl text-balance"
+                >
                   {post.title}
                 </h1>
 
@@ -259,7 +266,6 @@ export default async function PostPage(props: PostPageProps) {
             </Container>
 
             <div className="mt-12 w-full sm:mt-16 lg:mt-20">
-              {/* IMAGE ÉGALEMENT PRIORITAIRE */}
               <FadeIn delay={0} priority>
                 <Container className="max-w-6xl px-0 sm:px-6 lg:px-8">
                   <div className="relative aspect-4/3 w-full overflow-hidden sm:rounded-4xl shadow-xl md:aspect-21/9">
@@ -285,8 +291,12 @@ export default async function PostPage(props: PostPageProps) {
                 <div className="flex-1 max-w-3xl mx-auto">
                   <FadeIn delay={0.2}>
                     <AudioPlayer text={post.content} />
+
                     {post.excerpt && (
-                      <div className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9">
+                      <div
+                        id="speakable-summary" // AJOUT DE L'ID POUR LE SCHEMA SPEAKABLE
+                        className="mb-14 text-xl font-medium leading-relaxed text-neutral-600 md:text-2xl lg:leading-9"
+                      >
                         <p className="first-letter:float-left first-letter:mr-3 first-letter:text-5xl first-letter:font-bold first-letter:text-neutral-900 first-letter:leading-[0.8]">
                           {post.excerpt}
                         </p>
@@ -303,6 +313,7 @@ export default async function PostPage(props: PostPageProps) {
               </div>
 
               <div className="max-w-3xl mx-auto">
+                {/* ... Reste du code (Share, Author, Comments, Pub DLK) inchangé ... */}
                 <div className="my-20 flex flex-col items-center justify-center gap-8 border-t border-b border-neutral-100 py-12">
                   <p className="text-sm font-bold uppercase tracking-widest text-neutral-400">
                     Partager cet article

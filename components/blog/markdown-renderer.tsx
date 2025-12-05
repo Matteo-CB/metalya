@@ -2,6 +2,7 @@ import ReactMarkdown from "react-markdown";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import remarkBreaks from "remark-breaks";
+import { CopyButton } from "./copy-button";
 
 interface MarkdownRendererProps {
   content: string;
@@ -35,7 +36,8 @@ export function MarkdownRenderer({
       <ReactMarkdown
         remarkPlugins={[remarkBreaks]}
         components={{
-          br: () => <div className="h-4" />,
+          // --- CORRECTION BR (Utiliser span block au lieu de div) ---
+          br: () => <span className="block h-4 content-['']" />,
 
           hr: () => (
             <div className="my-16 flex items-center justify-center gap-4">
@@ -74,7 +76,7 @@ export function MarkdownRenderer({
           },
 
           p: ({ node, children, ...props }) => {
-            const hasImage =
+            const hasBlockChild =
               node &&
               node.children.some(
                 (child) =>
@@ -84,7 +86,7 @@ export function MarkdownRenderer({
                     child.tagName === "div")
               );
 
-            if (hasImage) {
+            if (hasBlockChild) {
               return <div className="mb-8">{children}</div>;
             }
 
@@ -196,6 +198,7 @@ export function MarkdownRenderer({
             // @ts-ignore
             const match = /language-(\w+)/.exec(className || "");
             const isInline = !match;
+            const codeContent = String(children).replace(/\n$/, "");
 
             if (isInline) {
               return (
@@ -211,14 +214,17 @@ export function MarkdownRenderer({
             return (
               <div className="relative my-8 overflow-hidden rounded-xl bg-neutral-900 shadow-2xl ring-1 ring-white/10">
                 <div className="flex items-center justify-between border-b border-white/10 bg-white/5 px-4 py-3">
-                  <div className="flex gap-1.5">
-                    <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                    <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                    <div className="h-3 w-3 rounded-full bg-green-500/80" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex gap-1.5">
+                      <div className="h-3 w-3 rounded-full bg-red-500/80" />
+                      <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
+                      <div className="h-3 w-3 rounded-full bg-green-500/80" />
+                    </div>
+                    <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">
+                      {match ? match[1] : "Code"}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">
-                    {match ? match[1] : "Code"}
-                  </span>
+                  <CopyButton content={codeContent} />
                 </div>
                 <div className="overflow-x-auto p-6">
                   <code
