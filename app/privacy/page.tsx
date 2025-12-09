@@ -87,10 +87,10 @@ export default function PrivacyPage() {
             <p>
               Pour exercer ce droit, contactez-nous à :{" "}
               <a
-                href="mailto:matteo.biyikli3224@gmail.com"
+                href="mailto:contact@metalya.fr"
                 className="text-neutral-900 underline"
               >
-                matteo.biyikli3224@gmail.com
+                contact@metalya.fr
               </a>
             </p>
           </div>

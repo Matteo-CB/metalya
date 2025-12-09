@@ -70,8 +70,6 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
   const { email, password } = validatedFields.data;
 
   try {
-    // On vérifie le rôle avant la connexion pour savoir où rediriger
-    // (Cette requête est rapide et permet une meilleure UX)
     const user = await prisma.user.findUnique({
       where: { email },
       select: { role: true },
@@ -86,7 +84,6 @@ export async function loginAction(values: z.infer<typeof LoginSchema>) {
     await signIn("credentials", {
       email,
       password,
-      // Redirection intelligente : Admin -> Dashboard, User -> Accueil
       redirectTo: isStaff ? "/admin/posts" : "/",
     });
   } catch (error) {

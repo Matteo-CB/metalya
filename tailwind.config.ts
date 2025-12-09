@@ -13,7 +13,6 @@ const config: Config = {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
       },
-      // --- NOUVELLES ANIMATIONS CSS NATIVES (Ultra Rapides) ---
       keyframes: {
         "fade-in-up": {
           "0%": { opacity: "0", transform: "translateY(20px)" },

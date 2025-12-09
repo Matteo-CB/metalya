@@ -14,9 +14,9 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "À Propos - Metalya x DLK Agency",
+  title: "À Propos - Metalya x Hidden Lab",
   description:
-    "Metalya est une vitrine technologique conçue par DLK Digital Agency. Découvrez comment nous allions éditorial exigeant et performance web de pointe.",
+    "Metalya est une vitrine technologique conçue par Hidden Lab. Découvrez comment nous allions éditorial exigeant et performance web de pointe.",
 };
 
 export default function AboutPage() {
@@ -95,7 +95,7 @@ export default function AboutPage() {
             <FadeIn>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 text-xs font-mono mb-8 backdrop-blur-md">
                 <Cpu size={14} />
-                <span>POWERED BY DLK DIGITAL AGENCY</span>
+                <span>POWERED BY HIDDEN LAB</span>
               </div>
               <h2 className="font-serif text-4xl md:text-6xl font-medium tracking-tight mb-6">
                 Nous ne construisons pas des sites. <br />
@@ -105,9 +105,9 @@ export default function AboutPage() {
               </h2>
               <p className="text-lg text-neutral-400 leading-relaxed">
                 Metalya est notre laboratoire (R&D). C'est ici que{" "}
-                <strong>DLK Digital Agency</strong> repousse les limites du
-                framework Next.js pour offrir des performances web-vitals
-                parfaites (100/100).
+                <strong>Hidden Lab</strong> repousse les limites du framework
+                Next.js pour offrir des performances web-vitals parfaites
+                (100/100).
               </p>
             </FadeIn>
           </div>
@@ -229,13 +229,13 @@ export default function AboutPage() {
               Vous avez un projet complexe ? Une vision ambitieuse ?
             </p>
             <a
-              href="https://dlkdigitalagency.com"
+              href="https://hiddenlab.fr"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-3 rounded-full bg-white text-neutral-950 px-8 py-4 font-bold transition-all hover:scale-105 hover:bg-indigo-50 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
             >
               <Globe size={18} />
-              Travailler avec DLK Digital Agency
+              Travailler avec Hidden Lab
             </a>
           </FadeIn>
         </Container>

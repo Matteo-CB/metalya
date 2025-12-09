@@ -83,15 +83,15 @@ export default function LegalMentionsPage() {
               <h2>4. Conception et Réalisation</h2>
               <p>
                 Ce site a été conçu et développé par : <br />
-                <strong>DLK Digital Agency</strong>
+                <strong>Hidden Lab</strong>
                 <br />
                 Site web :{" "}
                 <a
-                  href="https://dlkdigitalagency.com"
+                  href="https://hiddenlab.fr"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  dlkdigitalagency.com
+                  hiddenlab.fr
                 </a>
               </p>
             </section>

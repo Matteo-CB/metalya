@@ -447,13 +447,12 @@ export default async function PostPage(props: PostPageProps) {
                     </h3>
                     <p className="mb-8 max-w-lg text-lg text-neutral-400">
                       Ce chef-d'œuvre numérique a été conçu et développé par{" "}
-                      <strong className="text-white">DLK Digital Agency</strong>
-                      . Offrez à votre entreprise la présence en ligne qu'elle
-                      mérite.
+                      <strong className="text-white">Hidden Lab</strong>. Offrez
+                      à votre entreprise la présence en ligne qu'elle mérite.
                     </p>
 
                     <a
-                      href="https://dlkdigitalagency.com"
+                      href="https://hiddenlab.fr"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-sm font-bold uppercase tracking-widest text-neutral-950 transition-all hover:bg-neutral-200 hover:scale-105 active:scale-95"

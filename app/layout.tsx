@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   description:
     "Metalya est votre magazine numérique de référence. Explorez des analyses approfondies sur la technologie, la culture, le voyage et le futur de notre société.",
   applicationName: "Metalya",
-  authors: [{ name: "Matteo Biyikli", url: "https://dlkdigitalagency.com" }],
+  authors: [{ name: "Matteo Biyikli", url: "https://hiddenlab.fr" }],
   generator: "Next.js",
   category: "technology",
   classification: "Magazine, News, Tech, Culture",
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     "Web3",
   ],
   referrer: "origin-when-cross-origin",
-  creator: "DLK Digital Agency",
+  creator: "Hidden Lab",
   publisher: "Metalya Media",
   formatDetection: {
     email: false,

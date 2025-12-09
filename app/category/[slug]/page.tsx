@@ -53,7 +53,7 @@ export async function generateMetadata(
       locale: "fr_FR",
       images: [
         {
-          url: `${SITE_URL}/og-category.jpg`,
+          url: `${SITE_URL}/og-image.jpg`,
           width: 1200,
           height: 630,
           alt: category.title,

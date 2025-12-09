@@ -5,8 +5,8 @@ import { auth, signOut } from "@/auth";
 import { FadeIn } from "@/components/ui/fade-in";
 
 const CREATOR = {
-  name: "DLK Digital Agency",
-  url: "https://dlkdigitalagency.com",
+  name: "Hidden Lab",
+  url: "https://hiddenlab.fr",
 };
 
 const TiktokIcon = ({ size = 18 }: { size?: number }) => (
