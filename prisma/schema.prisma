@@ -73,8 +73,6 @@ model MessageRecipient {
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   isRead    Boolean   @default(false)
   readAt    DateTime?
-
-  @@index([userId, isRead])
 }
 
 model Post {
@@ -96,9 +94,6 @@ model Post {
   readingTime Int        @default(5)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-
-  @@index([status, createdAt])
-  @@index([categories, status])
 }
 
 model Comment {
