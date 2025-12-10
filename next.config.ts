@@ -6,7 +6,12 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
   experimental: {
-    ppr: "incremental",
+    optimizePackageImports: [
+      "lucide-react",
+      "date-fns",
+      "framer-motion",
+      "@radix-ui/react-icons",
+    ],
     serverActions: {
       bodySizeLimit: "10mb",
     },
