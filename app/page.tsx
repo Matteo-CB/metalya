@@ -6,7 +6,6 @@ import { HeroPost } from "@/components/home/hero-post";
 import { PostGrid } from "@/components/home/post-grid";
 import { Newsletter } from "@/components/home/newsletter";
 import { FadeIn } from "@/components/ui/fade-in";
-import { unstable_cache } from "next/cache";
 import {
   Sparkles,
   Clock,
@@ -19,18 +18,15 @@ import {
 import { formatDate, formatCategory } from "@/lib/utils";
 import { PostStatus } from "@prisma/client";
 
-const getHomePageData = unstable_cache(
-  async () => {
-    return await prisma.post.findMany({
-      where: { status: PostStatus.PUBLISHED },
-      orderBy: { createdAt: "desc" },
-      include: { author: true },
-      take: 20,
-    });
-  },
-  ["home-page-posts"],
-  { revalidate: 60, tags: ["posts"] }
-);
+async function getHomePageData() {
+  const posts = await prisma.post.findMany({
+    where: { status: PostStatus.PUBLISHED },
+    orderBy: { createdAt: "desc" },
+    include: { author: true },
+    take: 20,
+  });
+  return posts;
+}
 
 export default async function HomePage() {
   const posts = await getHomePageData();
@@ -90,6 +86,7 @@ export default async function HomePage() {
           </FadeIn>
         </header>
 
+        {/* Le reste reste standard (chargement au scroll) */}
         {heroPost && <HeroPost post={heroPost} />}
 
         {trendingPosts.length > 0 && (

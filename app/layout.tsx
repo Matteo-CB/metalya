@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { unstable_cache } from "next/cache";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/layout/footer";
@@ -144,28 +143,22 @@ export const metadata: Metadata = {
   },
 };
 
-const getUnreadCount = unstable_cache(
-  async (userId: string) => {
-    return await prisma.messageRecipient.count({
-      where: {
-        userId: userId,
-        isRead: false,
-      },
-    });
-  },
-  ["unread-messages-count"],
-  { tags: ["messages"], revalidate: 300 }
-);
-
 export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   const session = await auth();
-  const unreadCount = session?.user?.id
-    ? await getUnreadCount(session.user.id)
-    : 0;
+
+  let unreadCount = 0;
+  if (session?.user) {
+    unreadCount = await prisma.messageRecipient.count({
+      where: {
+        userId: session.user.id,
+        isRead: false,
+      },
+    });
+  }
 
   const orgSchema: WithContext<NewsMediaOrganization> = {
     "@context": "https://schema.org",
@@ -232,6 +225,7 @@ export default async function RootLayout({
           href="https://fonts.gstatic.com"
           crossOrigin="anonymous"
         />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
