@@ -24,14 +24,19 @@ function escapeXml(unsafe: string): string {
 
 export async function GET() {
   const posts = await prisma.post.findMany({
-    where: { status: PostStatus.PUBLISHED }, // CORRECTION ICI
+    where: { status: PostStatus.PUBLISHED },
     orderBy: { createdAt: "desc" },
     take: 20,
     include: { author: true },
   });
 
+  // 1. AJOUT DE L'ESPACE DE NOMS MEDIA (xmlns:media)
   const rssHeader = `<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0" 
+  xmlns:atom="http://www.w3.org/2005/Atom" 
+  xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:media="http://search.yahoo.com/mrss/">
   <channel>
     <title>Metalya</title>
     <link>${BASE_URL}</link>
@@ -48,10 +53,23 @@ export async function GET() {
   const rssItems = posts
     .map((post) => {
       const postUrl = `${BASE_URL}/posts/${post.slug}`;
+      const authorName = post.author.name || "Rédaction Metalya";
+      const category = post.categories?.[0] || "Général";
 
-      const imageEnclosure = post.coverImage
-        ? `<enclosure url="${post.coverImage}" type="image/jpeg" />`
+      // 2. IMAGE OPTIMISÉE POUR FLIPBOARD (<media:content>)
+      // Flipboard préfère ça à <enclosure>
+      const mediaContent = post.coverImage
+        ? `<media:content url="${post.coverImage}" medium="image" type="image/jpeg" />`
         : "";
+
+      // 3. CONTENU RICHE (CDATA)
+      // On met une image + l'excerpt pour que le lecteur Flipboard soit joli
+      const htmlContent = `
+        <figure><img src="${post.coverImage || ""}" /></figure>
+        <p>${post.excerpt || ""}</p>
+        <br />
+        <a href="${postUrl}">Lire la suite sur Metalya</a>
+      `;
 
       return `
     <item>
@@ -60,11 +78,12 @@ export async function GET() {
       <guid isPermaLink="true">${postUrl}</guid>
       <pubDate>${new Date(post.createdAt).toUTCString()}</pubDate>
       <description>${escapeXml(post.excerpt || "")}</description>
-      <dc:creator>${escapeXml(
-        post.author.name || "Rédaction Metalya"
-      )}</dc:creator>
-      <category>${escapeXml(post.categories?.[0] || "Général")}</category>
-      ${imageEnclosure}
+      <dc:creator>${escapeXml(authorName)}</dc:creator>
+      <category>${escapeXml(category)}</category>
+      
+      ${mediaContent}
+      
+      <content:encoded><![CDATA[${htmlContent}]]></content:encoded>
     </item>`;
     })
     .join("");

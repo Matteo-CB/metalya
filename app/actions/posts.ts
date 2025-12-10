@@ -6,6 +6,12 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
+import { createPinterestPin } from "@/lib/pinterest";
+import { createTumblrPost } from "@/lib/tumblr";
+import { createBlueskyPost } from "@/lib/bluesky";
+import { createDevToPost } from "@/lib/devto";
+import { createMastodonPost } from "@/lib/mastodon";
+import { requestGoogleIndexing } from "@/lib/google-indexing";
 
 function slugify(text: string) {
   return text
@@ -26,6 +32,101 @@ function canAccessAdmin(role: UserRole) {
   return allowedRoles.includes(role);
 }
 
+async function distributeToSocials(post: {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage: string;
+  seoTitle?: string;
+  seoDesc?: string;
+  categories: Category[];
+  keywords: string[];
+}) {
+  const postLink = `${process.env.NEXT_PUBLIC_URL}/posts/${post.slug}`;
+  const storyLink = `${process.env.NEXT_PUBLIC_URL}/web-stories/${post.slug}`;
+
+  const mainCategory =
+    post.categories && post.categories.length > 0
+      ? post.categories[0]
+      : "ACTUALITES";
+
+  const meta = {
+    title: post.seoTitle || post.title,
+    desc: post.seoDesc || post.excerpt || post.title,
+    img: post.coverImage,
+    link: postLink,
+    cat: mainCategory as Category,
+    keys: post.keywords || [],
+  };
+
+  try {
+    await Promise.allSettled([
+      // SEO : Notification rapide aux moteurs de recherche
+      pingIndexNow(post.slug),
+      requestGoogleIndexing(postLink),
+      requestGoogleIndexing(storyLink),
+
+      // Réseaux Sociaux
+      createMastodonPost({
+        title: meta.title,
+        excerpt: meta.desc,
+        link: meta.link,
+        tags: meta.keys,
+        imageUrl: meta.img,
+      }),
+
+      // Dev.to (Uniquement pour la Tech)
+      post.categories.includes("TECH")
+        ? createDevToPost({
+            title: meta.title,
+            content: post.content,
+            link: meta.link,
+            tags: meta.keys,
+            coverImage: meta.img,
+            description: meta.desc,
+          })
+        : Promise.resolve(),
+
+      post.coverImage
+        ? createPinterestPin({
+            title: meta.title,
+            description: meta.desc,
+            link: meta.link,
+            imageUrl: meta.img,
+            category: meta.cat,
+            keywords: meta.keys,
+            altText: meta.title,
+          })
+        : Promise.resolve(),
+
+      post.coverImage
+        ? createTumblrPost({
+            title: post.title,
+            excerpt: meta.desc,
+            link: meta.link,
+            imageUrl: meta.img,
+            category: meta.cat,
+            keywords: meta.keys,
+          })
+        : Promise.resolve(),
+
+      post.coverImage
+        ? createBlueskyPost({
+            title: post.title,
+            description: meta.desc,
+            link: meta.link,
+            imageUrl: meta.img,
+            category: meta.cat,
+            keywords: meta.keys,
+          })
+        : Promise.resolve(),
+    ]);
+  } catch (error) {
+    console.error("Social distribution failed:", error);
+  }
+}
+
 export async function createPost(formData: FormData) {
   const session = await auth();
 
@@ -39,15 +140,28 @@ export async function createPost(formData: FormData) {
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
   const action = formData.get("action") as string;
+  const seoTitle = formData.get("seoTitle") as string;
+  const seoDesc = formData.get("seoDesc") as string;
+  const keywordsRaw = formData.get("keywords") as string;
 
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
+  const keywords = keywordsRaw
+    ? keywordsRaw.split(",").map((k) => k.trim())
+    : [];
 
   if (!title) {
     throw new Error("Le titre est obligatoire");
   }
 
-  const slug = slugify(title);
+  const baseSlug = slugify(title);
+  let slug = baseSlug;
+  let counter = 1;
+
+  while (await prisma.post.findUnique({ where: { slug } })) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
 
   let status: PostStatus = PostStatus.DRAFT;
 
@@ -72,14 +186,25 @@ export async function createPost(formData: FormData) {
       readingTime: readingTime || 5,
       status,
       authorId: session.user.id!,
-      seoTitle: title,
-      seoDesc: excerpt,
+      seoTitle: seoTitle || title,
+      seoDesc: seoDesc || excerpt,
+      keywords,
       categories: categories,
     },
   });
 
   if (status === PostStatus.PUBLISHED) {
-    await pingIndexNow(slug);
+    await distributeToSocials({
+      title,
+      slug,
+      content,
+      excerpt,
+      coverImage,
+      seoTitle,
+      seoDesc,
+      categories,
+      keywords,
+    });
   }
 
   revalidatePath("/");
@@ -115,9 +240,15 @@ export async function updatePost(postId: string, formData: FormData) {
   const coverImage = formData.get("coverImage") as string;
   const readingTime = Number(formData.get("readingTime"));
   const action = formData.get("action") as string;
+  const seoTitle = formData.get("seoTitle") as string;
+  const seoDesc = formData.get("seoDesc") as string;
+  const keywordsRaw = formData.get("keywords") as string;
 
   const categoriesRaw = formData.getAll("categories") as string[];
   const categories = categoriesRaw.map((cat) => cat as Category);
+  const keywords = keywordsRaw
+    ? keywordsRaw.split(",").map((k) => k.trim())
+    : [];
 
   let status = post.status;
 
@@ -144,12 +275,25 @@ export async function updatePost(postId: string, formData: FormData) {
       readingTime,
       categories,
       status,
+      seoTitle: seoTitle || title,
+      seoDesc: seoDesc || excerpt,
+      keywords,
       updatedAt: new Date(),
     },
   });
 
   if (status === PostStatus.PUBLISHED) {
-    await pingIndexNow(slug);
+    await distributeToSocials({
+      title,
+      slug,
+      content,
+      excerpt,
+      coverImage,
+      seoTitle,
+      seoDesc,
+      categories,
+      keywords,
+    });
   }
 
   revalidatePath("/");
