@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
@@ -62,12 +63,10 @@ async function distributeToSocials(post: {
 
   try {
     await Promise.allSettled([
-      // SEO : Notification rapide aux moteurs de recherche
       pingIndexNow(post.slug),
       requestGoogleIndexing(postLink),
       requestGoogleIndexing(storyLink),
 
-      // Réseaux Sociaux
       createMastodonPost({
         title: meta.title,
         excerpt: meta.desc,
@@ -76,7 +75,6 @@ async function distributeToSocials(post: {
         imageUrl: meta.img,
       }),
 
-      // Dev.to (Uniquement pour la Tech)
       post.categories.includes("TECH")
         ? createDevToPost({
             title: meta.title,
@@ -151,7 +149,7 @@ export async function createPost(formData: FormData) {
     : [];
 
   if (!title) {
-    throw new Error("Le titre est obligatoire");
+    throw new Error("Title is required");
   }
 
   const baseSlug = slugify(title);
@@ -194,16 +192,18 @@ export async function createPost(formData: FormData) {
   });
 
   if (status === PostStatus.PUBLISHED) {
-    await distributeToSocials({
-      title,
-      slug,
-      content,
-      excerpt,
-      coverImage,
-      seoTitle,
-      seoDesc,
-      categories,
-      keywords,
+    after(async () => {
+      await distributeToSocials({
+        title,
+        slug,
+        content,
+        excerpt,
+        coverImage,
+        seoTitle,
+        seoDesc,
+        categories,
+        keywords,
+      });
     });
   }
 
@@ -217,7 +217,7 @@ export async function updatePost(postId: string, formData: FormData) {
   if (!session?.user) throw new Error("Unauthorized");
 
   const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw new Error("Post not found");
 
   const userRole = session.user.role;
   const isAuthor = post.authorId === session.user.id;
@@ -228,10 +228,10 @@ export async function updatePost(postId: string, formData: FormData) {
 
   if (isRedacteurOwner) {
     if (post.status === PostStatus.PUBLISHED) {
-      throw new Error("Impossible de modifier un article déjà publié.");
+      throw new Error("Cannot edit published post");
     }
   } else if (!isAdmin) {
-    throw new Error("Permission refusée");
+    throw new Error("Permission denied");
   }
 
   const title = formData.get("title") as string;
@@ -283,16 +283,18 @@ export async function updatePost(postId: string, formData: FormData) {
   });
 
   if (status === PostStatus.PUBLISHED) {
-    await distributeToSocials({
-      title,
-      slug,
-      content,
-      excerpt,
-      coverImage,
-      seoTitle,
-      seoDesc,
-      categories,
-      keywords,
+    after(async () => {
+      await distributeToSocials({
+        title,
+        slug,
+        content,
+        excerpt,
+        coverImage,
+        seoTitle,
+        seoDesc,
+        categories,
+        keywords,
+      });
     });
   }
 
@@ -306,7 +308,7 @@ export async function deletePost(postId: string) {
   if (!session?.user) throw new Error("Unauthorized");
 
   const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) throw new Error("Article introuvable");
+  if (!post) throw new Error("Post not found");
 
   const userRole = session.user.role;
   const isAuthor = post.authorId === session.user.id;
@@ -317,10 +319,10 @@ export async function deletePost(postId: string) {
 
   if (isRedacteurOwner) {
     if (post.status === PostStatus.PUBLISHED) {
-      throw new Error("Impossible de supprimer un article publié.");
+      throw new Error("Cannot delete published post");
     }
   } else if (!isAdmin) {
-    throw new Error("Permission refusée");
+    throw new Error("Permission denied");
   }
 
   await prisma.post.delete({
