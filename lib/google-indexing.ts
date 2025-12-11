@@ -1,27 +1,23 @@
 import { GoogleAuth } from "google-auth-library";
 
 export async function requestGoogleIndexing(url: string) {
-  const serviceAccountKey = process.env.GOOGLE_SERVICE_ACCOUNT_KEY;
+  const clientEmail = process.env.GOOGLE_CLIENT_EMAIL;
+  const privateKey = process.env.GOOGLE_PRIVATE_KEY;
 
-  if (!serviceAccountKey) {
+  if (!clientEmail || !privateKey) {
     console.error(
-      "❌ Google Indexing: Variable GOOGLE_SERVICE_ACCOUNT_KEY manquante"
+      "❌ Google Indexing: Variables GOOGLE_CLIENT_EMAIL ou GOOGLE_PRIVATE_KEY manquantes"
     );
     return;
   }
 
   try {
-    let credentials;
-    try {
-      credentials = JSON.parse(serviceAccountKey);
-    } catch (e) {
-      const fixedKey = serviceAccountKey.replace(/\n/g, "");
-      credentials = JSON.parse(fixedKey);
-    }
-
-    if (credentials.private_key) {
-      credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
-    }
+    // Reconstruction propre de l'objet credentials
+    const credentials = {
+      client_email: clientEmail,
+      // On s'assure que les \n sont bien interprétés comme des sauts de ligne
+      private_key: privateKey.replace(/\\n/g, "\n"),
+    };
 
     const auth = new GoogleAuth({
       credentials,
@@ -40,11 +36,11 @@ export async function requestGoogleIndexing(url: string) {
     });
 
     if (res.status === 200) {
-      console.log(`✅ Google notifié pour : ${url}`);
+      console.log(`✅ Google notifié : ${url}`);
     } else {
-      console.error(`⚠️ Google Indexing Status: ${res.status}`);
+      console.error(`⚠️ Status Google : ${res.status}`);
     }
   } catch (error) {
-    console.error("❌ Erreur Google Indexing:", error);
+    console.error("❌ Erreur Google Indexing :", error);
   }
 }
