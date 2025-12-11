@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { after } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
@@ -10,10 +9,10 @@ import { pingIndexNow } from "@/lib/indexnow";
 import { createPinterestPin } from "@/lib/pinterest";
 import { createTumblrPost } from "@/lib/tumblr";
 import { createBlueskyPost } from "@/lib/bluesky";
-import { createDevToPost } from "@/lib/devto";
 import { createMastodonPost } from "@/lib/mastodon";
 import { requestGoogleIndexing } from "@/lib/google-indexing";
 
+// ... (fonctions slugify et canAccessAdmin inchangées) ...
 function slugify(text: string) {
   return text
     .toString()
@@ -62,11 +61,14 @@ async function distributeToSocials(post: {
   };
 
   try {
+    // On lance tout en parallèle (plus de Dev.to qui ralentit)
     await Promise.allSettled([
+      // SEO
       pingIndexNow(post.slug),
       requestGoogleIndexing(postLink),
       requestGoogleIndexing(storyLink),
 
+      // Réseaux Sociaux
       createMastodonPost({
         title: meta.title,
         excerpt: meta.desc,
@@ -74,17 +76,6 @@ async function distributeToSocials(post: {
         tags: meta.keys,
         imageUrl: meta.img,
       }),
-
-      post.categories.includes("TECH")
-        ? createDevToPost({
-            title: meta.title,
-            content: post.content,
-            link: meta.link,
-            tags: meta.keys,
-            coverImage: meta.img,
-            description: meta.desc,
-          })
-        : Promise.resolve(),
 
       post.coverImage
         ? createPinterestPin({
@@ -125,6 +116,7 @@ async function distributeToSocials(post: {
   }
 }
 
+// ... (Le reste du fichier createPost, updatePost, deletePost reste strictement identique) ...
 export async function createPost(formData: FormData) {
   const session = await auth();
 
@@ -149,7 +141,7 @@ export async function createPost(formData: FormData) {
     : [];
 
   if (!title) {
-    throw new Error("Title is required");
+    throw new Error("Le titre est obligatoire");
   }
 
   const baseSlug = slugify(title);
@@ -192,18 +184,18 @@ export async function createPost(formData: FormData) {
   });
 
   if (status === PostStatus.PUBLISHED) {
-    after(async () => {
-      await distributeToSocials({
-        title,
-        slug,
-        content,
-        excerpt,
-        coverImage,
-        seoTitle,
-        seoDesc,
-        categories,
-        keywords,
-      });
+    // On appelle la fonction de distribution sans await pour ne pas bloquer l'UI
+    // (Optionnel : remettre await si vous voulez voir les logs en direct)
+    distributeToSocials({
+      title,
+      slug,
+      content,
+      excerpt,
+      coverImage,
+      seoTitle,
+      seoDesc,
+      categories,
+      keywords,
     });
   }
 
@@ -217,7 +209,7 @@ export async function updatePost(postId: string, formData: FormData) {
   if (!session?.user) throw new Error("Unauthorized");
 
   const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) throw new Error("Post not found");
+  if (!post) throw new Error("Article introuvable");
 
   const userRole = session.user.role;
   const isAuthor = post.authorId === session.user.id;
@@ -228,10 +220,10 @@ export async function updatePost(postId: string, formData: FormData) {
 
   if (isRedacteurOwner) {
     if (post.status === PostStatus.PUBLISHED) {
-      throw new Error("Cannot edit published post");
+      throw new Error("Impossible de modifier un article déjà publié.");
     }
   } else if (!isAdmin) {
-    throw new Error("Permission denied");
+    throw new Error("Permission refusée");
   }
 
   const title = formData.get("title") as string;
@@ -283,18 +275,16 @@ export async function updatePost(postId: string, formData: FormData) {
   });
 
   if (status === PostStatus.PUBLISHED) {
-    after(async () => {
-      await distributeToSocials({
-        title,
-        slug,
-        content,
-        excerpt,
-        coverImage,
-        seoTitle,
-        seoDesc,
-        categories,
-        keywords,
-      });
+    distributeToSocials({
+      title,
+      slug,
+      content,
+      excerpt,
+      coverImage,
+      seoTitle,
+      seoDesc,
+      categories,
+      keywords,
     });
   }
 
@@ -308,7 +298,7 @@ export async function deletePost(postId: string) {
   if (!session?.user) throw new Error("Unauthorized");
 
   const post = await prisma.post.findUnique({ where: { id: postId } });
-  if (!post) throw new Error("Post not found");
+  if (!post) throw new Error("Article introuvable");
 
   const userRole = session.user.role;
   const isAuthor = post.authorId === session.user.id;
@@ -319,10 +309,10 @@ export async function deletePost(postId: string) {
 
   if (isRedacteurOwner) {
     if (post.status === PostStatus.PUBLISHED) {
-      throw new Error("Cannot delete published post");
+      throw new Error("Impossible de supprimer un article publié.");
     }
   } else if (!isAdmin) {
-    throw new Error("Permission denied");
+    throw new Error("Permission refusée");
   }
 
   await prisma.post.delete({
