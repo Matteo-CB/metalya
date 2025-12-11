@@ -11,12 +11,17 @@ export async function requestGoogleIndexing(url: string) {
   }
 
   try {
-    const cleanServiceAccountKey = serviceAccountKey
-      .replace(/\\n/g, "\n")
-      .replace(/\s+/g, " ")
-      .trim();
+    let credentials;
+    try {
+      credentials = JSON.parse(serviceAccountKey);
+    } catch (e) {
+      const fixedKey = serviceAccountKey.replace(/\n/g, "");
+      credentials = JSON.parse(fixedKey);
+    }
 
-    const credentials = JSON.parse(cleanServiceAccountKey);
+    if (credentials.private_key) {
+      credentials.private_key = credentials.private_key.replace(/\\n/g, "\n");
+    }
 
     const auth = new GoogleAuth({
       credentials,
