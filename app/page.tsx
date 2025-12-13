@@ -52,7 +52,10 @@ export default async function HomePage() {
     .slice(0, 6);
 
   return (
-    <div className="flex flex-col pt-8 md:pt-16">
+    // CORRECTION ICI : Ajout de "w-full overflow-x-hidden"
+    // Cela empêche strictement tout élément enfant (glows, formes absolues)
+    // d'élargir la page au-delà de la largeur de l'écran mobile.
+    <div className="flex flex-col pt-8 md:pt-16 w-full overflow-x-hidden">
       <Container>
         <header className="mb-12 border-b border-neutral-200 pb-10 text-center md:mb-24 md:pb-16">
           <FadeIn priority>
@@ -96,9 +99,10 @@ export default async function HomePage() {
         )}
 
         <section
-          className="my-16 relative overflow-hidden rounded-4xl bg-neutral-950 py-16 text-white md:my-24 md:rounded-2xl md:py-24"
+          className="my-16 relative overflow-hidden rounded-[2.5rem] bg-neutral-950 py-16 text-white md:my-24 md:rounded-2xl md:py-24"
           aria-labelledby="univers-title"
         >
+          {/* Les blobs ici sont contenus par le overflow-hidden du section, mais la sécurité sur le div principal aide aussi */}
           <div className="absolute top-0 left-[-20%] w-[120%] h-full md:left-1/4 md:w-[600px] md:h-[600px] bg-blue-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
           <div className="absolute bottom-0 right-[-20%] w-[120%] h-full md:right-1/4 md:w-[600px] md:h-[600px] bg-purple-500/10 blur-[80px] md:blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
 
