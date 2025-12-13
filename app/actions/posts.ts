@@ -6,13 +6,11 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
-import { createPinterestPin } from "@/lib/pinterest";
 import { createTumblrPost } from "@/lib/tumblr";
 import { createBlueskyPost } from "@/lib/bluesky";
 import { createMastodonPost } from "@/lib/mastodon";
 import { requestGoogleIndexing } from "@/lib/google-indexing";
 
-// ... (fonctions slugify et canAccessAdmin inchangées) ...
 function slugify(text: string) {
   return text
     .toString()
@@ -61,14 +59,11 @@ async function distributeToSocials(post: {
   };
 
   try {
-    // On lance tout en parallèle (plus de Dev.to qui ralentit)
     await Promise.allSettled([
-      // SEO
       pingIndexNow(post.slug),
       requestGoogleIndexing(postLink),
       requestGoogleIndexing(storyLink),
 
-      // Réseaux Sociaux
       createMastodonPost({
         title: meta.title,
         excerpt: meta.desc,
@@ -76,18 +71,6 @@ async function distributeToSocials(post: {
         tags: meta.keys,
         imageUrl: meta.img,
       }),
-
-      post.coverImage
-        ? createPinterestPin({
-            title: meta.title,
-            description: meta.desc,
-            link: meta.link,
-            imageUrl: meta.img,
-            category: meta.cat,
-            keywords: meta.keys,
-            altText: meta.title,
-          })
-        : Promise.resolve(),
 
       post.coverImage
         ? createTumblrPost({
@@ -116,7 +99,6 @@ async function distributeToSocials(post: {
   }
 }
 
-// ... (Le reste du fichier createPost, updatePost, deletePost reste strictement identique) ...
 export async function createPost(formData: FormData) {
   const session = await auth();
 
@@ -184,8 +166,6 @@ export async function createPost(formData: FormData) {
   });
 
   if (status === PostStatus.PUBLISHED) {
-    // On appelle la fonction de distribution sans await pour ne pas bloquer l'UI
-    // (Optionnel : remettre await si vous voulez voir les logs en direct)
     distributeToSocials({
       title,
       slug,

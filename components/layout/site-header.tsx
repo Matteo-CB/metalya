@@ -15,6 +15,7 @@ import {
   Settings,
   Users,
   MessageSquare,
+  Share2, // Ajout de l'icône pour Pinterest
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
@@ -58,6 +59,8 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
     user?.role === "REDACTEUR";
 
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
+  // Ajout du rôle spécifique pour Pinterest (Admins seulement)
+  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
   return (
     <>
@@ -108,137 +111,172 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
 
             <div className="hidden items-center gap-4 lg:flex">
               {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    aria-expanded={isUserMenuOpen}
-                    aria-haspopup="true"
-                    className="group flex items-center gap-2 rounded-full border border-neutral-200 bg-white/50 py-1.5 pl-3 pr-2 transition-all hover:border-neutral-300 hover:bg-white hover:shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
-                  >
-                    <span className="max-w-[100px] truncate text-xs font-bold text-neutral-700">
-                      {user.name?.split(" ")[0]}
-                    </span>
-                    <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-100 transition-transform group-hover:scale-105">
-                      {user.image ? (
-                        <img
-                          src={user.image}
-                          alt=""
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <UserIcon size={16} />
+                <div className="flex items-center gap-4">
+                  {/* Bouton Pinterest accès direct (Desktop) */}
+                  {isAdmin && (
+                    <Link
+                      href="/admin/pinterest"
+                      className="hidden xl:flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-100"
+                    >
+                      <Share2 size={14} />
+                      Pinterest
+                    </Link>
+                  )}
+
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      aria-expanded={isUserMenuOpen}
+                      aria-haspopup="true"
+                      className="group flex items-center gap-2 rounded-full border border-neutral-200 bg-white/50 py-1.5 pl-3 pr-2 transition-all hover:border-neutral-300 hover:bg-white hover:shadow-sm focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                    >
+                      <span className="max-w-[100px] truncate text-xs font-bold text-neutral-700">
+                        {user.name?.split(" ")[0]}
+                      </span>
+                      <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full bg-neutral-100 text-neutral-600 ring-1 ring-neutral-100 transition-transform group-hover:scale-105">
+                        {user.image ? (
+                          <img
+                            src={user.image}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <UserIcon size={16} />
+                        )}
+                      </div>
+                      {unreadCount > 0 && (
+                        <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
                       )}
-                    </div>
-                    {unreadCount > 0 && (
-                      <span className="absolute top-0 right-0 h-2.5 w-2.5 rounded-full bg-red-600 ring-2 ring-white" />
-                    )}
-                    <ChevronDown
-                      size={14}
-                      className={cn(
-                        "text-neutral-400 transition-transform duration-200",
-                        isUserMenuOpen ? "rotate-180" : ""
-                      )}
-                    />
-                  </button>
+                      <ChevronDown
+                        size={14}
+                        className={cn(
+                          "text-neutral-400 transition-transform duration-200",
+                          isUserMenuOpen ? "rotate-180" : ""
+                        )}
+                      />
+                    </button>
 
-                  <AnimatePresence>
-                    {isUserMenuOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
-                        className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl border border-neutral-100 bg-white p-2 shadow-xl ring-1 ring-black/5"
-                      >
-                        <div className="px-3 py-2">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                            Compte
-                          </p>
-                          <p className="truncate text-xs font-medium text-neutral-900">
-                            {user.email}
-                          </p>
-                        </div>
+                    <AnimatePresence>
+                      {isUserMenuOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                          transition={{ duration: 0.2, ease: "easeOut" }}
+                          className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-2xl border border-neutral-100 bg-white p-2 shadow-xl ring-1 ring-black/5"
+                        >
+                          <div className="px-3 py-2">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                              Compte
+                            </p>
+                            <p className="truncate text-xs font-medium text-neutral-900">
+                              {user.email}
+                            </p>
+                          </div>
 
-                        <div className="my-1 h-px bg-neutral-100" />
+                          <div className="my-1 h-px bg-neutral-100" />
 
-                        {hasAdminAccess && (
-                          <>
+                          {hasAdminAccess && (
+                            <>
+                              <Link
+                                href="/admin/posts"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex w-full items-center gap-3 rounded-xl bg-neutral-50 px-3 py-2.5 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-100"
+                              >
+                                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
+                                  <LayoutDashboard size={16} />
+                                </div>
+                                <div>
+                                  <span>Administration</span>
+                                  <p className="text-[10px] font-normal text-neutral-500">
+                                    Gérer le site
+                                  </p>
+                                </div>
+                              </Link>
+
+                              {/* Lien Pinterest dans le Dropdown */}
+                              {isAdmin && (
+                                <Link
+                                  href="/admin/pinterest"
+                                  onClick={() => setIsUserMenuOpen(false)}
+                                  className="mt-1 flex w-full items-center gap-3 rounded-xl bg-red-50/50 px-3 py-2.5 text-sm font-bold text-red-700 transition-colors hover:bg-red-50"
+                                >
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-red-100">
+                                    <Share2
+                                      size={16}
+                                      className="text-red-600"
+                                    />
+                                  </div>
+                                  <div>
+                                    <span>Pinterest Studio</span>
+                                    <p className="text-[10px] font-normal text-red-400">
+                                      Créer des épingles
+                                    </p>
+                                  </div>
+                                </Link>
+                              )}
+
+                              <Link
+                                href="/admin/messages"
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
+                              >
+                                <div className="flex items-center gap-3">
+                                  <MessageSquare
+                                    size={18}
+                                    className="text-neutral-400"
+                                  />
+                                  Messagerie
+                                </div>
+                                {unreadCount > 0 && (
+                                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-bold text-white">
+                                    {unreadCount}
+                                  </span>
+                                )}
+                              </Link>
+                            </>
+                          )}
+
+                          {isSuperAdmin && (
                             <Link
-                              href="/admin/posts"
+                              href="/admin/users"
                               onClick={() => setIsUserMenuOpen(false)}
-                              className="flex w-full items-center gap-3 rounded-xl bg-neutral-50 px-3 py-2.5 text-sm font-bold text-neutral-900 transition-colors hover:bg-neutral-100"
+                              className="flex w-full items-center gap-3 rounded-xl bg-purple-50 px-3 py-2.5 text-sm font-bold text-purple-900 transition-colors hover:bg-purple-100"
                             >
-                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm">
-                                <LayoutDashboard size={16} />
+                              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm border border-purple-100">
+                                <Users size={16} className="text-purple-600" />
                               </div>
                               <div>
-                                <span>Administration</span>
-                                <p className="text-[10px] font-normal text-neutral-500">
-                                  Gérer le site
+                                <span>Utilisateurs</span>
+                                <p className="text-[10px] font-normal text-purple-500">
+                                  Gérer les rôles
                                 </p>
                               </div>
                             </Link>
+                          )}
 
-                            <Link
-                              href="/admin/messages"
-                              onClick={() => setIsUserMenuOpen(false)}
-                              className="flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
-                            >
-                              <div className="flex items-center gap-3">
-                                <MessageSquare
-                                  size={18}
-                                  className="text-neutral-400"
-                                />
-                                Messagerie
-                              </div>
-                              {unreadCount > 0 && (
-                                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-bold text-white">
-                                  {unreadCount}
-                                </span>
-                              )}
-                            </Link>
-                          </>
-                        )}
-
-                        {isSuperAdmin && (
                           <Link
-                            href="/admin/users"
+                            href="/profile"
                             onClick={() => setIsUserMenuOpen(false)}
-                            className="flex w-full items-center gap-3 rounded-xl bg-purple-50 px-3 py-2.5 text-sm font-bold text-purple-900 transition-colors hover:bg-purple-100"
+                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
                           >
-                            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm border border-purple-100">
-                              <Users size={16} className="text-purple-600" />
-                            </div>
-                            <div>
-                              <span>Utilisateurs</span>
-                              <p className="text-[10px] font-normal text-purple-500">
-                                Gérer les rôles
-                              </p>
-                            </div>
+                            <Settings size={18} className="text-neutral-400" />
+                            Profil & Réglages
                           </Link>
-                        )}
 
-                        <Link
-                          href="/profile"
-                          onClick={() => setIsUserMenuOpen(false)}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-700 transition-colors hover:bg-neutral-50 hover:text-neutral-900"
-                        >
-                          <Settings size={18} className="text-neutral-400" />
-                          Profil & Réglages
-                        </Link>
+                          <div className="my-1 h-px bg-neutral-100" />
 
-                        <div className="my-1 h-px bg-neutral-100" />
-
-                        <button
-                          onClick={() => signOut({ callbackUrl: "/" })}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
-                        >
-                          <LogOut size={18} />
-                          Se déconnecter
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                          <button
+                            onClick={() => signOut({ callbackUrl: "/" })}
+                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                          >
+                            <LogOut size={18} />
+                            Se déconnecter
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
@@ -372,6 +410,18 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                             <LayoutDashboard size={20} />
                             Administration
                           </Link>
+
+                          {/* Lien Pinterest dans le Menu Mobile */}
+                          {isAdmin && (
+                            <Link
+                              href="/admin/pinterest"
+                              onClick={() => setIsMobileMenuOpen(false)}
+                              className="flex w-full items-center gap-3 rounded-xl bg-red-50 px-4 py-3 font-medium text-red-700 border border-red-100 active:scale-95"
+                            >
+                              <Share2 size={20} />
+                              Pinterest Studio
+                            </Link>
+                          )}
 
                           <Link
                             href="/admin/messages"
