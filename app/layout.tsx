@@ -140,6 +140,7 @@ export const metadata: Metadata = {
     "opensearchdescription+xml": "/opensearch.xml",
     "geo.region": "FR",
     "geo.placename": "Paris",
+    "google-adsense-account": "ca-pub-9989627034003305",
   },
 };
 
