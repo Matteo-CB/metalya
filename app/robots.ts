@@ -16,8 +16,10 @@ export default function robots(): MetadataRoute.Robots {
         "/forgot-password/",
         "/register/",
         "/login/",
+        "/private/", // Sécurité supplémentaire
       ],
     },
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    // On déclare TOUS les sitemaps pour maximiser la couverture
+    sitemap: [`${BASE_URL}/sitemap.xml`, `${BASE_URL}/news-sitemap.xml`],
   };
 }

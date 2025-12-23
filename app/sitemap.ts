@@ -47,6 +47,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${BASE_URL}/outils`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.95, // Priorité très haute pour le Hub Outils
+    },
+    {
+      url: `${BASE_URL}/outils/convertisseur-image`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9, // Priorité haute pour l'outil lui-même
+    },
+    {
       url: `${BASE_URL}/about`,
       lastModified: new Date(),
       changeFrequency: "monthly",

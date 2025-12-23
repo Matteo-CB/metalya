@@ -6,7 +6,6 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
-import { createTumblrPost } from "@/lib/tumblr";
 import { createBlueskyPost } from "@/lib/bluesky";
 import { createMastodonPost } from "@/lib/mastodon";
 import { requestGoogleIndexing } from "@/lib/google-indexing";
@@ -71,17 +70,6 @@ async function distributeToSocials(post: {
         tags: meta.keys,
         imageUrl: meta.img,
       }),
-
-      post.coverImage
-        ? createTumblrPost({
-            title: post.title,
-            excerpt: meta.desc,
-            link: meta.link,
-            imageUrl: meta.img,
-            category: meta.cat,
-            keywords: meta.keys,
-          })
-        : Promise.resolve(),
 
       post.coverImage
         ? createBlueskyPost({

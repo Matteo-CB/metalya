@@ -15,13 +15,13 @@ import {
   Settings,
   Users,
   MessageSquare,
-  Share2, // Ajout de l'icône pour Pinterest
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { User } from "next-auth";
 
 const NAV_LINKS = [
   { label: "Articles", href: "/posts" },
+  { label: "Outils", href: "/outils" }, // AJOUT DU LIEN OUTILS
   { label: "Actualités", href: "/category/actualites" },
   { label: "Culture", href: "/category/culture" },
   { label: "Tech", href: "/category/tech" },
@@ -59,8 +59,6 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
     user?.role === "REDACTEUR";
 
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
-  // Ajout du rôle spécifique pour Pinterest (Admins seulement)
-  const isAdmin = user?.role === "ADMIN" || user?.role === "SUPER_ADMIN";
 
   return (
     <>
@@ -92,13 +90,15 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                   href={link.href}
                   className={cn(
                     "group relative py-2 text-sm font-medium transition-colors duration-300 hover:text-neutral-900",
-                    pathname === link.href
+                    pathname === link.href ||
+                      (link.href !== "/" && pathname?.startsWith(link.href))
                       ? "text-neutral-900"
                       : "text-neutral-500"
                   )}
                 >
                   {link.label}
-                  {pathname === link.href && (
+                  {(pathname === link.href ||
+                    (link.href !== "/" && pathname?.startsWith(link.href))) && (
                     <motion.div
                       layoutId="underline"
                       className="absolute -bottom-px left-0 h-px w-full bg-neutral-900"
@@ -112,17 +112,6 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
             <div className="hidden items-center gap-4 lg:flex">
               {user ? (
                 <div className="flex items-center gap-4">
-                  {/* Bouton Pinterest accès direct (Desktop) */}
-                  {isAdmin && (
-                    <Link
-                      href="/admin/pinterest"
-                      className="hidden xl:flex items-center gap-2 rounded-full bg-red-50 px-4 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-100"
-                    >
-                      <Share2 size={14} />
-                      Pinterest
-                    </Link>
-                  )}
-
                   <div className="relative">
                     <button
                       onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -193,28 +182,6 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                                   </p>
                                 </div>
                               </Link>
-
-                              {/* Lien Pinterest dans le Dropdown */}
-                              {isAdmin && (
-                                <Link
-                                  href="/admin/pinterest"
-                                  onClick={() => setIsUserMenuOpen(false)}
-                                  className="mt-1 flex w-full items-center gap-3 rounded-xl bg-red-50/50 px-3 py-2.5 text-sm font-bold text-red-700 transition-colors hover:bg-red-50"
-                                >
-                                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-red-100">
-                                    <Share2
-                                      size={16}
-                                      className="text-red-600"
-                                    />
-                                  </div>
-                                  <div>
-                                    <span>Pinterest Studio</span>
-                                    <p className="text-[10px] font-normal text-red-400">
-                                      Créer des épingles
-                                    </p>
-                                  </div>
-                                </Link>
-                              )}
 
                               <Link
                                 href="/admin/messages"
@@ -357,7 +324,9 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                         onClick={() => setIsMobileMenuOpen(false)}
                         className={cn(
                           "block font-serif text-4xl font-medium tracking-tight",
-                          pathname === link.href
+                          pathname === link.href ||
+                            (link.href !== "/" &&
+                              pathname?.startsWith(link.href))
                             ? "text-neutral-900"
                             : "text-neutral-400"
                         )}
@@ -370,6 +339,7 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
 
                 <div className="h-px w-full bg-neutral-100" />
 
+                {/* Le reste du menu mobile reste inchangé (profil, admin, etc.) */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -411,17 +381,7 @@ export function SiteHeader({ user, unreadCount = 0 }: SiteHeaderProps) {
                             Administration
                           </Link>
 
-                          {/* Lien Pinterest dans le Menu Mobile */}
-                          {isAdmin && (
-                            <Link
-                              href="/admin/pinterest"
-                              onClick={() => setIsMobileMenuOpen(false)}
-                              className="flex w-full items-center gap-3 rounded-xl bg-red-50 px-4 py-3 font-medium text-red-700 border border-red-100 active:scale-95"
-                            >
-                              <Share2 size={20} />
-                              Pinterest Studio
-                            </Link>
-                          )}
+                          {/* Suppression de Pinterest Studio Admin ici aussi si présent (non visible dans l'ancien code fourni mais par sécurité) */}
 
                           <Link
                             href="/admin/messages"
