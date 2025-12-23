@@ -528,7 +528,7 @@ export function ImageConverter() {
       {/* --- INFO SECTION --- */}
       <FadeIn delay={0.4}>
         <div className="mt-32 grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <div className="lg:col-span-4 space-y-8 sticky top-32 h-fit">
+          <div className="lg:col-span-4 space-y-8 lg:sticky top-32 h-fit">
             <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
               <h3 className="font-serif text-xl font-bold mb-4 text-neutral-900">
                 Formats Supportés
