@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   Upload,
   Download,
@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   AlertCircle,
   Layers,
+  Smartphone,
 } from "lucide-react";
 import { FadeIn } from "@/components/ui/fade-in";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,11 +25,12 @@ interface ProcessedImage {
   size: number;
 }
 
-// Définition locale des types de config pour éviter les conflits si la lib change
+// Types pour la configuration
 type ImglyConfig = {
   progress?: (key: string, current: number, total: number) => void;
   debug?: boolean;
   model?: "isnet" | "isnet_fp16" | "isnet_quint8";
+  device?: "gpu" | "cpu";
 };
 
 export function BackgroundRemover() {
@@ -39,11 +41,33 @@ export function BackgroundRemover() {
   const [loadingStep, setLoadingStep] = useState<string>("");
   const [progress, setProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Slider state
-  const [sliderPosition, setSliderPosition] = useState(50);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const imageContainerRef = useRef<HTMLDivElement>(null);
+  const [sliderPosition, setSliderPosition] = useState(50);
+
+  // Détection mobile au montage pour optimiser le modèle
+  useEffect(() => {
+    const checkMobile = () => {
+      const userAgent =
+        typeof window.navigator === "undefined" ? "" : navigator.userAgent;
+      const mobile = Boolean(
+        userAgent.match(/Android/i) ||
+          userAgent.match(/webOS/i) ||
+          userAgent.match(/iPhone/i) ||
+          userAgent.match(/iPad/i) ||
+          userAgent.match(/iPod/i) ||
+          userAgent.match(/BlackBerry/i) ||
+          userAgent.match(/Windows Phone/i) ||
+          window.innerWidth < 768
+      );
+      setIsMobile(mobile);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   // --- ACTIONS ---
 
@@ -62,46 +86,112 @@ export function BackgroundRemover() {
     });
   }, []);
 
+  // Fonction utilitaire pour réduire la taille de l'image AVANT traitement (Crucial pour mobile)
+  const resizeImageForMobile = async (file: File): Promise<Blob> => {
+    if (!isMobile && file.size < 5 * 1024 * 1024) return file; // Pas besoin sur desktop si < 5MB
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        // Limite max pour mobile : 1500px (suffisant et évite le crash RAM)
+        const maxDim = isMobile ? 1500 : 2500;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxDim || height > maxDim) {
+          if (width > height) {
+            height = (height / width) * maxDim;
+            width = maxDim;
+          } else {
+            width = (width / height) * maxDim;
+            height = maxDim;
+          }
+        } else {
+          // Si l'image est petite, on retourne le fichier original
+          resolve(file);
+          return;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else resolve(file); // Fallback
+            },
+            file.type,
+            0.9
+          );
+        } else {
+          resolve(file);
+        }
+      };
+      img.onerror = () => resolve(file);
+    });
+  };
+
   const processImage = async () => {
     if (!file || !result) return;
     setIsProcessing(true);
     setProgress(0);
 
     try {
-      setLoadingStep("Initialisation du Moteur Neural...");
+      setLoadingStep(
+        isMobile
+          ? "Optimisation pour mobile..."
+          : "Initialisation du Moteur Neural..."
+      );
       setProgress(5);
+
+      // 1. Optimisation préalable de l'image (Anti-Crash)
+      const optimizedBlob = await resizeImageForMobile(file);
 
       const imgly = await import("@imgly/background-removal");
 
-      // CORRECTION ICI : Utilisation de "isnet" (modèle standard) ou "isnet_quint8" (optimisé)
+      // 2. Configuration Adaptative : Quint8 pour Mobile (léger), Isnet pour Desktop (Qualité max)
       const config: ImglyConfig = {
         progress: (key: string, current: number, total: number) => {
           const percentage = Math.round((current / total) * 100);
           if (key.includes("fetch")) {
-            setLoadingStep(`Chargement du modèle IA (${percentage}%)...`);
+            setLoadingStep(`Chargement IA (${percentage}%)...`);
             setProgress(10 + percentage * 0.4);
           } else if (key.includes("compute")) {
-            setLoadingStep(`Analyse sémantique des pixels...`);
+            setLoadingStep(`Analyse sémantique...`);
             setProgress(50 + percentage * 0.5);
           }
         },
         debug: false,
-        model: "isnet", // Modèle haute qualité standard reconnu par TypeScript
+        // SUR MOBILE : On force le modèle compressé (quint8) pour diviser la RAM par 4
+        // SUR DESKTOP : On utilise le modèle standard
+        model: isMobile ? "isnet_quint8" : "isnet",
       };
 
       setLoadingStep("Détourage haute précision en cours...");
 
-      // @ts-ignore - Ignore l'erreur de typage stricte si la version de la lib diffère légèrement
-      const blob = await imgly.removeBackground(file, config);
+      // @ts-ignore
+      const blob = await imgly.removeBackground(optimizedBlob, config);
       const url = URL.createObjectURL(blob);
 
       setResult((prev) => (prev ? { ...prev, processedUrl: url } : null));
       setProgress(100);
     } catch (error) {
       console.error("Erreur détourage:", error);
-      setLoadingStep("Erreur lors du traitement. Réessayez.");
+      setLoadingStep("Mémoire insuffisante. Essayez une image plus petite.");
+      // Petit délai pour laisser l'utilisateur lire l'erreur avant de reset
+      setTimeout(() => setIsProcessing(false), 3000);
+      return;
     } finally {
-      setIsProcessing(false);
+      // Sur succès immédiat, on laisse l'animation finir proprement
+      if (progress === 100) {
+        setTimeout(() => setIsProcessing(false), 500);
+      } else {
+        setIsProcessing(false);
+      }
     }
   };
 
@@ -149,7 +239,7 @@ export function BackgroundRemover() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className={`w-full max-w-2xl border-2 border-dashed rounded-[2rem] p-16 text-center transition-all duration-300 cursor-pointer ${
+                  className={`w-full max-w-2xl border-2 border-dashed rounded-[2rem] p-8 md:p-16 text-center transition-all duration-300 cursor-pointer ${
                     isDragging
                       ? "border-purple-500 bg-purple-50 scale-[1.02]"
                       : "border-neutral-300 hover:border-purple-400 hover:bg-white"
@@ -167,16 +257,19 @@ export function BackgroundRemover() {
                   }}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 border border-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500">
-                    <Scissors size={36} className="text-purple-600" />
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-purple-100 to-pink-100 border border-white rounded-3xl flex items-center justify-center mx-auto mb-6 md:mb-8 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                    <Scissors
+                      size={32}
+                      className="text-purple-600 md:w-9 md:h-9"
+                    />
                   </div>
-                  <h3 className="text-3xl font-serif text-neutral-900 mb-4">
+                  <h3 className="text-2xl md:text-3xl font-serif text-neutral-900 mb-4">
                     Glissez votre image
                   </h3>
                   <p className="text-neutral-500 mb-8">
-                    JPG, PNG ou WebP jusqu'à 10MB
+                    JPG, PNG ou WebP {isMobile ? "(Optimisé Mobile)" : ""}
                   </p>
-                  <button className="px-8 py-4 bg-neutral-900 text-white rounded-full font-bold text-sm tracking-wide hover:bg-neutral-800 transition-colors shadow-lg">
+                  <button className="px-8 py-4 bg-neutral-900 text-white rounded-full font-bold text-sm tracking-wide hover:bg-neutral-800 transition-colors shadow-lg w-full md:w-auto">
                     Parcourir les fichiers
                   </button>
                 </motion.div>
@@ -191,7 +284,7 @@ export function BackgroundRemover() {
                 >
                   {/* Toolbar */}
                   <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-start">
                       <button
                         onClick={() => {
                           setFile(null);
@@ -200,9 +293,7 @@ export function BackgroundRemover() {
                         className="text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-neutral-100"
                       >
                         <Eraser size={16} />{" "}
-                        <span className="hidden sm:inline">
-                          Changer d'image
-                        </span>
+                        <span className="hidden sm:inline">Changer</span>
                       </button>
                       <div className="h-4 w-px bg-neutral-200 hidden sm:block" />
                       <span className="text-xs px-3 py-1.5 bg-neutral-100 border border-neutral-200 rounded-full text-neutral-600 font-mono truncate max-w-[150px]">
@@ -219,7 +310,12 @@ export function BackgroundRemover() {
                           size={18}
                           className="group-hover:rotate-12 transition-transform"
                         />
-                        Détourer maintenant
+                        Détourer{" "}
+                        {isMobile && (
+                          <span className="text-[10px] bg-white/20 px-1 rounded ml-1">
+                            LITE
+                          </span>
+                        )}
                       </button>
                     )}
 
@@ -232,14 +328,14 @@ export function BackgroundRemover() {
                         className="w-full md:w-auto px-8 py-3 bg-green-600 text-white rounded-xl font-bold shadow-lg shadow-green-200 hover:shadow-green-300 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
                       >
                         <Download size={18} />
-                        Télécharger le PNG
+                        Télécharger
                       </a>
                     )}
                   </div>
 
                   {/* Image Viewer Container */}
-                  <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-100 min-h-[400px]">
-                    {/* Checkerboard Background for Transparency */}
+                  <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-neutral-200 bg-neutral-100 min-h-[300px] md:min-h-[400px]">
+                    {/* Checkerboard Background */}
                     <div
                       className="absolute inset-0 opacity-40"
                       style={{
@@ -262,7 +358,9 @@ export function BackgroundRemover() {
                         >
                           <div className="w-full max-w-sm">
                             <div className="flex justify-between text-xs font-bold uppercase tracking-wider text-purple-600 mb-2">
-                              <span>Traitement IA</span>
+                              <span>
+                                Traitement {isMobile ? "Mobile" : "IA"}
+                              </span>
                               <span>{Math.round(progress)}%</span>
                             </div>
                             <div className="h-2 bg-neutral-200 rounded-full overflow-hidden relative">
@@ -273,9 +371,14 @@ export function BackgroundRemover() {
                                 transition={{ ease: "easeOut" }}
                               />
                             </div>
-                            <p className="text-center text-neutral-500 mt-4 font-medium animate-pulse">
+                            <p className="text-center text-neutral-500 mt-4 font-medium animate-pulse text-sm">
                               {loadingStep}
                             </p>
+                            {isMobile && progress < 20 && (
+                              <p className="text-center text-xs text-neutral-400 mt-2">
+                                Ne quittez pas la page...
+                              </p>
+                            )}
                           </div>
                         </motion.div>
                       )}
@@ -283,7 +386,7 @@ export function BackgroundRemover() {
 
                     {/* Interactive Comparison Slider */}
                     <div
-                      className="relative w-full aspect-video md:aspect-[16/9] select-none cursor-ew-resize group touch-none"
+                      className="relative w-full aspect-square md:aspect-[16/9] select-none cursor-ew-resize group touch-none"
                       ref={imageContainerRef}
                       onMouseMove={
                         result.processedUrl ? handleSliderMove : undefined
@@ -292,14 +395,14 @@ export function BackgroundRemover() {
                         result.processedUrl ? handleSliderMove : undefined
                       }
                     >
-                      {/* 1. Base Layer: The Result (No Background) OR Original if not processed */}
+                      {/* 1. Base Layer: Result */}
                       <img
                         src={result.processedUrl || result.originalUrl}
                         alt="Résultat sans fond"
                         className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                       />
 
-                      {/* 2. Top Layer: Original Image (Clipped) */}
+                      {/* 2. Top Layer: Original (Clipped) */}
                       {result.processedUrl && (
                         <div
                           className="absolute inset-0 overflow-hidden border-r-2 border-white shadow-[5px_0_20px_rgba(0,0,0,0.2)]"
@@ -341,7 +444,7 @@ export function BackgroundRemover() {
                     <div className="flex justify-center mt-6">
                       <p className="text-sm text-neutral-500 flex items-center gap-2">
                         <Sparkles size={14} className="text-yellow-500" />
-                        Glissez le curseur pour voir la différence
+                        Glissez le curseur pour comparer
                       </p>
                     </div>
                   )}
@@ -373,8 +476,8 @@ export function BackgroundRemover() {
                 Vitesse Éclair
               </h3>
               <p className="text-neutral-600 text-sm leading-relaxed">
-                Traitement via WebAssembly. ~2.5s par image. Sans file
-                d'attente, sans délai serveur.
+                Traitement via WebAssembly. Optimisé pour{" "}
+                {isMobile ? "votre mobile" : "la performance"}.
               </p>
             </div>
             <div className="bg-white border border-neutral-200 p-8 rounded-3xl hover:shadow-lg transition-all">
@@ -386,19 +489,19 @@ export function BackgroundRemover() {
               </h3>
               <p className="text-neutral-600 text-sm leading-relaxed">
                 Vos images ne sont jamais uploadées. Tout se passe localement
-                dans votre navigateur.
+                sur votre {isMobile ? "téléphone" : "ordinateur"}.
               </p>
             </div>
             <div className="bg-white border border-neutral-200 p-8 rounded-3xl hover:shadow-lg transition-all">
               <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-6 text-purple-600">
-                <Layers className="w-6 h-6" />
+                <Smartphone className="w-6 h-6" />
               </div>
               <h3 className="font-serif text-xl font-bold text-neutral-900 mb-2">
-                Qualité HD
+                Mobile First
               </h3>
               <p className="text-neutral-600 text-sm leading-relaxed">
-                Gère les détails complexes comme les cheveux. Export PNG
-                transparent haute résolution.
+                Notre IA s'adapte automatiquement à la puissance de votre
+                appareil pour éviter les crashs.
               </p>
             </div>
           </div>
@@ -416,8 +519,8 @@ export function BackgroundRemover() {
                   a: "Oui, totalement. Metalya offre cet outil gratuitement car il n'utilise pas de serveurs coûteux. C'est votre ordinateur qui fait le travail.",
                 },
                 {
-                  q: "Quelle est la taille maximum ?",
-                  a: "Nous recommandons des images jusqu'à 10MB pour garantir une performance optimale du navigateur.",
+                  q: "Pourquoi l'outil est plus lent sur mon téléphone ?",
+                  a: "Sur mobile, nous utilisons un modèle IA compressé pour économiser votre batterie et votre mémoire. Le processeur d'un téléphone est moins puissant qu'un PC, ce qui peut rallonger le traitement de quelques secondes.",
                 },
                 {
                   q: "Quels formats sont supportés ?",
@@ -443,12 +546,12 @@ export function BackgroundRemover() {
               <AlertCircle className="w-6 h-6 text-purple-600 shrink-0" />
               <div>
                 <h4 className="font-bold text-sm text-purple-900">
-                  Info Technique
+                  Note de compatibilité
                 </h4>
                 <p className="text-xs text-purple-700 mt-1">
-                  Lors de la première utilisation, l'outil télécharge le modèle
-                  IA (~30MB). Cela peut prendre quelques secondes. Les
-                  utilisations suivantes sont instantanées.
+                  Sur iPhone (iOS), Safari limite fortement la mémoire des sites
+                  web. Si l'outil recharge la page, essayez avec une image plus
+                  petite.
                 </p>
               </div>
             </div>
