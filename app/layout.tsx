@@ -79,8 +79,9 @@ export const metadata: Metadata = {
     apple: "/logo.png",
     other: [
       {
-        rel: "apple-touch-icon-precomposed",
-        url: "/logo.png",
+        rel: "search",
+        url: "/opensearch.xml",
+        type: "application/opensearchdescription+xml",
       },
     ],
   },
@@ -137,6 +138,7 @@ export const metadata: Metadata = {
     },
   },
   other: {
+    "application-name": "Metalya",
     "opensearchdescription+xml": "/opensearch.xml",
     "geo.region": "FR",
     "geo.placename": "Paris",

@@ -1,34 +1,46 @@
 import { ImageResponse } from "next/og";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma"; // Assure-toi que ce chemin est correct
+import { formatDate } from "@/lib/utils";
 
-export const runtime = "nodejs";
-export const alt = "Metalya Article";
-export const size = { width: 1200, height: 630 };
+// Dimensions recommandées
+export const size = {
+  width: 1200,
+  height: 630,
+};
+
+export const alt = "Article Metalya";
 export const contentType = "image/png";
 
-export default async function Image({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
-  const { slug } = await params;
-
+export default async function Image({ params }: { params: { slug: string } }) {
+  // 1. Récupération des données de l'article
   const post = await prisma.post.findUnique({
-    where: { slug },
-    select: {
-      title: true,
-      coverImage: true,
-      categories: true,
-      author: { select: { name: true, image: true } },
-    },
+    where: { slug: params.slug },
+    include: { author: true },
   });
 
   if (!post) {
-    return new Response("Not found", { status: 404 });
+    return new ImageResponse(
+      (
+        <div
+          style={{
+            background: "black",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "white",
+          }}
+        >
+          Metalya.
+        </div>
+      ),
+      { ...size }
+    );
   }
 
-  const category = post.categories[0] || "ARTICLE";
-  const bgImage = post.coverImage || "https://metalya.fr/og-image.jpg";
+  // Fallback si pas d'image de couverture
+  const bgImage = post.coverImage || "https://metalya.fr/og-image.jpg"; // Remplace par ton URL par défaut
 
   return new ImageResponse(
     (
@@ -38,112 +50,132 @@ export default async function Image({
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "flex-start",
           justifyContent: "flex-end",
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
+          padding: "60px",
+          backgroundColor: "#000",
+          fontFamily: "serif",
           position: "relative",
         }}
       >
+        {/* IMAGE DE FOND */}
+        {/* Note: Next/OG ne supporte pas 'backgroundImage: url(...)', il faut une balise img absolue */}
+        <img
+          src={bgImage}
+          alt={post.title}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            opacity: 0.6, // Légère transparence pour assombrir
+          }}
+        />
+
+        {/* OVERLAY DEGRADÉ (Pour lisibilité texte) */}
         <div
           style={{
             position: "absolute",
-            inset: 0,
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
             background:
               "linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%)",
           }}
         />
 
+        {/* CONTENU */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             gap: "20px",
-            padding: "60px",
+            position: "relative",
             zIndex: 10,
-            width: "100%",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "16px",
-            }}
-          >
+          {/* Badge Catégorie */}
+          {post.categories[0] && (
             <div
               style={{
-                backgroundColor: "#4f46e5",
+                display: "flex",
+                alignItems: "center",
+                padding: "8px 20px",
+                background: "#a855f7", // Violet Metalya
                 color: "white",
-                padding: "8px 24px",
                 borderRadius: "50px",
-                fontSize: 24,
-                fontWeight: 700,
-                textTransform: "uppercase",
-                letterSpacing: "0.05em",
-              }}
-            >
-              {category}
-            </div>
-            <div
-              style={{
-                color: "rgba(255,255,255,0.8)",
-                fontSize: 24,
+                fontSize: "16px",
                 fontWeight: 600,
+                textTransform: "uppercase",
+                width: "fit-content",
               }}
             >
-              METALYA.FR
+              {post.categories[0]}
             </div>
-          </div>
+          )}
 
+          {/* Titre */}
           <div
             style={{
-              fontSize: 72,
-              fontWeight: 800,
+              fontSize: "70px",
+              fontWeight: 900,
               color: "white",
               lineHeight: 1.1,
-              textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+              textShadow: "0 4px 20px rgba(0,0,0,0.5)",
               maxWidth: "90%",
-              display: "-webkit-box",
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
             }}
           >
             {post.title}
           </div>
 
+          {/* Footer: Auteur & Date */}
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "20px",
+              gap: "15px",
               marginTop: "10px",
             }}
           >
-            {post.author.image && (
+            {post.author?.image && (
               <img
                 src={post.author.image}
-                alt={post.author.name || "Auteur"}
-                style={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: "50%",
-                  border: "3px solid white",
-                }}
+                width="60"
+                height="60"
+                style={{ borderRadius: "50%", border: "2px solid white" }}
               />
             )}
             <div
               style={{
-                color: "rgba(255,255,255,0.9)",
-                fontSize: 28,
-                fontWeight: 500,
+                display: "flex",
+                flexDirection: "column",
+                color: "rgba(255,255,255,0.8)",
+                fontSize: "20px",
               }}
             >
-              Par {post.author.name || "La Rédaction"}
+              <span style={{ fontWeight: 700, color: "white" }}>
+                {post.author?.name}
+              </span>
+              <span>{formatDate(post.createdAt)}</span>
             </div>
           </div>
+        </div>
+
+        {/* Logo Watermark */}
+        <div
+          style={{
+            position: "absolute",
+            top: "50px",
+            right: "50px",
+            fontSize: "40px",
+            fontWeight: 800,
+            color: "rgba(255,255,255,0.7)",
+            zIndex: 10,
+          }}
+        >
+          Metalya.
         </div>
       </div>
     ),
