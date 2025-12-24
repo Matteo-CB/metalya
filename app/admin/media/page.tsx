@@ -12,7 +12,7 @@ export default async function MediaPage() {
   // 1. Sécurité : Seul l'ADMIN peut voir la galerie complète
   const session = await auth();
 
-  if (session?.user?.role !== "ADMIN") {
+  if (session?.user?.role !== "SUPER_ADMIN") {
     redirect("/");
   }
 

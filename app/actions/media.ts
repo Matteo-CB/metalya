@@ -17,7 +17,7 @@ async function checkAdminAccess() {
     throw new Error("Vous devez être connecté.");
   }
 
-  if (session.user.role !== "ADMIN") {
+  if (session.user.role !== "SUPER_ADMIN") {
     throw new Error("Accès refusé. Réservé aux administrateurs.");
   }
 

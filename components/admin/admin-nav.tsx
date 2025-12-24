@@ -5,77 +5,77 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard,
-  FileText,
   Users,
   Mail,
+  FileText,
+  PlusCircle,
   MessageSquare,
-  Image as ImageIcon, // Nouvelle icône
 } from "lucide-react";
+import { UserRole } from "@prisma/client";
 
-const navItems = [
-  {
-    title: "Vue d'ensemble",
-    href: "/admin",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Articles",
-    href: "/admin/posts",
-    icon: FileText,
-  },
-  {
-    title: "Médiathèque", // NOUVEAU LIEN
-    href: "/admin/media",
-    icon: ImageIcon,
-  },
-  {
-    title: "Utilisateurs",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    title: "Newsletter",
-    href: "/admin/newsletter",
-    icon: Mail,
-  },
-  {
-    title: "Messages",
-    href: "/admin/messages",
-    icon: MessageSquare,
-  },
-];
+interface AdminNavProps {
+  role: UserRole;
+  unreadCount: number;
+}
 
-export function AdminNav() {
+export function AdminNav({ role, unreadCount }: AdminNavProps) {
   const pathname = usePathname();
+  const isSuperAdmin = role === UserRole.SUPER_ADMIN;
+
+  const links = [
+    {
+      href: "/admin/posts",
+      label: "Articles",
+      icon: FileText,
+    },
+    {
+      href: "/admin/create",
+      label: "Nouveau",
+      icon: PlusCircle,
+    },
+    {
+      href: "/admin/messages",
+      label: "Messagerie",
+      icon: MessageSquare,
+      badge: unreadCount > 0 ? unreadCount : null,
+    },
+    {
+      href: "/admin/newsletter",
+      label: "Newsletter",
+      icon: Mail,
+    },
+  ];
+
+  if (isSuperAdmin) {
+    links.splice(3, 0, {
+      href: "/admin/users",
+      label: "Utilisateurs",
+      icon: Users,
+    }); // Insère avant Newsletter
+  }
 
   return (
-    <nav className="grid items-start gap-2">
-      {navItems.map((item, index) => {
-        const Icon = item.icon;
-
-        // Gestion de l'état actif (exact ou sous-route)
-        const isActive =
-          pathname === item.href ||
-          (item.href !== "/admin" && pathname.startsWith(item.href));
-
+    <nav className="flex gap-1 overflow-x-auto border-b border-neutral-200 bg-white px-4 py-2 lg:px-6">
+      {links.map((link) => {
+        const isActive = pathname.startsWith(link.href);
         return (
-          <Link key={index} href={item.href}>
-            <span
-              className={cn(
-                "group flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-neutral-900 text-white"
-                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
-              )}
-            >
-              <Icon
-                className={cn(
-                  "mr-2 h-4 w-4",
-                  isActive ? "text-white" : "text-neutral-500"
-                )}
-              />
-              <span>{item.title}</span>
-            </span>
+          <Link
+            key={link.href}
+            href={link.href}
+            className={cn(
+              "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "bg-neutral-100 text-neutral-900"
+                : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
+            )}
+          >
+            <link.icon size={16} />
+            {link.label}
+            {link.badge && (
+              <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-600 px-1.5 text-[10px] font-bold text-white">
+                {link.badge > 99 ? "99+" : link.badge}
+              </span>
+            )}
           </Link>
         );
       })}
