@@ -46,18 +46,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
+    // --- OUTILS : Priorité Maximale ---
     {
       url: `${BASE_URL}/outils`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.95, // Priorité très haute pour le Hub Outils
+      priority: 0.95,
     },
     {
       url: `${BASE_URL}/outils/convertisseur-image`,
       lastModified: new Date(),
       changeFrequency: "monthly",
-      priority: 0.9, // Priorité haute pour l'outil lui-même
+      priority: 0.9,
     },
+    {
+      url: `${BASE_URL}/outils/remove-background`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/outils/nomad-cost`,
+      lastModified: new Date(),
+      changeFrequency: "weekly", // Données dynamiques
+      priority: 0.9,
+    },
+    // --- PAGES STATIQUES ---
     {
       url: `${BASE_URL}/about`,
       lastModified: new Date(),
@@ -70,30 +84,32 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "yearly",
       priority: 0.5,
     },
+    // --- CATEGORIES ---
     {
       url: `${BASE_URL}/category/actualites`,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/category/tech`,
       lastModified: new Date(),
       changeFrequency: "daily",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/category/culture`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${BASE_URL}/category/voyage`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.7,
+      priority: 0.8,
     },
+    // --- LÉGAL ---
     {
       url: `${BASE_URL}/mentions-legales`,
       lastModified: new Date(),

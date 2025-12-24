@@ -7,6 +7,8 @@ import {
   Layers,
   Scissors,
   Wand2,
+  Map,
+  Wallet,
 } from "lucide-react";
 
 export interface Tool {
@@ -20,10 +22,29 @@ export interface Tool {
   bg: string;
   border: string;
   gradient: string;
-  keywords: string[]; // Ajout pour le SEO futur
+  keywords: string[];
 }
 
 export const tools: Tool[] = [
+  {
+    title: "Nomad Métriques",
+    description:
+      "Calculateur de pouvoir d'achat voyage. Découvrez combien de temps vous pouvez vivre à Bali, New York ou Tokyo avec votre budget actuel.",
+    icon: Wallet, // Nouvelle icône pertinente
+    href: "/outils/nomad-cost",
+    status: "new", // ACTIVÉ
+    badge: "Viral",
+    color: "text-emerald-600",
+    bg: "bg-emerald-600/10",
+    border: "group-hover:border-emerald-600/50",
+    gradient: "from-emerald-600/20 to-teal-600/20",
+    keywords: [
+      "coût vie voyage",
+      "budget digital nomad",
+      "comparateur ville",
+      "pouvoir d'achat tourisme",
+    ],
+  },
   {
     title: "Studio Détourage",
     description:
@@ -31,7 +52,7 @@ export const tools: Tool[] = [
     icon: Scissors,
     href: "/outils/remove-background",
     status: "active",
-    badge: "Nouveau",
+    badge: "Populaire",
     color: "text-purple-600",
     bg: "bg-purple-600/10",
     border: "group-hover:border-purple-600/50",
@@ -58,19 +79,6 @@ export const tools: Tool[] = [
     keywords: ["convertisseur webp", "compresser image", "avif converter"],
   },
   {
-    title: "Nomad Cost",
-    description:
-      "Analysez le coût de la vie pour Digital Nomads. Comparez votre budget actuel avec votre prochaine destination.",
-    icon: Globe,
-    href: "/outils/nomad-cost",
-    status: "coming-soon",
-    color: "text-blue-500",
-    bg: "bg-blue-500/10",
-    border: "group-hover:border-blue-500/50",
-    gradient: "from-blue-500/20 to-cyan-500/20",
-    keywords: ["digital nomad budget", "coût de la vie voyage"],
-  },
-  {
     title: "Focus Sanctuaire",
     description:
       "Générateur de bruits ambiants (Pluie, Café, Train) et minuteur Pomodoro pour le Deep Work.",
@@ -90,10 +98,10 @@ export const tools: Tool[] = [
     icon: Search,
     href: "/outils/seo-preview",
     status: "coming-soon",
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    border: "group-hover:border-emerald-500/50",
-    gradient: "from-emerald-500/20 to-green-500/20",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    border: "group-hover:border-blue-500/50",
+    gradient: "from-blue-500/20 to-cyan-500/20",
     keywords: ["serp simulator", "seo preview", "google snippet"],
   },
   {
