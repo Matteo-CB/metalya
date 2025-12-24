@@ -10,6 +10,7 @@ import {
   FileText,
   PlusCircle,
   MessageSquare,
+  Book,
 } from "lucide-react";
 import { UserRole } from "@prisma/client";
 
@@ -51,6 +52,13 @@ export function AdminNav({ role, unreadCount }: AdminNavProps) {
       href: "/admin/users",
       label: "Utilisateurs",
       icon: Users,
+    }); // Insère avant Newsletter
+  }
+  if (isSuperAdmin) {
+    links.splice(3, 0, {
+      href: "/admin/media",
+      label: "Mediathèque",
+      icon: Book,
     }); // Insère avant Newsletter
   }
 
