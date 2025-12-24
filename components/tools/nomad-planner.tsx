@@ -439,7 +439,7 @@ export function NomadPlanner() {
       </div>
 
       {/* STICKY CONTROL PANEL */}
-      <div className="sticky top-20 z-40 px-4 mb-12">
+      <div className="block top-20 z-40 px-4 mb-12">
         <FadeIn delay={0.2}>
           <div className="max-w-4xl mx-auto bg-white/90 backdrop-blur-xl border border-neutral-200 shadow-2xl rounded-3xl p-6 md:p-8 ring-1 ring-black/5 transition-all hover:bg-white">
             <div className="flex flex-col gap-6">
