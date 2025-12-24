@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { formatDate, formatCategory } from "@/lib/utils";
 import { PostStatus } from "@prisma/client";
+import { DestinationsSection } from "@/components/home/destinations-section";
+import { StoriesPreview } from "@/components/home/stories-preview";
 
 async function getHomePageData() {
   const posts = await prisma.post.findMany({
@@ -88,7 +90,8 @@ export default async function HomePage() {
         </header>
 
         {heroPost && <HeroPost post={heroPost} />}
-
+        <StoriesPreview />
+        <DestinationsSection />
         {trendingPosts.length > 0 && (
           <div className="py-4 md:py-8">
             <PostGrid posts={trendingPosts} title="Les Incontournables" />

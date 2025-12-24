@@ -17,14 +17,17 @@ export default function robots(): MetadataRoute.Robots {
         "/register/",
         "/login/",
         "/private/",
-        "/.well-known/traffic-advice", // On laisse l'accès au fichier lui-même, mais pas besoin de le crawler comme une page
+        "/web-stories/*/amp", // On laisse Google indexer via le sitemap, mais on évite le crawl sauvage si besoin (optionnel, je préfère laisser ouvert pour l'instant)
+        "/.well-known/traffic-advice",
       ],
     },
-    // Déclaration de TOUS les sitemaps (Général + News + Images)
+    // Déclaration de TOUS les sitemaps
     sitemap: [
       `${BASE_URL}/sitemap.xml`,
       `${BASE_URL}/news-sitemap.xml`,
-      `${BASE_URL}/image-sitemap.xml`, // <<< AJOUT CRUCIAL
+      `${BASE_URL}/image-sitemap.xml`,
+      `${BASE_URL}/destinations-sitemap.xml`, // AJOUTÉ
+      `${BASE_URL}/web-stories-sitemap.xml`, // AJOUTÉ
     ],
   };
 }

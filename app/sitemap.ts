@@ -46,12 +46,37 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.9,
     },
-    // --- OUTILS : Priorité Maximale ---
+    // --- NOUVEAUX HUBS (Essentiels) ---
+    {
+      url: `${BASE_URL}/destinations`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/web-stories`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    // --- OUTILS ---
     {
       url: `${BASE_URL}/outils`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.95,
+    },
+    {
+      url: `${BASE_URL}/outils/lifestyle-calculator`, // AJOUTÉ
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${BASE_URL}/outils/travel-calendar`, // AJOUTÉ
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: `${BASE_URL}/outils/convertisseur-image`,
@@ -68,7 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     {
       url: `${BASE_URL}/outils/nomad-cost`,
       lastModified: new Date(),
-      changeFrequency: "weekly", // Données dynamiques
+      changeFrequency: "weekly",
       priority: 0.9,
     },
     // --- PAGES STATIQUES ---

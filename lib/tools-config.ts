@@ -4,11 +4,11 @@ import {
   Zap,
   Clock,
   Search,
-  Layers,
   Scissors,
-  Wand2,
-  Map,
   Wallet,
+  Crown,
+  Calendar,
+  Plane,
 } from "lucide-react";
 
 export interface Tool {
@@ -27,23 +27,45 @@ export interface Tool {
 
 export const tools: Tool[] = [
   {
-    title: "Nomad Métriques",
+    title: "Géo-Arbitrage",
     description:
-      "Calculateur de pouvoir d'achat voyage. Découvrez combien de temps vous pouvez vivre à Bali, New York ou Tokyo avec votre budget actuel.",
-    icon: Wallet, // Nouvelle icône pertinente
-    href: "/outils/nomad-cost",
-    status: "new", // ACTIVÉ
+      "Calculateur de richesse relative. Votre salaire de 2000€ vaut 8000€ ailleurs. Découvrez où vous êtes un roi.",
+    icon: Crown,
+    href: "/outils/lifestyle-calculator",
+    status: "new",
     badge: "Viral",
+    color: "text-yellow-600",
+    bg: "bg-yellow-600/10",
+    border: "group-hover:border-yellow-600/50",
+    gradient: "from-yellow-600/20 to-amber-600/20",
+    keywords: ["geoarbitrage", "pouvoir d'achat", "salaire expatriation"],
+  },
+  {
+    title: "Calendrier Voyage",
+    description:
+      "Où partir ce mois-ci ? L'outil qui croise la météo idéale et les événements culturels incontournables.",
+    icon: Calendar,
+    href: "/outils/travel-calendar",
+    status: "new",
+    badge: "Indispensable",
+    color: "text-blue-600",
+    bg: "bg-blue-600/10",
+    border: "group-hover:border-blue-600/50",
+    gradient: "from-blue-600/20 to-cyan-600/20",
+    keywords: ["quand partir", "calendrier voyage", "saison idéale"],
+  },
+  {
+    title: "Nomad Cost",
+    description:
+      "Comparateur de coût de la vie pour 40+ villes. Loyer, Internet, Café. Planifiez votre budget mensuel.",
+    icon: Wallet,
+    href: "/outils/nomad-cost",
+    status: "active",
     color: "text-emerald-600",
     bg: "bg-emerald-600/10",
     border: "group-hover:border-emerald-600/50",
     gradient: "from-emerald-600/20 to-teal-600/20",
-    keywords: [
-      "coût vie voyage",
-      "budget digital nomad",
-      "comparateur ville",
-      "pouvoir d'achat tourisme",
-    ],
+    keywords: ["coût vie voyage", "budget digital nomad", "comparateur ville"],
   },
   {
     title: "Studio Détourage",
@@ -57,12 +79,7 @@ export const tools: Tool[] = [
     bg: "bg-purple-600/10",
     border: "group-hover:border-purple-600/50",
     gradient: "from-purple-600/20 to-indigo-600/20",
-    keywords: [
-      "supprimer fond",
-      "détourage ia",
-      "transparent background",
-      "remove bg",
-    ],
+    keywords: ["supprimer fond", "détourage ia", "transparent background"],
   },
   {
     title: "Studio Image",
