@@ -56,7 +56,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
       };
 
       setMedia((prev) => [newBlob, ...prev]);
-      alert("Image uploadée avec succès !");
     } catch (error) {
       console.error(error);
       alert("Erreur lors de l'upload.");
@@ -85,7 +84,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
   // Copie du lien
   function copyToClipboard(url: string) {
     navigator.clipboard.writeText(url);
-    alert("Lien copié dans le presse-papier !");
   }
 
   return (

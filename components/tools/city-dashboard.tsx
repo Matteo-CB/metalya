@@ -1,116 +1,159 @@
 "use client";
 
-import { City, getInflationCost } from "@/lib/destinations-data"; // <--- Import depuis le nouveau fichier central
-import { Wifi, Sun, Wallet, ThumbsUp, ThumbsDown, Plane } from "lucide-react";
+import { City, getInflationCost } from "@/lib/destinations-data";
+import {
+  Wifi,
+  Thermometer,
+  Wallet,
+  ShieldCheck,
+  Globe,
+  Users,
+  Map,
+  Sun,
+  CloudRain,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
 export function CityDashboard({ city }: { city: City }) {
-  // Calcul du coût réel avec inflation (fonction centralisée)
   const realCost = getInflationCost(city.baseCost);
+
+  // Estimation Budget Touriste (1 semaine) vs Budget Vie (1 mois)
+  const touristWeeklyBudget = Math.round(realCost * 0.4);
+
+  // Score de connectivité (0-100) basé sur la vitesse internet
+  const wifiScore = Math.min(100, Math.round((city.internet / 150) * 100));
+
+  // Couleur dynamique selon le score
+  const wifiColor =
+    wifiScore > 80
+      ? "text-emerald-500"
+      : wifiScore > 50
+      ? "text-yellow-500"
+      : "text-orange-500";
 
   const metrics = [
     {
-      label: "Budget / Mois",
-      value: `${realCost} €`,
-      icon: Wallet,
-      color: "text-emerald-600",
-      bg: "bg-emerald-50",
-    },
-    {
-      label: "Internet",
+      label: "Vitesse Internet",
       value: `${city.internet} Mbps`,
+      sub: wifiScore > 80 ? "Ultra Rapide 🚀" : "Suffisant pour streamer",
       icon: Wifi,
-      color: "text-blue-600",
-      bg: "bg-blue-50",
+      color: "bg-blue-50 text-blue-600",
     },
     {
-      label: "Météo",
+      label: "Météo Moyenne",
       value: `${city.temp}°C`,
-      icon: Sun,
-      color: "text-orange-500",
-      bg: "bg-orange-50",
+      sub: city.temp > 25 ? "Chaud & Ensoleillé ☀️" : "Tempéré & Doux 🌤️",
+      icon: Thermometer,
+      color: "bg-orange-50 text-orange-600",
     },
-    // On a supprimé la Sûreté ici comme demandé
+    {
+      label: "Budget Mensuel",
+      value: `${realCost} €`,
+      sub: "Logement + Vie locale",
+      icon: Wallet,
+      color: "bg-emerald-50 text-emerald-600",
+    },
+    {
+      label: "Budget Touriste",
+      value: `~${touristWeeklyBudget} €`,
+      sub: "Pour 1 semaine (Hôtel/Sorties)",
+      icon: Map,
+      color: "bg-purple-50 text-purple-600",
+    },
   ];
 
-  // Données factices pour Pros/Cons (car non présentes dans le type City simplifié pour le moment)
-  // Dans une V2, tu pourras les ajouter dans lib/destinations-data.ts
-  const defaultPros = ["Coût de la vie", "Communauté Nomade", "Activités"];
-  const defaultCons = ["Barrière langue", "Décalage horaire", "Trafic"];
-
   return (
-    <div className="w-full">
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        {metrics.map((m, i) => (
-          <motion.div
-            key={m.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className={`${m.bg} p-6 rounded-2xl border border-white/50 shadow-sm flex flex-col items-center text-center`}
-          >
-            <m.icon className={`w-8 h-8 ${m.color} mb-3`} />
-            <div className="text-xs font-bold uppercase text-neutral-500 tracking-wider">
-              {m.label}
-            </div>
-            <div className="text-2xl md:text-3xl font-bold text-neutral-900 mt-2">
-              {m.value}
-            </div>
-          </motion.div>
-        ))}
+    <div className="space-y-8">
+      {/* GRILLE PRINCIPALE */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {metrics.map((metric, idx) => {
+          const Icon = metric.icon;
+          return (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              key={idx}
+              className="flex items-start gap-4 p-4 rounded-2xl bg-neutral-50 border border-neutral-100 hover:border-neutral-200 transition-colors"
+            >
+              <div className={`p-3 rounded-xl ${metric.color}`}>
+                <Icon size={24} />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">
+                  {metric.label}
+                </p>
+                <p className="text-xl font-bold text-neutral-900 leading-none mb-1">
+                  {metric.value}
+                </p>
+                <p className="text-xs font-medium text-neutral-500">
+                  {metric.sub}
+                </p>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
 
-      {/* Pros & Cons (Placeholder intelligent) */}
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-emerald-700">
-            <ThumbsUp size={20} /> Les points forts
-          </h3>
-          <ul className="space-y-3">
-            {defaultPros.map((pro, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 text-sm text-neutral-600"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5" />
-                {pro}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* BARRES DE PROGRESSION & INFOS SUPPLÉMENTAIRES */}
+      <div className="bg-neutral-900 text-white rounded-2xl p-6 shadow-xl">
+        <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
+          <Globe size={20} className="text-blue-400" />
+          Indice de Voyageur
+        </h3>
 
-        <div className="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm">
-          <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-rose-700">
-            <ThumbsDown size={20} /> À savoir
-          </h3>
-          <ul className="space-y-3">
-            {defaultCons.map((con, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-3 text-sm text-neutral-600"
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5" />
-                {con}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+        <div className="space-y-6">
+          {/* Jauge Internet */}
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-neutral-300">Connectivité & 4G/5G</span>
+              <span className="font-bold text-blue-400">{wifiScore}/100</span>
+            </div>
+            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${wifiScore}%` }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="h-full bg-gradient-to-r from-blue-600 to-cyan-400"
+              />
+            </div>
+          </div>
 
-      {/* CTA Affiliation */}
-      <div className="mt-8 text-center">
-        <a
-          href={`https://www.skyscanner.fr/transport/vols/fr/${
-            city.slug.split("-")[0]
-          }`}
-          target="_blank"
-          rel="nofollow sponsored"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-neutral-900 text-white rounded-full font-bold hover:bg-neutral-800 transition-all hover:scale-105 shadow-xl hover:shadow-2xl"
-        >
-          <Plane size={20} />
-          Trouver un vol pour {city.name}
-        </a>
+          {/* Jauge Coût */}
+          <div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-neutral-300">Abordabilité</span>
+              <span className="font-bold text-emerald-400">
+                {realCost < 1500
+                  ? "Excellent"
+                  : realCost < 3000
+                  ? "Moyen"
+                  : "Cher"}
+              </span>
+            </div>
+            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{
+                  width: `${Math.max(10, 100 - (realCost / 5000) * 100)}%`,
+                }} // Plus c'est cher, plus la barre est petite
+                transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                className="h-full bg-gradient-to-r from-emerald-600 to-green-400"
+              />
+            </div>
+          </div>
+
+          <div className="pt-4 mt-4 border-t border-white/10 grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-2 text-sm text-neutral-300">
+              <ShieldCheck size={16} className="text-green-400" />
+              <span>Zone Touristique Sûre</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-neutral-300">
+              <Users size={16} className="text-purple-400" />
+              <span>Communauté Active</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   Crown,
   Calendar,
   Plane,
+  Coins, // Nouvelle icône
 } from "lucide-react";
 
 export interface Tool {
@@ -27,23 +28,37 @@ export interface Tool {
 
 export const tools: Tool[] = [
   {
-    title: "Géo-Arbitrage",
+    title: "Pouvoir d'Achat",
     description:
-      "Calculateur de richesse relative. Votre salaire de 2000€ vaut 8000€ ailleurs. Découvrez où vous êtes un roi.",
-    icon: Crown,
+      "Calculateur de richesse relative. Votre salaire de 2000€ vaut 8000€ ailleurs. Découvrez où vivre comme un roi.",
+    icon: Coins, // Icône plus financière
     href: "/outils/lifestyle-calculator",
     status: "new",
     badge: "Viral",
-    color: "text-yellow-600",
-    bg: "bg-yellow-600/10",
-    border: "group-hover:border-yellow-600/50",
-    gradient: "from-yellow-600/20 to-amber-600/20",
+    color: "text-indigo-600",
+    bg: "bg-indigo-600/10",
+    border: "group-hover:border-indigo-600/50",
+    gradient: "from-indigo-600/20 to-purple-600/20",
     keywords: ["geoarbitrage", "pouvoir d'achat", "salaire expatriation"],
+  },
+  {
+    title: "Budget Voyage", // Renommé de "Nomad Cost"
+    description:
+      "Comparateur de coût de la vie pour 80+ villes. Loyer, Hôtels, Repas. Planifiez votre budget vacances ou expatriation.",
+    icon: Wallet,
+    href: "/outils/nomad-cost",
+    status: "active",
+    badge: "Populaire",
+    color: "text-emerald-600",
+    bg: "bg-emerald-600/10",
+    border: "group-hover:border-emerald-600/50",
+    gradient: "from-emerald-600/20 to-teal-600/20",
+    keywords: ["coût vie voyage", "budget vacances", "comparateur ville"],
   },
   {
     title: "Calendrier Voyage",
     description:
-      "Où partir ce mois-ci ? L'outil qui croise la météo idéale et les événements culturels incontournables.",
+      "Où partir ce mois-ci ? L'outil qui croise la météo idéale et les événements culturels pour des vacances parfaites.",
     icon: Calendar,
     href: "/outils/travel-calendar",
     status: "new",
@@ -53,19 +68,6 @@ export const tools: Tool[] = [
     border: "group-hover:border-blue-600/50",
     gradient: "from-blue-600/20 to-cyan-600/20",
     keywords: ["quand partir", "calendrier voyage", "saison idéale"],
-  },
-  {
-    title: "Nomad Cost",
-    description:
-      "Comparateur de coût de la vie pour 40+ villes. Loyer, Internet, Café. Planifiez votre budget mensuel.",
-    icon: Wallet,
-    href: "/outils/nomad-cost",
-    status: "active",
-    color: "text-emerald-600",
-    bg: "bg-emerald-600/10",
-    border: "group-hover:border-emerald-600/50",
-    gradient: "from-emerald-600/20 to-teal-600/20",
-    keywords: ["coût vie voyage", "budget digital nomad", "comparateur ville"],
   },
   {
     title: "Studio Détourage",
@@ -84,7 +86,7 @@ export const tools: Tool[] = [
   {
     title: "Studio Image",
     description:
-      "Convertisseur & Compresseur (WebP, AVIF). Optimisez vos images pour le web sans perte de qualité.",
+      "Convertisseur & Compresseur (WebP, AVIF). Optimisez vos photos de voyage pour le web sans perte de qualité.",
     icon: ImageIcon,
     href: "/outils/convertisseur-image",
     status: "active",
@@ -98,7 +100,7 @@ export const tools: Tool[] = [
   {
     title: "Focus Sanctuaire",
     description:
-      "Générateur de bruits ambiants (Pluie, Café, Train) et minuteur Pomodoro pour le Deep Work.",
+      "Générateur de bruits ambiants (Pluie, Café, Train) et minuteur Pomodoro pour travailler efficacement en voyage.",
     icon: Clock,
     href: "/outils/focus",
     status: "coming-soon",

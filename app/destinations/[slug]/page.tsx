@@ -6,16 +6,17 @@ import { FadeIn } from "@/components/ui/fade-in";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowLeft,
-  Wifi,
-  Sun,
+  MapPin,
+  Calendar,
   Wallet,
   TrendingUp,
   ThumbsUp,
   ThumbsDown,
-  Globe,
-  Thermometer,
+  Plane,
+  Camera,
+  Coffee,
   ArrowRight,
+  Info,
 } from "lucide-react";
 import { CityDashboard } from "@/components/tools/city-dashboard";
 
@@ -25,11 +26,14 @@ function getCity(slug: string) {
   return DESTINATIONS.find((city) => city.slug === slug);
 }
 
-// Récupère 3 villes de la même région pour le maillage interne
 function getSimilarCities(currentCity: (typeof DESTINATIONS)[0]) {
   return DESTINATIONS.filter(
-    (c) => c.region === currentCity.region && c.slug !== currentCity.slug
-  ).slice(0, 3);
+    (c) =>
+      (c.region === currentCity.region || c.vibe === currentCity.vibe) &&
+      c.slug !== currentCity.slug
+  )
+    .sort(() => 0.5 - Math.random())
+    .slice(0, 3);
 }
 
 // --- CONFIG ---
@@ -54,18 +58,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const realCost = getInflationCost(city.baseCost);
 
   return {
-    title: `Vivre à ${city.name} en ${year} : Budget, Avis & Guide Nomad`,
-    description: `Guide complet pour ${city.name}. Budget mensuel : ${realCost}€. Vitesse internet, quartiers, avantages et inconvénients pour les digital nomads.`,
+    title: `Visiter ${city.name} : Guide Voyage, Budget & Avis ${year}`,
+    description: `Préparez votre voyage à ${city.name}, ${city.country}. Budget estimé (${realCost}€), meilleure période, sécurité et incontournables. Le guide complet ${year}.`,
     keywords: [
-      `budget ${city.name} ${year}`,
-      `avis vivre ${city.name}`,
-      `digital nomad ${city.country}`,
-      `cout vie ${city.name}`,
+      `visiter ${city.name}`,
+      `voyage ${city.country}`,
+      `budget voyage ${city.name}`,
+      `que faire à ${city.name}`,
+      `vivre à ${city.name}`,
+      `cout vie ${city.name} ${year}`,
     ],
     openGraph: {
-      title: `Vivre à ${city.name} : Le Guide Ultime ${year}`,
-      description: `Tout savoir sur ${city.name} : Budget (${realCost}€), Internet, Météo et Qualité de vie.`,
+      title: `Guide Ultime : Visiter ${city.name} en ${year}`,
+      description: `Tout savoir sur ${city.name} : Budget, Météo, Sécurité et Bons plans.`,
       images: [{ url: city.image }],
+      type: "article",
     },
   };
 }
@@ -82,42 +89,18 @@ export default async function CityPage({ params }: Props) {
   const realCost = getInflationCost(city.baseCost);
   const similarCities = getSimilarCities(city);
 
-  // JSON-LD (Données structurées)
   const jsonLd = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Accueil",
-            item: "https://metalya.fr",
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Destinations",
-            item: "https://metalya.fr/destinations",
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: city.name,
-            item: `https://metalya.fr/destinations/${city.slug}`,
-          },
-        ],
-      },
-      {
-        "@type": "TouristDestination",
-        name: city.name,
-        description: city.description,
-        image: city.image,
-        touristType: ["Digital Nomad"],
-        address: { "@type": "PostalAddress", addressCountry: city.country },
-      },
-    ],
+    "@type": "TouristDestination",
+    name: city.name,
+    description: city.description,
+    image: city.image,
+    touristType: ["Traveler", "Digital Nomad", "Expat"],
+    address: { "@type": "PostalAddress", addressCountry: city.country },
+    geo: {
+      "@type": "GeoCoordinates",
+      name: city.name,
+    },
   };
 
   return (
@@ -128,39 +111,48 @@ export default async function CityPage({ params }: Props) {
       />
 
       <main className="min-h-screen bg-neutral-50 pb-20">
-        {/* --- HERO HEADER --- */}
-        <header className="relative h-[70vh] w-full overflow-hidden">
-          <div className="absolute inset-0 bg-black/30 z-10" />
+        <header className="relative h-[75vh] w-full overflow-hidden">
+          <div className="absolute inset-0 bg-black/40 z-10" />
           <div className="absolute inset-0 bg-gradient-to-t from-neutral-50 via-transparent to-transparent z-20" />
 
           <Image
             src={city.image}
-            alt={`Vue panoramique de ${city.name}`}
+            alt={`Paysage de ${city.name}, ${city.country}`}
             fill
             className="object-cover"
             priority
-            quality={90}
+            quality={95}
           />
 
-          {/* AJUSTEMENT ICI : pb-32 (au lieu de 16) pour remonter le texte */}
           <Container className="relative z-30 h-full flex flex-col justify-end pb-32">
             <FadeIn>
-              <Link
-                href="/destinations"
-                className="inline-flex items-center text-white/90 hover:text-white mb-8 transition-colors font-medium text-sm uppercase tracking-widest"
-              >
-                <ArrowLeft size={16} className="mr-2" /> Explorer d'autres
-                villes
-              </Link>
+              <nav className="flex items-center gap-2 text-white/80 text-sm font-medium mb-8 uppercase tracking-widest">
+                <Link href="/" className="hover:text-white transition-colors">
+                  Accueil
+                </Link>
+                <span>/</span>
+                <Link
+                  href="/destinations"
+                  className="hover:text-white transition-colors"
+                >
+                  Destinations
+                </Link>
+                <span>/</span>
+                <span className="text-white">{city.country}</span>
+              </nav>
 
               <div className="flex flex-wrap items-center gap-4 mb-6">
-                <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20 text-xs font-bold uppercase tracking-wider shadow-sm">
-                  {city.region}
+                <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20 text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-2">
+                  <MapPin size={14} /> {city.region}
                 </span>
                 <span className="px-4 py-1.5 rounded-full bg-emerald-500/80 backdrop-blur-md text-white border border-white/10 text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-2">
-                  <Globe size={12} />
-                  {city.vibe}
+                  <Camera size={14} /> {city.vibe}
                 </span>
+                {city.badge && (
+                  <span className="px-4 py-1.5 rounded-full bg-yellow-500/90 text-black border border-yellow-400 text-xs font-bold uppercase tracking-wider shadow-sm flex items-center gap-2">
+                    ★ {city.badge}
+                  </span>
+                )}
               </div>
 
               <h1 className="font-serif text-6xl md:text-8xl font-bold text-white mb-6 shadow-sm leading-none tracking-tight">
@@ -174,24 +166,21 @@ export default async function CityPage({ params }: Props) {
           </Container>
         </header>
 
-        {/* AJUSTEMENT ICI : -mt-12 (au lieu de -mt-20) pour baisser la carte */}
         <Container className="relative z-40 -mt-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
-            {/* --- LEFT COLUMN: CONTENT (8 cols) --- */}
             <div className="lg:col-span-8 space-y-12">
-              {/* DASHBOARD CARD */}
               <FadeIn delay={0.2}>
-                <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-neutral-100/50 backdrop-blur-sm">
+                <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-neutral-100/50">
                   <div className="flex items-center gap-3 mb-8 border-b border-neutral-100 pb-6">
                     <div className="p-3 bg-blue-50 text-blue-600 rounded-xl">
                       <TrendingUp size={24} />
                     </div>
                     <div>
                       <h2 className="font-bold text-2xl text-neutral-900">
-                        Indicateurs de Vie {year}
+                        Données de Voyage {year}
                       </h2>
                       <p className="text-sm text-neutral-500">
-                        Données estimées en temps réel
+                        Estimations en temps réel pour {city.name}
                       </p>
                     </div>
                   </div>
@@ -199,95 +188,108 @@ export default async function CityPage({ params }: Props) {
                 </div>
               </FadeIn>
 
-              {/* SEO ARTICLE */}
               <FadeIn delay={0.4}>
                 <article className="prose prose-neutral prose-lg max-w-none">
-                  <div className="bg-white p-10 rounded-[2rem] border border-neutral-100 shadow-sm">
-                    <h3 className="font-serif text-3xl font-bold text-neutral-900 mb-6">
-                      Comprendre le budget à {city.name}
+                  <div className="bg-white p-8 md:p-12 rounded-[2rem] border border-neutral-100 shadow-sm">
+                    <h3 className="font-serif text-3xl font-bold text-neutral-900 mb-6 flex items-center gap-3">
+                      <Plane className="text-blue-500" />
+                      Pourquoi visiter {city.name} ?
                     </h3>
                     <p className="lead text-neutral-600">
-                      {city.name} s'impose en {year} comme une destination de
-                      choix. Avec un budget mensuel estimé à{" "}
-                      <strong>
-                        {realCost}€ ({city.currency})
-                      </strong>
-                      , elle offre un rapport qualité/prix{" "}
-                      {realCost < 1500
-                        ? "exceptionnel"
-                        : "cohérent avec ses infrastructures"}
-                      .
+                      {city.name} s'impose en {year} comme une destination
+                      incontournable. Que vous veniez pour des vacances, du
+                      télétravail ou une expatriation, la ville offre un mélange
+                      unique de culture, de confort et d'aventure.
                     </p>
 
-                    <div className="grid md:grid-cols-2 gap-8 my-8 not-prose">
-                      <div className="bg-neutral-50 p-6 rounded-2xl">
-                        <h4 className="flex items-center gap-2 font-bold text-neutral-900 mb-3">
-                          <Wallet className="text-emerald-500" size={20} />{" "}
-                          Logement
-                        </h4>
-                        <p className="text-sm text-neutral-600">
-                          Le poste principal. Comptez environ{" "}
-                          <strong>{Math.round(realCost * 0.4)}€</strong> pour un
-                          logement privé confortable en centre-ville ou proche
-                          des spots d'intérêt.
-                        </p>
-                      </div>
-                      <div className="bg-neutral-50 p-6 rounded-2xl">
-                        <h4 className="flex items-center gap-2 font-bold text-neutral-900 mb-3">
-                          <Sun className="text-orange-500" size={20} />{" "}
-                          Quotidien
-                        </h4>
-                        <p className="text-sm text-neutral-600">
-                          Pour la nourriture et les loisirs,{" "}
-                          <strong>{Math.round(realCost * 0.35)}€</strong>{" "}
-                          suffisent généralement pour profiter sans se priver
-                          (restaurants locaux, coworking).
-                        </p>
+                    <div className="my-12 p-8 bg-neutral-50 rounded-3xl border border-neutral-200">
+                      <h4 className="flex items-center gap-2 font-bold text-xl text-neutral-900 mb-4 not-prose">
+                        <Wallet className="text-emerald-600" size={24} />
+                        Analyse du Budget sur Place
+                      </h4>
+                      <p className="text-base text-neutral-600 mb-6">
+                        Le coût de la vie est souvent le facteur décisif. À{" "}
+                        {city.name}, le budget moyen est de{" "}
+                        <strong>{realCost}€ / mois</strong> pour une personne
+                        vivant confortablement.
+                      </p>
+                      <div className="grid md:grid-cols-2 gap-6 not-prose">
+                        <div className="bg-white p-4 rounded-xl shadow-sm">
+                          <span className="text-xs font-bold text-neutral-400 uppercase">
+                            Logement (Centre)
+                          </span>
+                          <p className="text-lg font-bold text-neutral-800">
+                            ~{Math.round(realCost * 0.45)}€
+                          </p>
+                        </div>
+                        <div className="bg-white p-4 rounded-xl shadow-sm">
+                          <span className="text-xs font-bold text-neutral-400 uppercase">
+                            Nourriture & Sorties
+                          </span>
+                          <p className="text-lg font-bold text-neutral-800">
+                            ~{Math.round(realCost * 0.35)}€
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <h3 className="font-serif text-2xl font-bold text-neutral-900 mt-10 mb-4">
-                      Qualité de la connexion Internet
+                    <h3 className="font-serif text-2xl font-bold text-neutral-900 mt-10 mb-4 flex items-center gap-3">
+                      <Calendar className="text-orange-500" />
+                      Meilleure période pour partir
                     </h3>
                     <p>
-                      C'est le critère n°1 des travailleurs distants. À{" "}
-                      {city.name}, la vitesse moyenne est de
-                      <strong> {city.internet} Mbps</strong>.
-                      {city.internet > 50
-                        ? " C'est excellent pour tout type d'activité, y compris les appels vidéo HD et le transfert de fichiers lourds."
-                        : " C'est suffisant pour le travail classique, mais attention aux uploads vidéo lourds."}
+                      Le climat à <strong>{city.name}</strong> est un atout
+                      majeur avec une température moyenne de{" "}
+                      <strong>{city.temp}°C</strong>.
+                      {(city as any).bestMonth ? (
+                        <>
+                          {" "}
+                          Le mois idéal pour visiter est souvent{" "}
+                          <strong>{(city as any).bestMonth}</strong>, offrant le
+                          meilleur équilibre entre météo clémente et
+                          fréquentation touristique.
+                        </>
+                      ) : (
+                        <>
+                          {" "}
+                          Vérifiez les saisons avant de réserver pour profiter
+                          pleinement des activités en extérieur.
+                        </>
+                      )}
                     </p>
 
-                    <h3 className="font-serif text-2xl font-bold text-neutral-900 mt-10 mb-4">
-                      Climat et Météo
+                    <h3 className="font-serif text-2xl font-bold text-neutral-900 mt-10 mb-4 flex items-center gap-3">
+                      <Coffee className="text-brown-500" />
+                      Vie locale & Connectivité
                     </h3>
                     <p>
-                      Avec une température moyenne de{" "}
-                      <strong>{city.temp}°C</strong>, le climat est un atout
-                      majeur. Pensez à vérifier la saison des pluies si vous
-                      prévoyez un long séjour.
+                      Pour ceux qui ont besoin de rester connectés (Instagram,
+                      Télétravail, Streaming), {city.name} offre une vitesse
+                      moyenne de <strong>{city.internet} Mbps</strong>.
+                      {city.internet > 50
+                        ? " C'est excellent, vous pourrez envoyer vos vidéos et travailler sans aucune latence."
+                        : " C'est correct pour la navigation basique, mais attendez-vous à quelques ralentissements sur les gros fichiers."}
                     </p>
                   </div>
                 </article>
               </FadeIn>
             </div>
 
-            {/* --- RIGHT COLUMN: SIDEBAR (4 cols) --- */}
             <aside className="lg:col-span-4 space-y-8">
-              {/* PROS & CONS CARD */}
-              <div className="block lg:sticky top-24 space-y-8">
+              <div className="sticky top-24 space-y-8">
                 <FadeIn delay={0.3}>
                   <div className="bg-white rounded-3xl p-8 border border-neutral-100 shadow-xl overflow-hidden relative">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
-                    <h3 className="font-bold text-xl mb-6 relative z-10">
-                      L'avis Metalya
+                    <h3 className="font-bold text-xl mb-6 relative z-10 flex items-center gap-2">
+                      <Info size={20} className="text-blue-500" /> L'avis
+                      express
                     </h3>
 
                     <div className="space-y-6 relative z-10">
                       <div>
                         <h4 className="flex items-center gap-2 text-sm font-bold text-emerald-700 uppercase tracking-wider mb-3">
-                          <ThumbsUp size={16} /> Les Points Forts
+                          <ThumbsUp size={16} /> On adore
                         </h4>
                         <ul className="space-y-3">
                           {city.pros?.map((pro, i) => (
@@ -298,11 +300,7 @@ export default async function CityPage({ params }: Props) {
                               <div className="min-w-[6px] h-[6px] rounded-full bg-emerald-500 mt-1.5" />
                               {pro}
                             </li>
-                          )) || (
-                            <li className="text-sm text-neutral-400 italic">
-                              Données en cours de collecte
-                            </li>
-                          )}
+                          ))}
                         </ul>
                       </div>
 
@@ -310,7 +308,7 @@ export default async function CityPage({ params }: Props) {
 
                       <div>
                         <h4 className="flex items-center gap-2 text-sm font-bold text-rose-700 uppercase tracking-wider mb-3">
-                          <ThumbsDown size={16} /> Attention à
+                          <ThumbsDown size={16} /> À savoir
                         </h4>
                         <ul className="space-y-3">
                           {city.cons?.map((con, i) => (
@@ -321,43 +319,49 @@ export default async function CityPage({ params }: Props) {
                               <div className="min-w-[6px] h-[6px] rounded-full bg-rose-500 mt-1.5" />
                               {con}
                             </li>
-                          )) || (
-                            <li className="text-sm text-neutral-400 italic">
-                              Données en cours de collecte
-                            </li>
-                          )}
+                          ))}
                         </ul>
                       </div>
                     </div>
                   </div>
                 </FadeIn>
 
-                {/* SUMMARY BADGE */}
                 <FadeIn delay={0.5}>
                   <div className="bg-neutral-900 text-white rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <Globe size={48} className="mx-auto mb-4 text-blue-400" />
-                    <h3 className="text-xl font-bold mb-2">Prêt à partir ?</h3>
+                    <Plane
+                      size={48}
+                      className="mx-auto mb-4 text-blue-400 group-hover:-translate-y-2 transition-transform duration-500"
+                    />
+                    <h3 className="text-xl font-bold mb-2">
+                      Envie de partir ?
+                    </h3>
                     <p className="text-white/60 text-sm mb-6">
-                      {city.name} vous attend. Préparez votre départ
-                      sereinement.
+                      Trouvez les meilleurs vols et hébergements pour{" "}
+                      {city.name}.
                     </p>
-                    <div className="inline-flex items-center justify-center w-full px-4 py-2 rounded-xl bg-white/10 border border-white/10 text-xs font-mono">
-                      📍 {city.region} • {city.currency}
-                    </div>
+                    <button className="w-full py-3 rounded-xl bg-white text-black font-bold text-sm hover:bg-blue-50 transition-colors">
+                      Voir les disponibilités
+                    </button>
                   </div>
                 </FadeIn>
               </div>
             </aside>
           </div>
 
-          {/* --- BOTTOM: SIMILAR CITIES (INTERNAL LINKING) --- */}
           {similarCities.length > 0 && (
             <div className="mt-32 pt-16 border-t border-neutral-200">
               <FadeIn>
-                <h2 className="text-3xl font-serif font-bold mb-12 text-center">
-                  D'autres destinations en {city.region}
-                </h2>
+                <div className="text-center mb-12">
+                  <h2 className="text-3xl font-serif font-bold mb-4">
+                    D'autres voyages en {city.region}
+                  </h2>
+                  <p className="text-neutral-500 max-w-2xl mx-auto">
+                    Vous hésitez encore ? Ces destinations offrent une ambiance
+                    similaire ou sont géographiquement proches.
+                  </p>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   {similarCities.map((simCity) => (
                     <Link
@@ -365,7 +369,7 @@ export default async function CityPage({ params }: Props) {
                       href={`/destinations/${simCity.slug}`}
                       className="group block bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-neutral-100"
                     >
-                      <div className="relative h-48 w-full overflow-hidden">
+                      <div className="relative h-56 w-full overflow-hidden">
                         <Image
                           src={simCity.image}
                           alt={simCity.name}
@@ -381,21 +385,15 @@ export default async function CityPage({ params }: Props) {
                           <h3 className="font-bold text-xl text-neutral-900">
                             {simCity.name}
                           </h3>
-                          <span className="text-emerald-600 font-bold">
+                          <span className="text-emerald-600 font-bold bg-emerald-50 px-2 py-1 rounded-lg text-sm">
                             {getInflationCost(simCity.baseCost)}€
                           </span>
                         </div>
-                        <div className="flex items-center text-neutral-500 text-sm gap-4 mt-4">
-                          <div className="flex items-center gap-1">
-                            <Wifi size={14} /> {simCity.internet} Mb
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Thermometer size={14} /> {simCity.temp}°C
-                          </div>
-                        </div>
-                        <div className="mt-6 flex items-center text-blue-600 text-sm font-bold group-hover:gap-2 transition-all">
-                          Voir le guide{" "}
-                          <ArrowRight size={16} className="ml-1" />
+                        <p className="text-neutral-500 text-sm line-clamp-2 mb-4">
+                          {simCity.description}
+                        </p>
+                        <div className="flex items-center justify-end text-blue-600 text-sm font-bold group-hover:gap-2 transition-all">
+                          Découvrir <ArrowRight size={16} className="ml-1" />
                         </div>
                       </div>
                     </Link>

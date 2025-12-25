@@ -73,12 +73,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/outils/travel-calendar`, // AJOUTÉ
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.9,
-    },
-    {
       url: `${BASE_URL}/outils/convertisseur-image`,
       lastModified: new Date(),
       changeFrequency: "monthly",

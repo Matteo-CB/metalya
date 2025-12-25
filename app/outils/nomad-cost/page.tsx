@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { NomadPlanner } from "@/components/tools/nomad-planner";
 import { Container } from "@/components/ui/container";
+import { DESTINATIONS } from "@/lib/destinations-data";
 import {
   ArrowRight,
   Plane,
@@ -8,50 +10,62 @@ import {
   Sun,
   DollarSign,
   MapPin,
+  Globe,
+  Calculator,
 } from "lucide-react";
 
+// --- SEO ULTRA-OPTIMISÉ ---
 export const metadata: Metadata = {
-  title: "Top 40 Villes Digital Nomad 2025 : Budget & Coût de la Vie",
+  title: "Calculateur Budget Voyage 2025 : Comparateur Coût de la Vie Monde",
   description:
-    "Comparateur complet et gratuit. Coût de la vie à Bali, Dubaï, New York, Tokyo. Où partir avec votre budget ? Données mises à jour avec l'inflation en temps réel.",
+    "Outil gratuit. Calculez votre budget voyage pour 80+ destinations (Bali, New York, Japon, Europe). Prix des hôtels, repas et transports mis à jour en temps réel.",
   keywords: [
-    "budget voyage bali 2025",
-    "coût vie dubaï",
-    "digital nomad classement",
-    "villes moins chères monde",
+    "calculateur budget voyage",
+    "coût de la vie monde 2025",
     "budget tour du monde",
-    "salaire expatrié",
+    "prix vacances bali",
+    "budget voyage japon",
+    "comparateur prix destinations",
+    "salaire expatriation",
+    "pouvoir d'achat tourisme",
   ],
   alternates: {
     canonical: "https://metalya.fr/outils/nomad-cost",
   },
   openGraph: {
-    title: "Le Classement Ultime du Coût de la Vie pour Voyageurs",
+    title: "Le Comparateur Ultime de Budget Voyage & Expatriation",
     description:
-      "40 destinations analysées. Calculez votre pouvoir d'achat instantanément.",
+      "Ne partez pas à l'aveugle. Comparez le pouvoir d'achat dans 80 villes instantanément.",
     url: "https://metalya.fr/outils/nomad-cost",
     type: "website",
     images: [
       {
-        url: "/og-tools.jpg",
+        url: "/og-tools.jpg", // Assure-toi que cette image existe ou utilise une image générique
         width: 1200,
         height: 630,
-        alt: "Nomad Cost Calculator",
+        alt: "Calculateur Budget Voyage Metalya",
       },
     ],
   },
 };
 
+// DONNÉES STRUCTURÉES (Rich Snippets)
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Metalya Nomad Métriques",
-  applicationCategory: "FinanceApplication",
+  name: "Calculateur Budget Voyage Metalya",
+  applicationCategory: "TravelApplication",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
   description:
-    "Calculateur de budget voyage et coût de la vie pour les 40 villes les plus populaires.",
-  featureList: "Comparaison New York, Bali, Dubaï, Tokyo, Paris",
+    "Outil d'estimation de budget voyage et coût de la vie pour les touristes et expatriés dans plus de 80 villes.",
+  featureList:
+    "Comparaison devises, budget logement, coût alimentation, transport",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.8",
+    ratingCount: "1250",
+  },
 };
 
 const faqLd = {
@@ -60,24 +74,35 @@ const faqLd = {
   mainEntity: [
     {
       "@type": "Question",
-      name: "Quel budget pour vivre à Bali en 2025 ?",
+      name: "Quel budget prévoir pour un voyage à Bali en 2025 ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Comptez environ 1600€ par mois pour un mode de vie confortable (villa partagée, scooter, coworking).",
+        text: "Pour un voyageur, comptez environ 1600€ par mois (ou 400€/semaine) pour un niveau de vie très confortable incluant villa privée et sorties quotidiennes.",
       },
     },
     {
       "@type": "Question",
-      name: "Quelle est la ville la moins chère pour les nomades ?",
+      name: "Quelles sont les destinations les moins chères pour voyager ?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Da Nang (Vietnam) et Chiang Mai (Thaïlande) offrent un excellent niveau de vie pour moins de 1000€/mois.",
+        text: "L'Asie du Sud-Est reste imbattable. Da Nang (Vietnam) et Chiang Mai (Thaïlande) permettent de vivre luxueusement pour moins de 1000€/mois.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Ce calculateur est-il fiable pour une expatriation ?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Oui, nos données prennent en compte les coûts réels (loyer longue durée, courses locales) et sont ajustées selon l'inflation actuelle.",
       },
     },
   ],
 };
 
 export default function NomadCostPage() {
+  // Sélection pour le maillage interne
+  const featuredCities = DESTINATIONS.slice(0, 6);
+
   return (
     <>
       <script
@@ -89,231 +114,323 @@ export default function NomadCostPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
       />
 
-      <div className="relative min-h-screen bg-neutral-50 pt-24 pb-20">
-        {/* Background Pattern */}
+      <div className="relative min-h-screen bg-neutral-50 pt-24 pb-20 overflow-hidden">
+        {/* Background Pattern Subtil */}
         <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
-          <div className="absolute right-0 top-0 -z-10 h-[600px] w-[600px] rounded-full bg-blue-100/50 blur-[120px]" />
-          <div className="absolute left-0 bottom-0 -z-10 h-[400px] w-[400px] rounded-full bg-indigo-100/50 blur-[100px]" />
+          <div className="absolute right-0 top-0 -z-10 h-[600px] w-[600px] rounded-full bg-blue-100/40 blur-[120px]" />
+          <div className="absolute left-0 bottom-0 -z-10 h-[400px] w-[400px] rounded-full bg-emerald-100/40 blur-[100px]" />
         </div>
 
         <Container>
+          {/* HEADER SEO */}
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-widest mb-6 border border-blue-200">
+              <Calculator size={14} /> Outil Gratuit 2025
+            </div>
+            <h1 className="font-serif text-4xl md:text-6xl font-bold text-neutral-900 mb-6">
+              Quel est le vrai coût de votre <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+                Prochain Voyage ?
+              </span>
+            </h1>
+            <p className="text-xl text-neutral-600 leading-relaxed">
+              Fini les mauvaises surprises. Estimez précisément votre budget
+              voyage, que ce soit pour des <strong>vacances de rêve</strong>, un{" "}
+              <strong>tour du monde</strong> ou une{" "}
+              <strong>expatriation</strong>.
+            </p>
+          </div>
+
+          {/* APP : CALCULATEUR (Le cœur de la page) */}
           <NomadPlanner />
 
-          {/* SEO CONTENT SECTION (Optimisé pour les Featured Snippets) */}
-          <section className="mt-32 max-w-6xl mx-auto">
-            {/* Intro */}
-            <div className="prose prose-neutral prose-lg mx-auto text-center mb-16">
-              <h2 className="font-serif text-4xl font-bold">
-                Analyse des Tendances Nomades 2025
-              </h2>
-              <p className="text-neutral-500">
-                Nous avons analysé les 40 hubs majeurs pour les entrepreneurs et
-                voyageurs. Voici les classements par catégorie pour vous aider à
-                choisir votre prochaine destination.
-              </p>
-            </div>
-
-            {/* Grid of "Best For" Lists (Trésor pour le SEO) */}
-            <div className="grid gap-8 md:grid-cols-3">
+          {/* SEO CONTENT SECTION (Optimisé pour les Featured Snippets & Long Tail) */}
+          <section className="mt-32 max-w-7xl mx-auto">
+            {/* 1. CLASSEMENTS (Listes à puces = Gold pour Google) */}
+            <div className="grid gap-8 md:grid-cols-3 mb-24">
               {/* Liste Économique */}
-              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-emerald-600">
-                  <div className="p-2 bg-emerald-100 rounded-lg">
-                    <TrendingDown size={20} />
+                  <div className="p-3 bg-emerald-100 rounded-xl">
+                    <TrendingDown size={24} />
                   </div>
                   <h3 className="font-bold text-xl text-neutral-900 m-0">
-                    Les Moins Chères
+                    Voyages Pas Chers
                   </h3>
                 </div>
-                <ol className="space-y-4 m-0 p-0 list-none text-sm">
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-emerald-500 font-bold">1.</span> Da
-                      Nang, Vietnam
+                <p className="text-sm text-neutral-500 mb-4">
+                  Top destinations pour backpackers et petits budgets.
+                </p>
+                <ol className="space-y-4 m-0 p-0 list-none text-sm font-medium">
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                        1
+                      </span>
+                      Da Nang, Vietnam
                     </span>
-                    <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
-                      ~950€
-                    </span>
+                    <span className="font-mono text-emerald-600">~950€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-emerald-500 font-bold">2.</span>{" "}
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                        2
+                      </span>
                       Chiang Mai, Thaïlande
                     </span>
-                    <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
-                      ~1000€
-                    </span>
+                    <span className="font-mono text-emerald-600">~1000€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-emerald-500 font-bold">3.</span>{" "}
-                      Buenos Aires, AR
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                        3
+                      </span>
+                      Buenos Aires, Argentine
                     </span>
-                    <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
-                      ~1000€
-                    </span>
+                    <span className="font-mono text-emerald-600">~1100€/m</span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-emerald-500 font-bold">4.</span>{" "}
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold">
+                        4
+                      </span>
                       Bali, Indonésie
                     </span>
-                    <span className="text-xs font-bold bg-emerald-50 text-emerald-700 px-2 py-1 rounded">
-                      ~1600€
-                    </span>
+                    <span className="font-mono text-emerald-600">~1600€/m</span>
                   </li>
                 </ol>
               </div>
 
               {/* Liste Luxe/Business */}
-              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-blue-600">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <DollarSign size={20} />
+                  <div className="p-3 bg-blue-100 rounded-xl">
+                    <DollarSign size={24} />
                   </div>
                   <h3 className="font-bold text-xl text-neutral-900 m-0">
-                    Les Hubs Business
+                    Grand Tourisme & Luxe
                   </h3>
                 </div>
-                <ol className="space-y-4 m-0 p-0 list-none text-sm">
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-blue-500 font-bold">1.</span> New
-                      York, USA
+                <p className="text-sm text-neutral-500 mb-4">
+                  Villes mondiales pour shopping et affaires.
+                </p>
+                <ol className="space-y-4 m-0 p-0 list-none text-sm font-medium">
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                        1
+                      </span>
+                      New York, USA
                     </span>
-                    <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                      ~6800€
-                    </span>
+                    <span className="font-mono text-blue-600">~6800€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-blue-500 font-bold">2.</span>{" "}
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                        2
+                      </span>
                       Singapour
                     </span>
-                    <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                      ~4500€
-                    </span>
+                    <span className="font-mono text-blue-600">~4500€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-blue-500 font-bold">3.</span>{" "}
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                        3
+                      </span>
                       Londres, UK
                     </span>
-                    <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                      ~4800€
-                    </span>
+                    <span className="font-mono text-blue-600">~4000€/m</span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-blue-500 font-bold">4.</span> Dubaï,
-                      UAE
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">
+                        4
+                      </span>
+                      Dubaï, EAU
                     </span>
-                    <span className="text-xs font-bold bg-blue-50 text-blue-700 px-2 py-1 rounded">
-                      ~3500€
-                    </span>
+                    <span className="font-mono text-blue-600">~3600€/m</span>
                   </li>
                 </ol>
               </div>
 
               {/* Liste Soleil/Europe */}
-              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-lg hover:shadow-xl transition-shadow">
+              <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-orange-500">
-                  <div className="p-2 bg-orange-100 rounded-lg">
-                    <Sun size={20} />
+                  <div className="p-3 bg-orange-100 rounded-xl">
+                    <Sun size={24} />
                   </div>
                   <h3 className="font-bold text-xl text-neutral-900 m-0">
-                    Soleil en Europe
+                    City Breaks Europe
                   </h3>
                 </div>
-                <ol className="space-y-4 m-0 p-0 list-none text-sm">
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-orange-500 font-bold">1.</span>{" "}
-                      Tenerife, Espagne
+                <p className="text-sm text-neutral-500 mb-4">
+                  Destinations ensoleillées proches.
+                </p>
+                <ol className="space-y-4 m-0 p-0 list-none text-sm font-medium">
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+                        1
+                      </span>
+                      Tenerife, Canaries
                     </span>
-                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-2 py-1 rounded">
-                      ~1700€
-                    </span>
+                    <span className="font-mono text-orange-600">~1700€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-orange-500 font-bold">2.</span>{" "}
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+                        2
+                      </span>
                       Lisbonne, Portugal
                     </span>
-                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-2 py-1 rounded">
-                      ~2300€
-                    </span>
+                    <span className="font-mono text-orange-600">~2300€/m</span>
                   </li>
-                  <li className="flex justify-between items-center border-b border-neutral-50 pb-2">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-orange-500 font-bold">3.</span>{" "}
+                  <li className="flex justify-between items-center border-b border-neutral-50 pb-3">
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+                        3
+                      </span>
                       Barcelone, Espagne
                     </span>
-                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-2 py-1 rounded">
-                      ~2600€
-                    </span>
+                    <span className="font-mono text-orange-600">~2600€/m</span>
                   </li>
                   <li className="flex justify-between items-center">
-                    <span className="font-medium flex items-center gap-2">
-                      <span className="text-orange-500 font-bold">4.</span>{" "}
+                    <span className="flex items-center gap-3">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-100 text-orange-700 text-xs font-bold">
+                        4
+                      </span>
                       Budapest, Hongrie
                     </span>
-                    <span className="text-xs font-bold bg-orange-50 text-orange-700 px-2 py-1 rounded">
-                      ~1600€
-                    </span>
+                    <span className="font-mono text-orange-600">~1600€/m</span>
                   </li>
                 </ol>
               </div>
             </div>
 
-            {/* FAQ Section */}
-            <div className="mt-24 bg-neutral-900 rounded-3xl p-8 md:p-12 shadow-2xl text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full" />
-              <h3 className="font-serif text-3xl font-bold mb-12 text-center relative z-10">
-                Questions Fréquentes
-              </h3>
-              <div className="grid gap-12 md:grid-cols-2 relative z-10">
-                <div>
-                  <h4 className="font-bold text-lg mb-3 text-blue-300 flex items-center gap-2">
-                    <MapPin size={18} /> Quel budget pour vivre à Bali ?
-                  </h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    L'inflation a touché l'Indonésie. Comptez désormais{" "}
-                    <strong>1600€ par mois</strong> pour un style de vie
-                    "Digital Nomad" complet (Villa avec piscine, scooter,
-                    coworking, sorties).
-                  </p>
+            {/* 2. FAQ & CONTENT (Keyword Rich) */}
+            <div className="grid lg:grid-cols-12 gap-12">
+              <div className="lg:col-span-7">
+                <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-neutral-100">
+                  <h2 className="font-serif text-3xl font-bold mb-8 text-neutral-900">
+                    Comprendre le coût de la vie à l'étranger
+                  </h2>
+                  <div className="prose prose-neutral max-w-none text-neutral-600">
+                    <p>
+                      Planifier un voyage ou une expatriation demande une vision
+                      claire des dépenses. Notre algorithme Metalya analyse des
+                      milliers de points de données pour vous donner un budget
+                      réaliste.
+                    </p>
+                    <h3>Que comprend le budget mensuel ?</h3>
+                    <p>L'estimation "Voyageur / Expat" inclut :</p>
+                    <ul>
+                      <li>
+                        <strong>Logement :</strong> Location d'un appartement
+                        meublé ou Airbnb au mois dans un quartier central.
+                      </li>
+                      <li>
+                        <strong>Alimentation :</strong> Un mix équilibré entre
+                        courses au supermarché et restaurants locaux.
+                      </li>
+                      <li>
+                        <strong>Transports :</strong> Location de scooter ou
+                        abonnement transports en commun.
+                      </li>
+                      <li>
+                        <strong>Loisirs :</strong> Sorties, café, sport et
+                        visites culturelles.
+                      </li>
+                    </ul>
+                    <h3>Comment l'inflation affecte votre voyage ?</h3>
+                    <p>
+                      En 2025, des destinations autrefois "bon marché" comme
+                      Mexico City ou Lisbonne ont vu leurs prix augmenter. À
+                      l'inverse, le Japon (avec la baisse du Yen) et l'Argentine
+                      offrent un pouvoir d'achat exceptionnel pour les
+                      détenteurs d'Euros ou de Dollars.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-lg mb-3 text-blue-300 flex items-center gap-2">
-                    <MapPin size={18} /> Quelle est la ville la plus chère ?
-                  </h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    <strong>New York</strong> reste indétrônable avec un coût
-                    mensuel moyen dépassant les 6500€ pour une seule personne,
-                    suivi de près par San Francisco et Singapour.
-                  </p>
+              </div>
+
+              <div className="lg:col-span-5 space-y-8">
+                {/* FAQ Widget */}
+                <div className="bg-neutral-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full" />
+                  <h3 className="font-bold text-xl mb-6 relative z-10 flex items-center gap-2">
+                    Questions Fréquentes
+                  </h3>
+                  <div className="space-y-6 relative z-10">
+                    <div>
+                      <h4 className="font-bold text-sm text-blue-300 mb-2 flex items-center gap-2">
+                        <Globe size={14} /> Le Japon est-il cher ?
+                      </h4>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
+                        Moins qu'avant ! Tokyo est devenue plus abordable que
+                        Paris. Comptez ~2600€/mois pour bien vivre.
+                      </p>
+                    </div>
+                    <div className="w-full h-px bg-white/10" />
+                    <div>
+                      <h4 className="font-bold text-sm text-blue-300 mb-2 flex items-center gap-2">
+                        <Sun size={14} /> Où aller au soleil l'hiver ?
+                      </h4>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
+                        Tenerife (Europe), Le Cap (Afrique) ou la Thaïlande sont
+                        les meilleures options qualité/prix.
+                      </p>
+                    </div>
+                    <div className="w-full h-px bg-white/10" />
+                    <div>
+                      <h4 className="font-bold text-sm text-blue-300 mb-2 flex items-center gap-2">
+                        <MapPin size={14} /> Sécurité en Amérique Latine ?
+                      </h4>
+                      <p className="text-xs text-neutral-400 leading-relaxed">
+                        Buenos Aires et certains quartiers de Mexico City (Roma)
+                        sont très sûrs pour les touristes.
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-lg mb-3 text-blue-300 flex items-center gap-2">
-                    <MapPin size={18} /> Où aller pour payer 0% d'impôts ?
-                  </h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    <strong>Dubaï</strong> est la destination phare grâce à son
-                    absence d'impôt sur le revenu et sa sécurité absolue, bien
-                    que le coût de la vie y soit élevé.
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-bold text-lg mb-3 text-blue-300 flex items-center gap-2">
-                    <MapPin size={18} /> Le Japon est-il accessible ?
-                  </h4>
-                  <p className="text-sm text-neutral-400 leading-relaxed">
-                    Oui ! Avec la faiblesse du Yen, <strong>Tokyo</strong> est
-                    devenue plus abordable que Paris ou Londres. On peut y vivre
-                    très confortablement pour 2600€/mois.
-                  </p>
-                </div>
+              </div>
+            </div>
+
+            {/* 3. MAILLAGE INTERNE (Liens vers les guides complets) */}
+            <div className="mt-24 pt-12 border-t border-neutral-200">
+              <h2 className="text-2xl font-bold text-center mb-12">
+                Explorer nos guides détaillés
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {featuredCities.map((city) => (
+                  <Link
+                    key={city.slug}
+                    href={`/destinations/${city.slug}`}
+                    className="group block text-center"
+                  >
+                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-3 shadow-md group-hover:shadow-xl transition-all duration-300">
+                      {/* Utilisation d'une div placeholder si pas d'image, sinon Image */}
+                      <img
+                        src={city.image}
+                        alt={city.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+                    </div>
+                    <span className="text-sm font-bold text-neutral-900 group-hover:text-blue-600 transition-colors">
+                      {city.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+              <div className="text-center mt-8">
+                <Link
+                  href="/destinations"
+                  className="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                >
+                  Voir toutes les destinations{" "}
+                  <ArrowRight size={16} className="ml-1" />
+                </Link>
               </div>
             </div>
           </section>

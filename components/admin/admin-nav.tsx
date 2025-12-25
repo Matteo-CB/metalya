@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
   Users,
   Mail,
   FileText,
@@ -23,7 +22,13 @@ export function AdminNav({ role, unreadCount }: AdminNavProps) {
   const pathname = usePathname();
   const isSuperAdmin = role === UserRole.SUPER_ADMIN;
 
-  const links = [
+  // On type explicitement le tableau pour que TypeScript accepte les ajouts via splice
+  const links: {
+    href: string;
+    label: string;
+    icon: any;
+    badge?: number | null;
+  }[] = [
     {
       href: "/admin/posts",
       label: "Articles",
@@ -47,19 +52,22 @@ export function AdminNav({ role, unreadCount }: AdminNavProps) {
     },
   ];
 
+  // Insertion dynamique
   if (isSuperAdmin) {
     links.splice(3, 0, {
       href: "/admin/users",
       label: "Utilisateurs",
       icon: Users,
-    }); // Insère avant Newsletter
+    });
   }
+
   if (isSuperAdmin) {
+    // On insère encore à l'index 3 pour qu'il passe DEVANT Utilisateurs
     links.splice(3, 0, {
       href: "/admin/media",
-      label: "Mediathèque",
+      label: "Médiathèque",
       icon: Book,
-    }); // Insère avant Newsletter
+    });
   }
 
   return (
@@ -71,7 +79,8 @@ export function AdminNav({ role, unreadCount }: AdminNavProps) {
             key={link.href}
             href={link.href}
             className={cn(
-              "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+              // J'ai ajouté 'whitespace-nowrap' pour que le texte ne casse pas sur mobile
+              "relative flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors whitespace-nowrap",
               isActive
                 ? "bg-neutral-100 text-neutral-900"
                 : "text-neutral-500 hover:bg-neutral-50 hover:text-neutral-900"
