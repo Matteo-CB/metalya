@@ -14,9 +14,6 @@ export function DestinationsSection() {
   return (
     <section className="py-32 bg-neutral-50 overflow-hidden relative">
       {/* --- BACKGROUND FX --- */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-neutral-200 to-transparent" />
-      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-[100px] pointer-events-none" />
 
       <Container className="relative z-10">
         <FadeIn>
