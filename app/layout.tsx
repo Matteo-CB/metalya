@@ -73,10 +73,15 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Metalya",
   },
+  // C'est ICI que Next.js génère les balises <link rel="icon">
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: [
+      { url: "/icon.png" },
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon.png", sizes: "192x192", type: "image/png" }, // Ajout pour Google
+    ],
+    apple: [{ url: "/apple-icon.png" }],
+    shortcut: "/icon.png", // Corrigé de logo.png à icon.png pour cohérence
     other: [
       {
         rel: "search",
@@ -163,6 +168,7 @@ export default async function RootLayout({
     });
   }
 
+  // Schema.org optimisé pour le logo
   const orgSchema: WithContext<NewsMediaOrganization> = {
     "@context": "https://schema.org",
     "@type": "NewsMediaOrganization",
@@ -170,9 +176,16 @@ export default async function RootLayout({
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/logo.png`,
-      width: "512px",
-      height: "512px",
+      url: `${SITE_URL}/icon.png`, // Point vers l'icône carrée (Important pour Google SERP)
+      width: "512",
+      height: "512",
+    },
+    image: {
+      // Image alternative (Bannière)
+      "@type": "ImageObject",
+      url: `${SITE_URL}/banniere.png`,
+      width: "1200",
+      height: "630",
     },
     sameAs: [
       "https://twitter.com/Metalyafr",
