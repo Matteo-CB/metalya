@@ -95,6 +95,9 @@ export async function createPost(formData: FormData) {
   }
 
   const title = formData.get("title") as string;
+  // Récupération du slug manuel
+  const slugInput = formData.get("slug") as string;
+
   const content = formData.get("content") as string;
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
@@ -114,13 +117,25 @@ export async function createPost(formData: FormData) {
     throw new Error("Le titre est obligatoire");
   }
 
-  const baseSlug = slugify(title);
-  let slug = baseSlug;
-  let counter = 1;
+  // Si slugInput est vide, on génère depuis le titre, sinon on nettoie l'input
+  let slug = slugInput ? slugify(slugInput) : slugify(title);
 
-  while (await prisma.post.findUnique({ where: { slug } })) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
+  // Vérification basique d'unicité (pour éviter crash DB, on ajoute un suffixe si auto, mais on bloque si manuel)
+  if (slugInput) {
+    const existing = await prisma.post.findUnique({ where: { slug } });
+    if (existing) {
+      throw new Error(
+        "Ce slug est déjà utilisé. Veuillez en choisir un autre."
+      );
+    }
+  } else {
+    // Logique auto-increment seulement si génération automatique
+    let baseSlug = slug;
+    let counter = 1;
+    while (await prisma.post.findUnique({ where: { slug } })) {
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
   }
 
   let status: PostStatus = PostStatus.DRAFT;
@@ -195,6 +210,8 @@ export async function updatePost(postId: string, formData: FormData) {
   }
 
   const title = formData.get("title") as string;
+  const slugInput = formData.get("slug") as string;
+
   const content = formData.get("content") as string;
   const excerpt = formData.get("excerpt") as string;
   const coverImage = formData.get("coverImage") as string;
@@ -222,7 +239,19 @@ export async function updatePost(postId: string, formData: FormData) {
     }
   }
 
-  const slug = slugify(title);
+  // Gestion du slug en update
+  let slug = post.slug; // Par défaut on garde l'ancien
+  if (slugInput && slugInput !== post.slug) {
+    const newSlug = slugify(slugInput);
+    const existing = await prisma.post.findUnique({ where: { slug: newSlug } });
+    if (existing) {
+      throw new Error("Ce slug est déjà pris.");
+    }
+    slug = newSlug;
+  } else if (!slugInput && title !== post.title) {
+    // Si pas de slug fourni et titre changé, on peut regénérer (ou garder l'ancien, ici je garde l'ancien pour ne pas casser les liens sauf demande explicite)
+    // slug = slugify(title);
+  }
 
   await prisma.post.update({
     where: { id: postId },

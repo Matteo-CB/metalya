@@ -10,8 +10,20 @@ import { MarkdownEditor } from "@/components/admin/post-editor/markdown-editor";
 import { LivePreview } from "@/components/admin/post-editor/live-preview";
 import { PostSettings } from "@/components/admin/post-editor/post-settings";
 
+// Helper simple pour le slug
+function slugify(text: string) {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "")
+    .replace(/\-\-+/g, "-");
+}
+
 export default function CreatePostPage() {
   const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState("");
   const [excerpt, setExcerpt] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [readingTime, setReadingTime] = useState(5);
@@ -33,6 +45,14 @@ export default function CreatePostPage() {
     );
   };
 
+  // Met à jour le slug quand le titre change, sauf si l'utilisateur a déjà touché au slug
+  const handleTitleChange = (val: string) => {
+    setTitle(val);
+    if (!slug || slug === slugify(title)) {
+      setSlug(slugify(val));
+    }
+  };
+
   return (
     <form
       action={(formData) => {
@@ -49,7 +69,6 @@ export default function CreatePostPage() {
       />
 
       <main className="mx-auto grid w-full max-w-[1600px] flex-1 grid-cols-1 gap-6 p-6 lg:grid-cols-12 lg:gap-8">
-       
         <aside
           className={cn(
             "lg:col-span-3",
@@ -59,7 +78,9 @@ export default function CreatePostPage() {
           <div className="sticky top-24">
             <PostSettings
               title={title}
-              setTitle={setTitle}
+              setTitle={handleTitleChange}
+              slug={slug}
+              setSlug={setSlug}
               excerpt={excerpt}
               setExcerpt={setExcerpt}
               coverImage={coverImage}

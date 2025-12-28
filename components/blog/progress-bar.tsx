@@ -12,7 +12,7 @@ export function ReadingProgressBar() {
 
   return (
     <motion.div
-      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 z-50 origin-left"
+      className="fixed top-0 left-0 right-0 h-1.5 bg-gradient-to-r bg-indigo-500 z-50 origin-left"
       style={{ scaleX }}
     />
   );

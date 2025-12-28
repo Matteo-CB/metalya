@@ -12,12 +12,13 @@ import { PostSettings } from "@/components/admin/post-editor/post-settings";
 
 export function PostEditorClient({ post }: { post: Post }) {
   const [title, setTitle] = useState(post.title);
-  const [excerpt, setExcerpt] = useState(post.excerpt);
-  const [coverImage, setCoverImage] = useState(post.coverImage);
-  const [readingTime, setReadingTime] = useState(post.readingTime);
+  const [slug, setSlug] = useState(post.slug);
+  const [excerpt, setExcerpt] = useState(post.excerpt || "");
+  const [coverImage, setCoverImage] = useState(post.coverImage || "");
+  const [readingTime, setReadingTime] = useState(post.readingTime || 5);
   const [content, setContent] = useState(post.content);
   const [categories, setCategories] = useState<Category[]>(
-    post.categories as Category[]
+    (post.categories as Category[]) || []
   );
 
   const [isPending, startTransition] = useTransition();
@@ -61,6 +62,8 @@ export function PostEditorClient({ post }: { post: Post }) {
             <PostSettings
               title={title}
               setTitle={setTitle}
+              slug={slug}
+              setSlug={setSlug}
               excerpt={excerpt}
               setExcerpt={setExcerpt}
               coverImage={coverImage}
