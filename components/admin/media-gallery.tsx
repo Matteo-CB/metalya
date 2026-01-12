@@ -9,17 +9,68 @@ import {
   Copy,
   Loader2,
   Image as ImageIcon,
-  Check,
   Search,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Type simplifié pour les blobs Vercel
 type BlobAsset = {
   url: string;
   pathname: string;
   size: number;
   uploadedAt: Date;
+};
+
+const compressImage = async (file: File): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
+      const img = document.createElement("img");
+      img.src = event.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1920;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error("Compression failed"));
+              return;
+            }
+            const compressedFile = new File([blob], file.name, {
+              type: "image/webp",
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          "image/webp",
+          0.8
+        );
+      };
+      img.onerror = (error) => reject(error);
+    };
+    reader.onerror = (error) => reject(error);
+  });
 };
 
 export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
@@ -29,44 +80,43 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
   const [search, setSearch] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Filtrage
   const filteredMedia = media.filter((item) =>
     item.pathname.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Gestion de l'upload
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
 
     try {
-      // 1. Appel au serveur (qui compresse et sauvegarde)
+      const compressedFile = await compressImage(file);
+
+      const formData = new FormData();
+      formData.append("file", compressedFile);
+
       const url = await uploadImage(formData);
 
-      // 2. Mise à jour optimiste locale (on simule le nouveau fichier)
       const newBlob: BlobAsset = {
         url,
-        pathname: `articles/${file.name}`, // Nom temporaire pour l'affichage
-        size: file.size,
+        pathname: `articles/${file.name.replace(/\.[^/.]+$/, "")}.webp`,
+        size: compressedFile.size,
         uploadedAt: new Date(),
       };
 
       setMedia((prev) => [newBlob, ...prev]);
     } catch (error) {
       console.error(error);
-      alert("Erreur lors de l'upload.");
+      alert(
+        "Erreur lors de l'upload. Vérifiez que l'image n'est pas corrompue."
+      );
     } finally {
       setIsUploading(false);
-      // Reset input
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   }
 
-  // Gestion de la suppression
   function handleDelete(url: string) {
     if (!confirm("Voulez-vous vraiment supprimer cette image définitivement ?"))
       return;
@@ -81,16 +131,13 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
     });
   }
 
-  // Copie du lien
   function copyToClipboard(url: string) {
     navigator.clipboard.writeText(url);
   }
 
   return (
     <div className="space-y-8">
-      {/* --- TOOLBAR --- */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-neutral-200 flex flex-col md:flex-row justify-between items-center gap-4">
-        {/* Search */}
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 w-4 h-4" />
           <input
@@ -102,7 +149,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
           />
         </div>
 
-        {/* Upload Button */}
         <div>
           <input
             type="file"
@@ -118,7 +164,7 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
           >
             {isUploading ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" /> Compression...
+                <Loader2 className="w-4 h-4 animate-spin" /> Optimisation...
               </>
             ) : (
               <>
@@ -129,7 +175,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
         </div>
       </div>
 
-      {/* --- GRID --- */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
         <AnimatePresence mode="popLayout">
           {filteredMedia.map((file) => (
@@ -141,7 +186,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
               exit={{ opacity: 0, scale: 0.9 }}
               className="group relative aspect-square bg-white rounded-xl border border-neutral-200 shadow-sm overflow-hidden"
             >
-              {/* Image Preview */}
               <div className="relative w-full h-full">
                 <Image
                   src={file.url}
@@ -150,12 +194,9 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
                   sizes="(max-width: 768px) 50vw, 20vw"
                 />
-
-                {/* Gradient Overlay */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors duration-300" />
               </div>
 
-              {/* Actions Overlay (Hover) */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4">
                 <button
                   onClick={() => copyToClipboard(file.url)}
@@ -178,7 +219,6 @@ export function MediaGallery({ initialMedia }: { initialMedia: BlobAsset[] }) {
                 </button>
               </div>
 
-              {/* File Info Badge */}
               <div className="absolute bottom-2 left-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <p className="text-[10px] text-white truncate font-mono">
                   {file.pathname.split("/").pop()}
