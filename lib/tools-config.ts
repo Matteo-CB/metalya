@@ -9,7 +9,7 @@ import {
   Crown,
   Calendar,
   Plane,
-  Coins, // Nouvelle icône
+  Coins,
 } from "lucide-react";
 
 export interface Tool {
@@ -31,7 +31,7 @@ export const tools: Tool[] = [
     title: "Pouvoir d'Achat",
     description:
       "Calculateur de richesse relative. Votre salaire de 2000€ vaut 8000€ ailleurs. Découvrez où vivre comme un roi.",
-    icon: Coins, // Icône plus financière
+    icon: Coins,
     href: "/outils/lifestyle-calculator",
     status: "new",
     badge: "Viral",
@@ -42,7 +42,7 @@ export const tools: Tool[] = [
     keywords: ["geoarbitrage", "pouvoir d'achat", "salaire expatriation"],
   },
   {
-    title: "Budget Voyage", // Renommé de "Nomad Cost"
+    title: "Budget Voyage",
     description:
       "Comparateur de coût de la vie pour 80+ villes. Loyer, Hôtels, Repas. Planifiez votre budget vacances ou expatriation.",
     icon: Wallet,
@@ -89,7 +89,8 @@ export const tools: Tool[] = [
       "Générateur de bruits ambiants (Pluie, Café, Train) et minuteur Pomodoro pour travailler efficacement en voyage.",
     icon: Clock,
     href: "/outils/focus",
-    status: "coming-soon",
+    status: "active",
+    badge: "Nouveau",
     color: "text-amber-500",
     bg: "bg-amber-500/10",
     border: "group-hover:border-amber-500/50",
@@ -102,7 +103,8 @@ export const tools: Tool[] = [
       "Simulateur de résultats Google (SERP). Optimisez vos titres et méta-descriptions pour le clic.",
     icon: Search,
     href: "/outils/seo-preview",
-    status: "coming-soon",
+    status: "active",
+    badge: "Marketing",
     color: "text-blue-500",
     bg: "bg-blue-500/10",
     border: "group-hover:border-blue-500/50",
@@ -115,7 +117,7 @@ export const tools: Tool[] = [
       "Analysez la lisibilité de vos textes et estimez le temps de lecture pour votre audience.",
     icon: Zap,
     href: "/outils/lecture",
-    status: "coming-soon",
+    status: "active",
     color: "text-violet-500",
     bg: "bg-violet-500/10",
     border: "group-hover:border-violet-500/50",
