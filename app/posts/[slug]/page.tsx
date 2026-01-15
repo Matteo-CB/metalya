@@ -221,7 +221,7 @@ export default async function PostPage(props: PostPageProps) {
         <div className="fixed inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] mask-[radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-60 pointer-events-none" />
 
         <article>
-          <div className="sticky top-0 z-40 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md transition-all">
+          <div className="top-0 z-40 w-full border-b border-neutral-100 bg-white/80 backdrop-blur-md transition-all">
             <Container className="flex h-16 items-center justify-between">
               <Link
                 href="/"
@@ -403,7 +403,7 @@ export default async function PostPage(props: PostPageProps) {
                 <div className="flex flex-col gap-10">
                   <TableOfContents content={post.content} />
 
-                  <div className="hidden lg:block sticky top-32 w-full max-w-xs mx-auto">
+                  <div className="hidden lg:block top-32 w-full max-w-xs mx-auto">
                     <p className="mb-2 text-center text-[10px] uppercase tracking-widest text-neutral-300">
                       Sponsorisé
                     </p>
