@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ImageConverter } from "@/components/tools/image-converter";
 import { Container } from "@/components/ui/container";
+import { GoogleAd } from "@/components/ads/google-ad";
 
 export const metadata: Metadata = {
   title: "Convertisseur Image Ultime Gratuit : JPG, PNG, WebP, AVIF | Metalya",
@@ -51,7 +52,29 @@ export default function ImageConverterPage() {
 
       <div className="relative min-h-screen bg-neutral-50 pt-24 pb-20">
         <Container>
+          <div className="mb-8">
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[100px]"
+            />
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+              Publicité
+            </p>
+          </div>
+
           <ImageConverter />
+
+          <div className="mt-12">
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+              Publicité
+            </p>
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[280px]"
+            />
+          </div>
         </Container>
       </div>
     </>

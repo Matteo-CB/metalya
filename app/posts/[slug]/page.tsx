@@ -32,6 +32,7 @@ import { TableOfContents } from "@/components/blog/table-of-contents";
 import { AudioPlayer } from "@/components/blog/audio-player";
 import { SpeakableSchema } from "@/components/seo/speakable-schema";
 import { TextSelectionShare } from "@/components/blog/text-selection-share";
+import { GoogleAd } from "@/components/ads/google-ad";
 
 interface PostPageProps {
   params: Promise<{
@@ -371,13 +372,48 @@ export default async function PostPage(props: PostPageProps) {
                       </div>
                     )}
 
+                    <div className="my-10 border-y border-neutral-100 py-6">
+                      <GoogleAd
+                        slot="3729459964"
+                        format="auto"
+                        className="min-h-[280px]"
+                      />
+                      <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300">
+                        Publicité
+                      </p>
+                    </div>
+
                     <div className="prose prose-lg prose-neutral md:prose-xl max-w-none prose-headings:font-serif prose-headings:font-medium prose-p:leading-8 prose-p:text-neutral-600 prose-a:text-indigo-600 prose-a:no-underline prose-a:transition-colors hover:prose-a:text-indigo-800 hover:prose-a:underline hover:prose-a:decoration-2 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-4 prose-blockquote:border-indigo-500 prose-blockquote:bg-indigo-50/50 prose-blockquote:py-2 prose-blockquote:pl-6 prose-blockquote:pr-4 prose-blockquote:not-italic prose-blockquote:text-indigo-900">
                       <MarkdownRenderer content={post.content} />
+                    </div>
+
+                    <div className="my-16">
+                      <p className="mb-4 text-center text-[10px] uppercase tracking-widest text-neutral-300">
+                        Publicité
+                      </p>
+                      <GoogleAd
+                        slot="3729459964"
+                        format="auto"
+                        className="min-h-[280px]"
+                      />
                     </div>
                   </FadeIn>
                 </div>
 
-                <TableOfContents content={post.content} />
+                <div className="flex flex-col gap-10">
+                  <TableOfContents content={post.content} />
+
+                  <div className="hidden lg:block sticky top-32 w-full max-w-xs mx-auto">
+                    <p className="mb-2 text-center text-[10px] uppercase tracking-widest text-neutral-300">
+                      Sponsorisé
+                    </p>
+                    <GoogleAd
+                      slot="3729459964"
+                      format="vertical"
+                      className="min-h-[600px]"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="max-w-3xl mx-auto">

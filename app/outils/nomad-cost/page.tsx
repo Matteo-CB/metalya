@@ -3,6 +3,7 @@ import Link from "next/link";
 import { NomadPlanner } from "@/components/tools/nomad-planner";
 import { Container } from "@/components/ui/container";
 import { DESTINATIONS } from "@/lib/destinations-data";
+import { GoogleAd } from "@/components/ads/google-ad";
 import {
   ArrowRight,
   Plane,
@@ -14,7 +15,6 @@ import {
   Calculator,
 } from "lucide-react";
 
-// --- SEO ULTRA-OPTIMISÉ ---
 export const metadata: Metadata = {
   title: "Calculateur Budget Voyage 2025 : Comparateur Coût de la Vie Monde",
   description:
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-tools.jpg", // Assure-toi que cette image existe ou utilise une image générique
+        url: "/og-tools.jpg",
         width: 1200,
         height: 630,
         alt: "Calculateur Budget Voyage Metalya",
@@ -49,7 +49,6 @@ export const metadata: Metadata = {
   },
 };
 
-// DONNÉES STRUCTURÉES (Rich Snippets)
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -100,7 +99,6 @@ const faqLd = {
 };
 
 export default function NomadCostPage() {
-  // Sélection pour le maillage interne
   const featuredCities = DESTINATIONS.slice(0, 6);
 
   return (
@@ -115,15 +113,13 @@ export default function NomadCostPage() {
       />
 
       <div className="relative min-h-screen bg-neutral-50 pt-24 pb-20 overflow-hidden">
-        {/* Background Pattern Subtil */}
         <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
           <div className="absolute right-0 top-0 -z-10 h-[600px] w-[600px] rounded-full bg-blue-100/40 blur-[120px]" />
           <div className="absolute left-0 bottom-0 -z-10 h-[400px] w-[400px] rounded-full bg-emerald-100/40 blur-[100px]" />
         </div>
 
         <Container>
-          {/* HEADER SEO */}
-          <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="text-center max-w-3xl mx-auto mb-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-widest mb-6 border border-blue-200">
               <Calculator size={14} /> Outil Gratuit 2025
             </div>
@@ -141,14 +137,32 @@ export default function NomadCostPage() {
             </p>
           </div>
 
-          {/* APP : CALCULATEUR (Le cœur de la page) */}
+          <div className="mb-12">
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[100px]"
+            />
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+              Publicité
+            </p>
+          </div>
+
           <NomadPlanner />
 
-          {/* SEO CONTENT SECTION (Optimisé pour les Featured Snippets & Long Tail) */}
-          <section className="mt-32 max-w-7xl mx-auto">
-            {/* 1. CLASSEMENTS (Listes à puces = Gold pour Google) */}
+          <div className="my-20">
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+              Publicité
+            </p>
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[280px]"
+            />
+          </div>
+
+          <section className="mt-16 max-w-7xl mx-auto">
             <div className="grid gap-8 md:grid-cols-3 mb-24">
-              {/* Liste Économique */}
               <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-emerald-600">
                   <div className="p-3 bg-emerald-100 rounded-xl">
@@ -201,7 +215,6 @@ export default function NomadCostPage() {
                 </ol>
               </div>
 
-              {/* Liste Luxe/Business */}
               <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-blue-600">
                   <div className="p-3 bg-blue-100 rounded-xl">
@@ -254,7 +267,6 @@ export default function NomadCostPage() {
                 </ol>
               </div>
 
-              {/* Liste Soleil/Europe */}
               <div className="bg-white p-8 rounded-3xl border border-neutral-100 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
                 <div className="flex items-center gap-3 mb-6 text-orange-500">
                   <div className="p-3 bg-orange-100 rounded-xl">
@@ -308,7 +320,17 @@ export default function NomadCostPage() {
               </div>
             </div>
 
-            {/* 2. FAQ & CONTENT (Keyword Rich) */}
+            <div className="my-20">
+              <GoogleAd
+                slot="3729459964"
+                format="auto"
+                className="min-h-[280px]"
+              />
+              <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+                Publicité
+              </p>
+            </div>
+
             <div className="grid lg:grid-cols-12 gap-12">
               <div className="lg:col-span-7">
                 <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm border border-neutral-100">
@@ -355,7 +377,6 @@ export default function NomadCostPage() {
               </div>
 
               <div className="lg:col-span-5 space-y-8">
-                {/* FAQ Widget */}
                 <div className="bg-neutral-900 rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-blue-600/20 blur-[100px] rounded-full" />
                   <h3 className="font-bold text-xl mb-6 relative z-10 flex items-center gap-2">
@@ -396,7 +417,6 @@ export default function NomadCostPage() {
               </div>
             </div>
 
-            {/* 3. MAILLAGE INTERNE (Liens vers les guides complets) */}
             <div className="mt-24 pt-12 border-t border-neutral-200">
               <h2 className="text-2xl font-bold text-center mb-12">
                 Explorer nos guides détaillés
@@ -409,7 +429,6 @@ export default function NomadCostPage() {
                     className="group block text-center"
                   >
                     <div className="relative w-full aspect-square rounded-2xl overflow-hidden mb-3 shadow-md group-hover:shadow-xl transition-all duration-300">
-                      {/* Utilisation d'une div placeholder si pas d'image, sinon Image */}
                       <img
                         src={city.image}
                         alt={city.name}

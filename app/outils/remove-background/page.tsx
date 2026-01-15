@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BackgroundRemover } from "@/components/tools/background-remover";
 import { Container } from "@/components/ui/container";
+import { GoogleAd } from "@/components/ads/google-ad";
 
 export const metadata: Metadata = {
   title: "Supprimer le fond d'une image gratuitement (IA) | Metalya",
@@ -47,13 +48,34 @@ export default function RemoveBackgroundPage() {
       />
 
       <div className="relative min-h-screen bg-neutral-50 pt-24 pb-20 overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]">
           <div className="absolute left-1/2 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-purple-200/50 blur-[120px]" />
         </div>
 
         <Container>
+          <div className="mb-8">
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[100px]"
+            />
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+              Publicité
+            </p>
+          </div>
+
           <BackgroundRemover />
+
+          <div className="mt-12">
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+              Publicité
+            </p>
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[280px]"
+            />
+          </div>
         </Container>
       </div>
     </>

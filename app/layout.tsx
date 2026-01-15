@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/layout/footer";
@@ -73,15 +74,14 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "Metalya",
   },
-  // C'est ICI que Next.js génère les balises <link rel="icon">
   icons: {
     icon: [
       { url: "/icon.png" },
       { url: "/icon.png", sizes: "32x32", type: "image/png" },
-      { url: "/icon.png", sizes: "192x192", type: "image/png" }, // Ajout pour Google
+      { url: "/icon.png", sizes: "192x192", type: "image/png" },
     ],
     apple: [{ url: "/apple-icon.png" }],
-    shortcut: "/icon.png", // Corrigé de logo.png à icon.png pour cohérence
+    shortcut: "/icon.png",
     other: [
       {
         rel: "search",
@@ -168,7 +168,6 @@ export default async function RootLayout({
     });
   }
 
-  // Schema.org optimisé pour le logo
   const orgSchema: WithContext<NewsMediaOrganization> = {
     "@context": "https://schema.org",
     "@type": "NewsMediaOrganization",
@@ -176,12 +175,11 @@ export default async function RootLayout({
     url: SITE_URL,
     logo: {
       "@type": "ImageObject",
-      url: `${SITE_URL}/icon.png`, // Point vers l'icône carrée (Important pour Google SERP)
+      url: `${SITE_URL}/icon.png`,
       width: "512",
       height: "512",
     },
     image: {
-      // Image alternative (Bannière)
       "@type": "ImageObject",
       url: `${SITE_URL}/banniere.png`,
       width: "1200",
@@ -249,6 +247,12 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <Script
+          id="adsbygoogle-init"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9989627034003305`}
         />
       </head>
       <body

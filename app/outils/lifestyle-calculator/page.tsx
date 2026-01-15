@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { LifestyleCalculator } from "@/components/tools/lifestyle-calculator";
 import { Container } from "@/components/ui/container";
 import { Coins, Globe, TrendingUp, Briefcase } from "lucide-react";
+import { GoogleAd } from "@/components/ads/google-ad";
 
-// SEO : On vise "Pouvoir d'achat", "Salaire Expatrié", "Géo-arbitrage"
 export const metadata: Metadata = {
   title: "Simulateur de Pouvoir d'Achat & Salaire Expatrié 2025 | Metalya",
   description:
@@ -50,11 +50,10 @@ export default function LifestyleCalculatorPage() {
       />
 
       <div className="min-h-screen bg-neutral-50 pt-24 pb-20 relative overflow-hidden">
-        {/* Background Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-100/30 rounded-full blur-[120px] -z-10" />
 
         <Container>
-          <div className="text-center max-w-4xl mx-auto mb-16">
+          <div className="text-center max-w-4xl mx-auto mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-100 text-indigo-800 text-xs font-bold uppercase tracking-widest mb-6 border border-indigo-200">
               <Coins size={14} /> Géo-Arbitrage 2025
             </div>
@@ -71,10 +70,31 @@ export default function LifestyleCalculatorPage() {
             </p>
           </div>
 
+          <div className="mb-12 max-w-4xl mx-auto">
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[100px]"
+            />
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+              Publicité
+            </p>
+          </div>
+
           <LifestyleCalculator />
 
-          {/* SEO Content Section */}
-          <section className="mt-32 grid md:grid-cols-3 gap-12 text-center">
+          <div className="mt-16 max-w-4xl mx-auto">
+            <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+              Publicité
+            </p>
+            <GoogleAd
+              slot="3729459964"
+              format="auto"
+              className="min-h-[280px]"
+            />
+          </div>
+
+          <section className="mt-16 grid md:grid-cols-3 gap-12 text-center">
             <div>
               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-md mx-auto mb-6 text-indigo-600">
                 <Globe size={32} />
