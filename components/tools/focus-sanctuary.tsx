@@ -25,14 +25,14 @@ const SOUNDS = [
     name: "Ambiance Café",
     icon: Coffee,
     color: "text-amber-600",
-    src: "/sounds/cafe.mp3",
+    src: "/sounds/coffee.mp3",
   },
   {
     id: "white",
-    name: "Bruit Blanc",
+    name: "Vent",
     icon: Wind,
     color: "text-neutral-400",
-    src: "/sounds/white.mp3",
+    src: "/sounds/wind.mp3",
   },
 ];
 
