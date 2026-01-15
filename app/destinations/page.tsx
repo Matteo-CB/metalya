@@ -5,6 +5,7 @@ import { DESTINATIONS, getInflationCost } from "@/lib/destinations-data";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, ArrowUpRight, Wifi, Sun, DollarSign } from "lucide-react";
+import { GoogleAd } from "@/components/ads/google-ad";
 
 export const metadata: Metadata = {
   title: "Destinations Digital Nomad : Le Guide Complet 2025",
@@ -17,7 +18,7 @@ export default function DestinationsPage() {
     <div className="min-h-screen bg-neutral-50 pt-32 pb-20">
       <Container>
         {/* Header de Page */}
-        <div className="max-w-2xl mb-20">
+        <div className="max-w-2xl mb-12">
           <FadeIn>
             <h1 className="font-serif text-5xl md:text-7xl font-bold text-neutral-900 mb-6 tracking-tight">
               Trouvez votre <br />
@@ -31,6 +32,18 @@ export default function DestinationsPage() {
               2025.
             </p>
           </FadeIn>
+        </div>
+
+        {/* PUB TOP */}
+        <div className="mb-16">
+          <GoogleAd
+            slot="3729459964"
+            format="auto"
+            className="min-h-[120px] rounded-2xl"
+          />
+          <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mt-2">
+            Publicité
+          </p>
         </div>
 
         {/* Grille Principale */}
@@ -112,6 +125,18 @@ export default function DestinationsPage() {
               </Link>
             </FadeIn>
           ))}
+        </div>
+
+        {/* PUB BOTTOM */}
+        <div className="mt-20">
+          <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+            Publicité
+          </p>
+          <GoogleAd
+            slot="3729459964"
+            format="auto"
+            className="min-h-[250px] rounded-2xl"
+          />
         </div>
       </Container>
     </div>

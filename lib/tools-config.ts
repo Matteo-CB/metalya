@@ -56,20 +56,6 @@ export const tools: Tool[] = [
     keywords: ["coût vie voyage", "budget vacances", "comparateur ville"],
   },
   {
-    title: "Calendrier Voyage",
-    description:
-      "Où partir ce mois-ci ? L'outil qui croise la météo idéale et les événements culturels pour des vacances parfaites.",
-    icon: Calendar,
-    href: "/outils/travel-calendar",
-    status: "new",
-    badge: "Indispensable",
-    color: "text-blue-600",
-    bg: "bg-blue-600/10",
-    border: "group-hover:border-blue-600/50",
-    gradient: "from-blue-600/20 to-cyan-600/20",
-    keywords: ["quand partir", "calendrier voyage", "saison idéale"],
-  },
-  {
     title: "Studio Détourage",
     description:
       "Supprimez l'arrière-plan de n'importe quelle image en 1 clic. IA embarquée puissante. 100% Gratuit & Privé.",

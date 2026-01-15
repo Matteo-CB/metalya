@@ -19,6 +19,7 @@ import {
   Info,
 } from "lucide-react";
 import { CityDashboard } from "@/components/tools/city-dashboard";
+import { GoogleAd } from "@/components/ads/google-ad";
 
 // --- UTILS ---
 
@@ -169,6 +170,18 @@ export default async function CityPage({ params }: Props) {
         <Container className="relative z-40 -mt-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12">
             <div className="lg:col-span-8 space-y-12">
+              {/* PUB TOP */}
+              <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-neutral-100">
+                <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+                  Publicité
+                </p>
+                <GoogleAd
+                  slot="3729459964"
+                  format="auto"
+                  className="min-h-[150px]"
+                />
+              </div>
+
               <FadeIn delay={0.2}>
                 <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-neutral-100/50">
                   <div className="flex items-center gap-3 mb-8 border-b border-neutral-100 pb-6">
@@ -202,6 +215,18 @@ export default async function CityPage({ params }: Props) {
                       unique de culture, de confort et d'aventure.
                     </p>
 
+                    {/* PUB MIDDLE CONTENT */}
+                    <div className="my-8 not-prose">
+                      <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+                        Publicité
+                      </p>
+                      <GoogleAd
+                        slot="3729459964"
+                        format="auto"
+                        className="min-h-[250px]"
+                      />
+                    </div>
+
                     <div className="my-12 p-8 bg-neutral-50 rounded-3xl border border-neutral-200">
                       <h4 className="flex items-center gap-2 font-bold text-xl text-neutral-900 mb-4 not-prose">
                         <Wallet className="text-emerald-600" size={24} />
@@ -213,6 +238,7 @@ export default async function CityPage({ params }: Props) {
                         <strong>{realCost}€ / mois</strong> pour une personne
                         vivant confortablement.
                       </p>
+
                       <div className="grid md:grid-cols-2 gap-6 not-prose">
                         <div className="bg-white p-4 rounded-xl shadow-sm">
                           <span className="text-xs font-bold text-neutral-400 uppercase">
@@ -325,6 +351,18 @@ export default async function CityPage({ params }: Props) {
                     </div>
                   </div>
                 </FadeIn>
+
+                {/* PUB SIDEBAR */}
+                <div className="hidden lg:block">
+                  <p className="text-center text-[10px] uppercase tracking-widest text-neutral-300 mb-2">
+                    Sponsorisé
+                  </p>
+                  <GoogleAd
+                    slot="3729459964"
+                    format="vertical"
+                    className="min-h-[600px] rounded-3xl"
+                  />
+                </div>
 
                 <FadeIn delay={0.5}>
                   <div className="bg-neutral-900 text-white rounded-3xl p-8 text-center shadow-2xl relative overflow-hidden group">
