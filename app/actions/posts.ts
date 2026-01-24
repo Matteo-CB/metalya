@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { UserRole, Category, PostStatus } from "@prisma/client";
 import { pingIndexNow } from "@/lib/indexnow";
 import { createBlueskyPost } from "@/lib/bluesky";
-import { createMastodonPost } from "@/lib/mastodon";
+
 import { requestGoogleIndexing } from "@/lib/google-indexing";
 
 function slugify(text: string) {
@@ -63,13 +63,7 @@ async function distributeToSocials(post: {
       requestGoogleIndexing(postLink),
       requestGoogleIndexing(storyLink),
 
-      createMastodonPost({
-        title: meta.title,
-        excerpt: meta.desc,
-        link: meta.link,
-        tags: meta.keys,
-        imageUrl: meta.img,
-      }),
+    
 
       post.coverImage
         ? createBlueskyPost({
